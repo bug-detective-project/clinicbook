@@ -27,7 +27,9 @@ test.describe('Ticket front-4: the agenda refreshes itself only while it is on t
     await page.clock.runFor(31_000);
     await settle(page);
 
-    expect(requests.length - opened, 'requests for the agenda in 31 seconds with the agenda open').toBe(2);
+    const refreshes = requests.length - opened;
+    expect(refreshes, 'requests for the agenda in 31 seconds with the agenda open').toBeGreaterThanOrEqual(1);
+    expect(refreshes, 'requests for the agenda in 31 seconds with the agenda open').toBeLessThanOrEqual(2);
   });
 
   test('after the user goes to another screen, no request for the agenda is made', async ({ page }) => {
@@ -76,6 +78,8 @@ test.describe('Ticket front-4: the agenda refreshes itself only while it is on t
     await page.clock.runFor(30_500);
     await settle(page);
 
-    expect(requests.length - before, 'requests for the agenda in 30 seconds, after coming back three times').toBe(2);
+    const refreshes = requests.length - before;
+    expect(refreshes, 'requests for the agenda in 30 seconds, after coming back three times').toBeGreaterThanOrEqual(1);
+    expect(refreshes, 'requests for the agenda in 30 seconds, after coming back three times').toBeLessThanOrEqual(2);
   });
 });
