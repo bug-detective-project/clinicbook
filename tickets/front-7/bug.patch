@@ -1,0 +1,127 @@
+diff --git a/client/src/App.tsx b/client/src/App.tsx
+index ff04b51..d819488 100644
+--- a/client/src/App.tsx
++++ b/client/src/App.tsx
+@@ -3,7 +3,6 @@ import { Layout } from './components/Layout.tsx';
+ import { AgendaPage } from './pages/AgendaPage.tsx';
+ import { BookingPage } from './pages/BookingPage.tsx';
+ import { NotFound } from './pages/NotFound.tsx';
+-import { PatientRecord } from './pages/PatientRecord.tsx';
+ import { PatientsPage } from './pages/PatientsPage.tsx';
+ import { RemindersPage } from './pages/RemindersPage.tsx';
+ import { TodayProvider } from './TodayContext.tsx';
+@@ -17,7 +16,6 @@ export function App() {
+           <Route path="appointments/new" element={<BookingPage />} />
+           <Route path="appointments/:id/reschedule" element={<BookingPage />} />
+           <Route path="patients" element={<PatientsPage />} />
+-          <Route path="patients/:id/*" element={<PatientRecord />} />
+           <Route path="reminders" element={<RemindersPage />} />
+           <Route path="*" element={<NotFound />} />
+         </Route>
+diff --git a/client/src/pages/PatientRecord.module.css b/client/src/pages/PatientRecord.module.css
+deleted file mode 100644
+index b913e0e..0000000
+--- a/client/src/pages/PatientRecord.module.css
++++ /dev/null
+@@ -1,19 +0,0 @@
+-.tabs {
+-  display: flex;
+-  gap: 4px;
+-  margin-bottom: 16px;
+-  border-bottom: 1px solid var(--line);
+-}
+-
+-.tabs a {
+-  padding: 8px 16px;
+-  border-bottom: 3px solid transparent;
+-  color: var(--ink);
+-  text-decoration: none;
+-}
+-
+-.tabs a[aria-current='page'] {
+-  border-bottom-color: var(--brand);
+-  color: var(--brand);
+-  font-weight: 600;
+-}
+diff --git a/client/src/pages/PatientRecord.tsx b/client/src/pages/PatientRecord.tsx
+deleted file mode 100644
+index 1cca954..0000000
+--- a/client/src/pages/PatientRecord.tsx
++++ /dev/null
+@@ -1,76 +0,0 @@
+-import { useEffect, useState } from 'react';
+-import { Link, NavLink, Route, Routes, useParams } from 'react-router';
+-import { ApiError } from '../api/http.ts';
+-import { getPatient } from '../api/patients.ts';
+-import type { Patient } from '../api/types.ts';
+-import { PatientAppointments } from '../components/PatientAppointments.tsx';
+-import { PatientDetails } from '../components/PatientDetails.tsx';
+-import ui from '../components/ui.module.css';
+-import styles from './PatientRecord.module.css';
+-
+-/**
+- * The record of one patient, at /patients/:id, with one tab per address:
+- * /patients/:id is "Details" and /patients/:id/appointments is "Appointments".
+- */
+-export function PatientRecord() {
+-  const { id } = useParams();
+-  const [patient, setPatient] = useState<Patient | null>(null);
+-  const [problem, setProblem] = useState<'missing' | 'failed' | null>(null);
+-
+-  useEffect(() => {
+-    let current = true;
+-    setPatient(null);
+-    setProblem(null);
+-    getPatient(Number(id))
+-      .then((found) => {
+-        if (current) {
+-          setPatient(found);
+-        }
+-      })
+-      .catch((failure: unknown) => {
+-        if (current) {
+-          setProblem(failure instanceof ApiError && failure.status < 500 ? 'missing' : 'failed');
+-        }
+-      });
+-    return () => {
+-      current = false;
+-    };
+-  }, [id]);
+-
+-  if (problem !== null) {
+-    return (
+-      <section>
+-        <h2>{problem === 'missing' ? 'Patient not found' : 'The patient could not be loaded'}</h2>
+-        <p>
+-          <Link to="/patients">Back to the patients</Link>
+-        </p>
+-      </section>
+-    );
+-  }
+-  if (patient === null) {
+-    return <p>Loading…</p>;
+-  }
+-
+-  return (
+-    <section>
+-      <div className={ui.titleRow}>
+-        <h2>{patient.name}</h2>
+-        <Link className={ui.button} to="/patients">
+-          Back to the patients
+-        </Link>
+-      </div>
+-
+-      <nav aria-label="Patient record" className={styles.tabs}>
+-        <NavLink to={`/patients/${patient.id}`} end>
+-          Details
+-        </NavLink>
+-        <NavLink to={`/patients/${patient.id}/appointments`}>Appointments</NavLink>
+-      </nav>
+-
+-      <Routes>
+-        <Route index element={<PatientDetails patient={patient} />} />
+-        <Route path="appointments" element={<PatientAppointments patient={patient} />} />
+-      </Routes>
+-    </section>
+-  );
+-}

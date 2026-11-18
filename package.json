@@ -1,0 +1,34 @@
+{
+  "name": "clinicbook-qa",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "bugDetective": {
+    "project": {
+      "id": "clinicbook",
+      "name": "ClinicBook",
+      "difficulty": "beginner",
+      "stack": {
+        "frontend": "React · Vite · React Router",
+        "backend": "Node.js · Fastify · Kysely",
+        "database": "SQLite"
+      }
+    }
+  },
+  "engines": {
+    "node": ">=26.12.1"
+  },
+  "scripts": {
+    "qa": "node run.ts",
+    "typecheck": "tsc --noEmit",
+    "postinstall": "playwright install chromium",
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "@bug-detective/catalog": "github:bug-detective-project/catalog#v1.7.0",
+    "@playwright/test": "1.64.1",
+    "@types/node": "26.6.5",
+    "typescript": "7.0.2",
+    "vitest": "5.0.5"
+  }
+}

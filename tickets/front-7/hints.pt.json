@@ -1,0 +1,7 @@
+{
+  "hints": [
+    "Comece pela menor coisa que dá para ver: em `client/src/App.tsx`, adicione uma rota para `patients/:id` cujo elemento é um `PatientRecord` novo que só mostra o id do endereço (`useParams`). Quando o **Open record** parar de mostrar \"Page not found\", você tem a rota; todo o resto vai dentro da página.",
+    "No `PatientRecord`, carregue o paciente em um `useEffect` que dependa do id, com `getPatient(Number(id))`. Mantenha três resultados separados: ainda carregando, achou, e falhou (o 404 é o caso do \"Patient not found\"). O título e os dois `NavLink`s só aparecem depois que o paciente foi achado. Dê ao link de Details a prop `end`, senão ele conta como atual também no endereço de Appointments, porque esse endereço começa com o mesmo texto.",
+    "Cada aba precisa de um endereço próprio dentro da mesma página, para que a página (e o paciente carregado) fique enquanto a aba muda. Declare a rota como `patients/:id/*` e, dentro do `PatientRecord`, renderize um `<Routes>` aninhado com uma rota `index` para `<PatientDetails patient={patient} />` e uma rota `appointments` para `<PatientAppointments patient={patient} />`. Use endereços completos nos links: `/patients/${patient.id}` e `/patients/${patient.id}/appointments`."
+  ]
+}

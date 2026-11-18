@@ -1,0 +1,7 @@
+{
+  "hints": [
+    "The route is innocent: `server/src/routes/reminders.ts` sends nothing when `settings.remindersEnabled` is false. So with `REMINDERS_ENABLED=false` that setting is true. Find where the setting is made from the variable, and read the last line of the ticket again: `false`, `0` and `no` leave the option on, and an empty value turns it off. What do the three have in common that the empty one does not?",
+    "`readSettings` in `server/src/config.ts` makes the setting with `Boolean(env.REMINDERS_ENABLED ?? true)`. Everything that comes from the environment is a text. In the terminal, try `node -e \"console.log(Boolean('false'), Boolean('0'), Boolean(''))\"`.",
+    "`Boolean` of a text asks one thing only: is the text empty? `'false'` is a text with five letters, so it is true. An option of the environment has to be read by comparing texts: trim it and lower the case, treat `'true'` and `'1'` as on and `'false'` and `'0'` as off, use the default when the variable is missing or empty, and refuse anything else with an error that names the variable, so a typo is noticed when the server starts."
+  ]
+}

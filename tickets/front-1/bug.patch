@@ -1,0 +1,44 @@
+diff --git a/client/src/pages/BookingPage.tsx b/client/src/pages/BookingPage.tsx
+index b59548f..714aa42 100644
+--- a/client/src/pages/BookingPage.tsx
++++ b/client/src/pages/BookingPage.tsx
+@@ -32,7 +32,6 @@ export function BookingPage() {
+   const [reason, setReason] = useState('');
+   const [slots, setSlots] = useState<string[] | null>(null);
+   const [error, setError] = useState('');
+-  const [saving, setSaving] = useState(false);
+ 
+   useEffect(() => {
+     let current = true;
+@@ -88,14 +87,10 @@ export function BookingPage() {
+ 
+   async function submit(event: FormEvent) {
+     event.preventDefault();
+-    if (saving) {
+-      return;
+-    }
+     if (patientId === '' || doctorId === '' || day === '' || time === '') {
+       setError('Choose the patient, the doctor, the day and the time.');
+       return;
+     }
+-    setSaving(true);
+     setError('');
+     try {
+       if (rescheduling) {
+@@ -106,7 +101,6 @@ export function BookingPage() {
+       await navigate(`/?day=${day}`);
+     } catch (failure) {
+       setError(failure instanceof ApiError ? failure.message : 'The appointment could not be saved.');
+-      setSaving(false);
+     }
+   }
+ 
+@@ -185,7 +179,7 @@ export function BookingPage() {
+         )}
+ 
+         <div>
+-          <button type="submit" className={ui.primary} disabled={saving}>
++          <button type="submit" className={ui.primary}>
+             {rescheduling ? 'Reschedule' : 'Book'}
+           </button>
+         </div>

@@ -1,0 +1,7 @@
+{
+  "hints": [
+    "Follow the day from the database to the title. The ticket says the database and the API both have `2026-03-10`; check the API yourself in the Network tab. So the text arrives right in the browser, and somewhere between the answer of the API and the screen it becomes a different day. Which function turns `2026-03-10` into \"Tuesday, March 10\"?",
+    "Every screen formats days with `client/src/dates.ts`. Its `toDate` builds a `Date` from the text. In the browser console, with the time zone of São Paulo, try `new Date('2026-03-10')` and then `.toString()` on it. Which moment is that, exactly, and on which day does that moment fall in São Paulo?",
+    "JavaScript reads a text with only a date, `'2026-03-10'`, as midnight in UTC. Midnight in UTC is 21:00 of the day before in São Paulo, and `toLocaleDateString` writes the date of the computer's own time zone. A day has no time and no zone: build the `Date` from its parts, `new Date(year, month - 1, date)`, which is midnight on the computer's own calendar. The tests of the project run in UTC, where both ways give the same day; that is why they never noticed."
+  ]
+}

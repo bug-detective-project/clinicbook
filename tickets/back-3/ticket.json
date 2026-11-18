@@ -1,0 +1,7 @@
+{
+  "type": "fix",
+  "skills": {
+    "en": ["Configuration and feature flags", "Language and types"],
+    "pt": ["Configuração e opções de funcionalidade", "Linguagem e tipos"]
+  }
+}

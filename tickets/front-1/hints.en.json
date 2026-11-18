@@ -1,0 +1,7 @@
+{
+  "hints": [
+    "Open the Network tab of the DevTools, set the throttling to a slow connection and double-click **Book**. Count the `POST /api/appointments` requests. Each one is a complete, valid booking, so the server books both: the question is why the page sent two.",
+    "The form is in `client/src/pages/BookingPage.tsx`, and `submit` runs once for every click. Between the first click and the answer of the server there is a stretch of time in which the form looks exactly as before. What does the page know, during that time, about the request that is already on its way?",
+    "The form needs a state that says \"a booking is being sent\": set it before the request, and use it twice, to leave `submit` early and to disable the button. When the server refuses the booking the state must go back, or the user is stuck with a dead button. When the booking succeeds the page navigates away, so there is nothing to undo."
+  ]
+}

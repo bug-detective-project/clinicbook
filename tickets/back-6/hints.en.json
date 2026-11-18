@@ -1,0 +1,7 @@
+{
+  "hints": [
+    "Before writing anything, read what exists as a map of what is missing. The route in `server/src/routes/appointments.ts` stops at a comment. `bookAppointment` in `server/src/appointments.ts` is a complete example of a rule function: it checks, then it writes. And `moveAppointment` in `server/src/repository.ts` is a write that nobody calls. Which of the three layers has nothing for rescheduling yet?",
+    "Write a function next to `bookAppointment`, for example `rescheduleAppointment(db, today, id, day, time)`. It needs the appointment first (`requireAppointment` gives it, or throws the 404), because two things depend on it: its status, for the rule about cancelled appointments, and its doctor, for the rules of the time. `assertBookable` is in the same file and takes exactly a doctor, a day and a time.",
+    "The order inside the function: load the appointment; throw `new ConflictError('A cancelled appointment cannot be rescheduled')` when its status is `cancelled` (import `ConflictError` from `./errors.ts`); `await assertBookable(db, today, appointment.doctorId, day, time)`; and only then `return moveAppointment(db, id, day, time)`, which also sets the status back to scheduled. In the route, replace the 501 with a call to your function, passing `today()`, the id of the address and `request.body.day` and `request.body.time`."
+  ]
+}

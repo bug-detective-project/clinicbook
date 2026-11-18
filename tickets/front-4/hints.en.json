@@ -1,0 +1,7 @@
+{
+  "hints": [
+    "Use the Network tab as your measuring tool: filter by `appointments` and count the requests of each round of 15 seconds. One round after opening the agenda has one request. Change the day three times and count again. Each number you get is the number of timers that are alive.",
+    "The refresh is started in the `useEffect` of `client/src/pages/AgendaPage.tsx`, the one that depends on `day`. An effect runs again each time `day` changes, and each run starts a new `setInterval`. What stops the interval of the previous run? And what stops the last one when the user goes to another screen and the component is removed?",
+    "An effect that starts something must return a function that stops it. React calls that function before running the effect again and when the component leaves the screen. Keep the id that `setInterval` returns and call `window.clearInterval(timer)` in the function the effect returns, next to `current = false`."
+  ]
+}

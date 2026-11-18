@@ -1,0 +1,14 @@
+diff --git a/server/src/appointments.ts b/server/src/appointments.ts
+index 4de20b3..6eab799 100644
+--- a/server/src/appointments.ts
++++ b/server/src/appointments.ts
+@@ -51,8 +51,7 @@ export async function bookAppointment(db: Db, today: string, input: AppointmentI
+ }
+ 
+ export async function confirmAppointment(db: Db, id: number): Promise<Appointment> {
+-  const appointment = await requireAppointment(db, id);
+-  assertTransition(appointment.status, 'confirmed');
++  await requireAppointment(db, id);
+   return setAppointmentStatus(db, id, 'confirmed');
+ }
+ 

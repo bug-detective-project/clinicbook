@@ -1,0 +1,7 @@
+{
+  "hints": [
+    "A rota que cadastra um paciente quase não tem código de conferência: o Fastify confere o corpo contra um esquema antes de a rota rodar. Ache o esquema dessa rota (`server/src/routes/patients.ts` diz qual é) e leia o que ele diz sobre `phone`. Depois compare os telefones recusados com os que entram: `1234` é recusado, `11 9888-77AB` não. O que os aceitos têm em comum?",
+    "O `phone` do `patientBody` em `server/src/schemas.ts` é conferido com `PHONE_PATTERN`, uma expressão regular. Teste à mão no terminal: `node -e \"console.log(new RegExp('\\\\\\\\+?[0-9 ()-]{8,20}').test('call 11 98888-7777'))\"`. Uma expressão regular responde \"existe um trecho que casa em algum ponto do texto?\", a não ser que alguém diga onde o trecho tem que começar e terminar.",
+    "O padrão não tem âncoras. Sem `^` e `$`, qualquer texto que contenha 8 caracteres permitidos em sequência passa, não importa o que há em volta. Ancore as duas pontas: `'^\\\\+?[0-9 ()-]{8,20}$'`. Agora o texto inteiro precisa ser um telefone, e o 20 passa a ser um limite de verdade também."
+  ]
+}

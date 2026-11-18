@@ -1,0 +1,108 @@
+{
+  "client": {
+    "name": "Vila Clara Clinic",
+    "about": "A Vila Clara Clinic é uma clínica de bairro em São Paulo: três médicos, uma recepção com dois computadores e poucas centenas de pacientes, muitos das mesmas famílias. O ClinicBook é o que a recepção deixa aberto o dia inteiro: a agenda, as marcações e os lembretes passam por ele.",
+    "contacts": "Renata Siqueira (líder da recepção), Otávio Brandt (TI e operações, que trabalha de Lisboa) e a Dra. Helena Prado (diretora clínica) relatam os tickets.",
+    "reporters": [
+      {
+        "name": "Renata Siqueira",
+        "role": "Líder da recepção"
+      },
+      {
+        "name": "Otávio Brandt",
+        "role": "TI e operações"
+      },
+      {
+        "name": "Dra. Helena Prado",
+        "role": "Diretora clínica"
+      }
+    ]
+  },
+  "project": {
+    "name": "ClinicBook",
+    "about": "A recepção de uma clínica: a agenda do dia, que se atualiza sozinha, marcar, confirmar, remarcar e cancelar consultas, os pacientes com as fichas, e os lembretes que a clínica envia.",
+    "stack": "React, Vite e React Router; Node.js, Fastify e Kysely; SQLite",
+    "skills": [
+      "Formulários e validação",
+      "Estado local e derivado",
+      "Efeitos e ciclo de vida",
+      "Datas, números e texto",
+      "Criação de rotas e navegação",
+      "Criação de componentes",
+      "Plataforma web: DOM e eventos",
+      "Validação de entrada",
+      "Regras de negócio e camadas",
+      "Erros e resiliência",
+      "Criação de rotas e endpoints",
+      "Configuração e opções de funcionalidade"
+    ]
+  },
+  "messages": {
+    "welcome": {
+      "subject": "Boas-vindas ao projeto ClinicBook!",
+      "body": "Oi, que bom ter você com a gente!\n\nEu sou a Rafaela, gerente de engenharia. Você vai entrar no **ClinicBook**, o app que construímos para a **Vila Clara Clinic**, uma clínica de bairro em São Paulo. A recepção o deixa aberto o dia inteiro para marcar, confirmar e remarcar consultas, então, quando algo está errado, costuma haver um paciente no balcão enquanto acontece.\n\nComo a gente trabalha:\n\n- Seus tickets aparecem no **Quadro**. Um de cada vez: arraste para **Em andamento** quando começar e para **Em QA** quando achar que terminou. Alguns tickets são bugs para consertar; outros pedem que você construa algo que falta, ou que termine algo que ficou pela metade.\n- O código fica no seu container de workspace. **Abrir no VS Code** conecta o seu editor a ele, com Node, terminal e depurador já configurados. Rode `npm run dev` no terminal do VS Code e use **Abrir app no navegador** para testar o app.\n- As consultas de exemplo são escritas em torno de hoje, então a agenda parece viva sempre que você abre. `npm run db:reset` as repõe quando você quiser começar do zero.\n- O servidor é feito com Fastify e escreve as consultas ao banco com Kysely. Se eles são novidade para você, leia o `README.md` primeiro: ele diz onde mora cada tipo de código.\n- O QA roda primeiro os testes do projeto e depois verifica o próprio ticket. Se algo falhar, o card volta com observações.\n- Travou? Mande mensagem para a **Priya** pelo ticket. Ela aponta a direção, uma dica de cada vez.\n\nQuando estiver pronto, clique em **Pegar próxima tarefa**. Escolhi uma boa para começar.\n\nRafaela"
+    },
+    "assignments": {
+      "front-1": {
+        "subject": "Novo ticket: CB-101",
+        "body": "A Renata achou o mesmo paciente duas vezes na agenda, no mesmo horário, três vezes na semana passada. Um clique duplo em **Book** basta.\n\nReproduza com a aba Network aberta e uma conexão lenta: ela mostra exatamente o que a página está enviando.\n\nRafaela"
+      },
+      "front-2": {
+        "subject": "Novo ticket: CB-102",
+        "body": "A agenda diz quantas consultas o dia tem. Quando a Renata cancela uma, a linha muda na hora e o número não, por alguns segundos.\n\nA linha e o número estão na mesma tela. Comece descobrindo de onde vem cada um.\n\nRafaela"
+      },
+      "front-3": {
+        "subject": "Novo ticket: CB-103",
+        "body": "Este é urgente: na clínica, toda data da tela está um dia atrasada. Uma paciente veio no dia errado por causa disso.\n\nO Otávio, que trabalha de Lisboa, vê as datas certas com os mesmos dados. Tome isso como a primeira pista, e leia o ticket até o fim antes de abrir o código.\n\nRafaela"
+      },
+      "front-4": {
+        "subject": "Novo ticket: CB-104",
+        "body": "O Otávio estava lendo o log do servidor e achou os computadores da recepção pedindo a agenda dezenas de vezes a cada 15 segundos, também quando ninguém está olhando para ela.\n\nNada parece errado na tela, então meça primeiro: a aba Network é o seu instrumento aqui.\n\nRafaela"
+      },
+      "front-5": {
+        "subject": "Novo ticket: CB-105",
+        "body": "O menu \"⋯\" de cada paciente abre e nunca fecha, a não ser que você clique de novo no mesmo botão. A recepção quer que ele se comporte como qualquer menu: um clique fora fecha, e o Esc também.\n\nÉ algo para construir, e o ticket lista os comportamentos. Teste o resultado só com o teclado antes de enviar.\n\nRafaela"
+      },
+      "front-6": {
+        "subject": "Novo ticket: CB-106",
+        "body": "Para marcar uma consulta, a recepção digita o horário em um campo de texto e torce para ele estar livre. O servidor já sabe os horários livres; o componente que os mostra nunca foi construído.\n\nO ticket tem a especificação: as props, os comportamentos e onde ele entra no formulário. Construa o componente primeiro, sozinho, e encaixe depois.\n\nRafaela"
+      },
+      "front-7": {
+        "subject": "Novo ticket: CB-107",
+        "body": "Todo link para a ficha de um paciente termina em \"Page not found\". As duas partes da ficha estão escritas; a página que as reúne, com uma aba para cada, é você quem constrói.\n\nA Dra. Helena quer um link que possa mandar a uma colega para cada aba. Guarde essa frase enquanto decide como as abas funcionam.\n\nRafaela"
+      },
+      "back-1": {
+        "subject": "Novo ticket: CB-201",
+        "body": "Uma consulta cancelada foi confirmada da outra mesa alguns segundos depois, e dois pacientes apareceram para o mesmo horário.\n\nA clínica tem uma regra clara sobre isso, e tenho quase certeza de que o servidor conhece a regra. Descubra por que ninguém perguntou a ela.\n\nRafaela"
+      },
+      "back-2": {
+        "subject": "Novo ticket: CB-202",
+        "body": "Um paciente foi cadastrado com uma anotação dentro do telefone, e na terça ninguém na clínica recebeu lembrete por causa disso.\n\nO Otávio achava que o telefone estava sendo conferido, já que o formulário recusa alguns. Descubra o que exatamente é conferido.\n\nRafaela"
+      },
+      "back-3": {
+        "subject": "Novo ticket: CB-203",
+        "body": "Este é urgente. A unidade nova da clínica roda o servidor com os lembretes desligados, e doze pacientes receberam mensagem mesmo assim.\n\nO Otávio definiu a opção do jeito que o README manda. O ticket tem o comando exato, e vale ler duas vezes o último comentário dele.\n\nRafaela"
+      },
+      "back-4": {
+        "subject": "Novo ticket: CB-204",
+        "body": "A recepção mandou uma foto da tela com uma consulta SQL inteira embaixo de um formulário, em vermelho. Acontece quando o banco recusa alguma coisa, e ninguém nunca decidiu o que o usuário deveria ler nesse caso.\n\nÉ algo para construir: o ticket tem a tabela do que responder. Existe um lugar só no servidor onde todo erro vai parar, e é ali que você vai trabalhar.\n\nRafaela"
+      },
+      "back-5": {
+        "subject": "Novo ticket: CB-205",
+        "body": "O formulário de marcação pede ao servidor os horários livres de um médico, e o servidor não tem esse endpoint. Enquanto ele não existir, a recepção não consegue marcar pelo formulário.\n\nO ticket diz o que o endpoint responde em cada caso e lista o que o servidor já tem para você. Monte a lista de horários de um médico no papel antes de escrever o laço.\n\nRafaela"
+      },
+      "back-6": {
+        "subject": "Novo ticket: CB-206",
+        "body": "A remarcação foi começada e nunca terminada: a tela está pronta, e o servidor responde \"not available yet\". A recepção cancela e marca de novo à mão, e às vezes esquece a segunda metade.\n\nAntes de escrever qualquer coisa, leia o que já existe, nas três camadas do servidor. A maior parte do seu trabalho é ligar peças que existem.\n\nRafaela"
+      }
+    },
+    "completion": {
+      "subject": "ClinicBook: projeto concluído!",
+      "body": "Você completou toda a trilha de {{track}} do ClinicBook, então este projeto está pronto do seu lado. A Renata diz que a recepção parou de manter uma lista em papel de \"coisas para conferir de novo no sistema\", e o Otávio e a Dra. Helena também mandam agradecimentos.\n\nVocê pode seguir com as outras trilhas do ClinicBook quando quiser. Novos projetos também estão a caminho.\n\nObrigada pelo esforço.\n\nRafaela"
+    },
+    "trackCompletion": {
+      "subject": "A trilha de {{track}} está concluída!",
+      "body": "Você fechou todos os tickets de {{track}} do ClinicBook. A Renata percebeu: foi uma semana tranquila na recepção da Vila Clara.\n\nObrigada pelo esforço.\n\nRafaela"
+    }
+  }
+}

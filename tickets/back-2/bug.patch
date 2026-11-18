@@ -1,0 +1,13 @@
+diff --git a/server/src/schemas.ts b/server/src/schemas.ts
+index e4590f2..a29ed56 100644
+--- a/server/src/schemas.ts
++++ b/server/src/schemas.ts
+@@ -5,7 +5,7 @@ export const DAY_PATTERN = '^\\d{4}-\\d{2}-\\d{2}$';
+ export const TIME_PATTERN = '^([01]\\d|2[0-3]):[0-5]\\d$';
+ 
+ /** A phone: digits, spaces, dashes and parentheses, with an optional + in front; 8 to 20 characters. */
+-export const PHONE_PATTERN = '^\\+?[0-9 ()-]{8,20}$';
++export const PHONE_PATTERN = '\\+?[0-9 ()-]{8,20}';
+ 
+ export const patientBody = {
+   type: 'object',

@@ -1,0 +1,248 @@
+diff --git a/client/src/components/TimeSlotPicker.module.css b/client/src/components/TimeSlotPicker.module.css
+new file mode 100644
+index 0000000..83154c0
+--- /dev/null
++++ b/client/src/components/TimeSlotPicker.module.css
+@@ -0,0 +1,44 @@
++.picker {
++  display: flex;
++  flex-wrap: wrap;
++  gap: 8px;
++}
++
++.slot {
++  position: relative;
++  cursor: pointer;
++}
++
++/* The radio stays in the page for the keyboard and for screen readers; the label is what shows. */
++.slot input {
++  position: absolute;
++  inset: 0;
++  margin: 0;
++  opacity: 0;
++  cursor: pointer;
++}
++
++.slot span {
++  display: block;
++  padding: 6px 12px;
++  border: 1px solid var(--line);
++  border-radius: var(--radius);
++  background: var(--surface);
++  font-variant-numeric: tabular-nums;
++}
++
++.slot input:checked + span {
++  border-color: var(--brand);
++  background: var(--brand);
++  color: var(--brand-ink);
++}
++
++.slot input:focus-visible + span {
++  outline: 2px solid var(--brand);
++  outline-offset: 2px;
++}
++
++.empty {
++  margin: 0;
++  color: var(--muted);
++}
+diff --git a/client/src/components/TimeSlotPicker.test.tsx b/client/src/components/TimeSlotPicker.test.tsx
+new file mode 100644
+index 0000000..9a57a56
+--- /dev/null
++++ b/client/src/components/TimeSlotPicker.test.tsx
+@@ -0,0 +1,72 @@
++import { render, screen, within } from '@testing-library/react';
++import userEvent from '@testing-library/user-event';
++import { describe, expect, it, vi } from 'vitest';
++import { mockApi, TOMORROW } from '../test/mockApi.ts';
++import { renderApp } from '../test/renderApp.tsx';
++import { TimeSlotPicker } from './TimeSlotPicker.tsx';
++
++const SLOTS = ['08:00', '08:30', '10:00', '14:00'];
++
++describe('TimeSlotPicker', () => {
++  it('shows one option per free time, in the order given, inside a group named Time', () => {
++    render(<TimeSlotPicker slots={SLOTS} value="" onChange={() => {}} />);
++
++    const group = screen.getByRole('radiogroup', { name: 'Time' });
++    const options = within(group).getAllByRole('radio');
++
++    expect(options.map((option) => option.getAttribute('value'))).toEqual(SLOTS);
++    expect(within(group).getByRole('radio', { name: '10:00' })).toBeInTheDocument();
++    expect(options.every((option) => !(option as HTMLInputElement).checked)).toBe(true);
++  });
++
++  it('marks the chosen time', () => {
++    render(<TimeSlotPicker slots={SLOTS} value="10:00" onChange={() => {}} />);
++
++    expect(screen.getByRole('radio', { name: '10:00' })).toBeChecked();
++    expect(screen.getByRole('radio', { name: '08:00' })).not.toBeChecked();
++  });
++
++  it('tells which time the user chose', async () => {
++    const onChange = vi.fn();
++    render(<TimeSlotPicker slots={SLOTS} value="08:00" onChange={onChange} />);
++
++    await userEvent.click(screen.getByRole('radio', { name: '14:00' }));
++
++    expect(onChange).toHaveBeenCalledExactlyOnceWith('14:00');
++  });
++
++  it('says that the day has no free time instead of showing an empty group', () => {
++    render(<TimeSlotPicker slots={[]} value="" onChange={() => {}} />);
++
++    expect(screen.getByText('No free times on this day.')).toBeInTheDocument();
++    expect(screen.queryByRole('radiogroup')).not.toBeInTheDocument();
++  });
++});
++
++describe('the booking form with the TimeSlotPicker', () => {
++  it('offers the free times of the doctor on the day, and books the chosen one', async () => {
++    const api = mockApi();
++    await renderApp(`/appointments/new?patient=4&doctor=1&day=${TOMORROW}`);
++
++    const group = await screen.findByRole('radiogroup', { name: 'Time' });
++    // Dr. Helena Prado already has an appointment at 09:00 on that day.
++    expect(within(group).queryByRole('radio', { name: '09:00' })).not.toBeInTheDocument();
++    await userEvent.click(within(group).getByRole('radio', { name: '09:30' }));
++    await userEvent.click(screen.getByRole('button', { name: 'Book' }));
++
++    await screen.findByRole('heading', { level: 2, name: 'Tuesday, March 10' });
++    expect(api.calls('POST', '/api/appointments')[0].body).toMatchObject({ doctorId: 1, day: TOMORROW, time: '09:30' });
++  });
++
++  it('asks for the free times again when the doctor changes, and keeps a chosen time that is still free', async () => {
++    const api = mockApi();
++    await renderApp(`/appointments/new?patient=4&doctor=1&day=${TOMORROW}&time=10:30`);
++    expect(await screen.findByRole('radio', { name: '10:30' })).toBeChecked();
++
++    await userEvent.selectOptions(screen.getByLabelText('Doctor'), '2');
++
++    expect(await screen.findByRole('radio', { name: '09:00' })).toBeInTheDocument();
++    expect(api.calls('GET', '/api/doctors/2/slots')).toHaveLength(1);
++    expect(screen.getByRole('radio', { name: '10:30' })).toBeChecked();
++  });
++});
+diff --git a/client/src/components/TimeSlotPicker.tsx b/client/src/components/TimeSlotPicker.tsx
+new file mode 100644
+index 0000000..72f5736
+--- /dev/null
++++ b/client/src/components/TimeSlotPicker.tsx
+@@ -0,0 +1,27 @@
++import styles from './TimeSlotPicker.module.css';
++
++export interface TimeSlotPickerProps {
++  /** The free times, as HH:MM, in the order they are shown. */
++  slots: string[];
++  /** The chosen time, or an empty text while none is chosen. */
++  value: string;
++  onChange: (time: string) => void;
++}
++
++/** The free times of a day as a group of options, of which one can be chosen. */
++export function TimeSlotPicker({ slots, value, onChange }: TimeSlotPickerProps) {
++  if (slots.length === 0) {
++    return <p className={styles.empty}>No free times on this day.</p>;
++  }
++
++  return (
++    <div role="radiogroup" aria-label="Time" className={styles.picker}>
++      {slots.map((time) => (
++        <label key={time} className={styles.slot}>
++          <input type="radio" name="time" value={time} checked={value === time} onChange={() => onChange(time)} />
++          <span>{time}</span>
++        </label>
++      ))}
++    </div>
++  );
++}
+diff --git a/client/src/pages/BookingPage.tsx b/client/src/pages/BookingPage.tsx
+index af63a3d..b59548f 100644
+--- a/client/src/pages/BookingPage.tsx
++++ b/client/src/pages/BookingPage.tsx
+@@ -2,10 +2,11 @@ import { useEffect, useState } from 'react';
+ import type { FormEvent } from 'react';
+ import { Link, useNavigate, useParams, useSearchParams } from 'react-router';
+ import { bookAppointment, getAppointment, rescheduleAppointment } from '../api/appointments.ts';
+-import { listDoctors } from '../api/doctors.ts';
++import { listDoctors, listSlots } from '../api/doctors.ts';
+ import { ApiError } from '../api/http.ts';
+ import { listPatients } from '../api/patients.ts';
+ import type { Appointment, Doctor, Patient } from '../api/types.ts';
++import { TimeSlotPicker } from '../components/TimeSlotPicker.tsx';
+ import ui from '../components/ui.module.css';
+ import { useToday } from '../useToday.ts';
+ 
+@@ -29,6 +30,7 @@ export function BookingPage() {
+   const [day, setDay] = useState(params.get('day') ?? today);
+   const [time, setTime] = useState(params.get('time') ?? '');
+   const [reason, setReason] = useState('');
++  const [slots, setSlots] = useState<string[] | null>(null);
+   const [error, setError] = useState('');
+   const [saving, setSaving] = useState(false);
+ 
+@@ -58,6 +60,32 @@ export function BookingPage() {
+     };
+   }, [id, rescheduling, today]);
+ 
++  // The free times belong to a doctor and a day: they are asked again when either changes.
++  useEffect(() => {
++    if (doctorId === '' || day === '') {
++      setSlots(null);
++      return;
++    }
++    let current = true;
++    setSlots(null);
++    listSlots(Number(doctorId), day)
++      .then((list) => {
++        if (current) {
++          setSlots(list);
++          setTime((chosen) => (list.includes(chosen) ? chosen : ''));
++        }
++      })
++      .catch(() => {
++        if (current) {
++          setSlots([]);
++          setError('The free times could not be loaded.');
++        }
++      });
++    return () => {
++      current = false;
++    };
++  }, [doctorId, day]);
++
+   async function submit(event: FormEvent) {
+     event.preventDefault();
+     if (saving) {
+@@ -84,6 +112,12 @@ export function BookingPage() {
+ 
+   const title = rescheduling ? 'Reschedule appointment' : 'Book appointment';
+ 
++  let timeField = <p className={ui.muted}>Choose a doctor and a day to see the free times.</p>;
++  if (doctorId !== '' && day !== '') {
++    timeField
++      = slots === null ? <p className={ui.muted}>Loading the free times…</p> : <TimeSlotPicker slots={slots} value={time} onChange={setTime} />;
++  }
++
+   return (
+     <section>
+       <div className={ui.titleRow}>
+@@ -138,11 +172,10 @@ export function BookingPage() {
+           <input type="date" value={day} min={today} onChange={(event) => setDay(event.target.value)} />
+         </label>
+ 
+-        {/* Temporary: a plain text field, until the form offers the free times of the doctor. */}
+-        <label className={ui.field}>
+-          <span>Time</span>
+-          <input type="text" value={time} placeholder="HH:MM" onChange={(event) => setTime(event.target.value)} />
+-        </label>
++        <div className={ui.field}>
++          <span className={ui.legend}>Time</span>
++          {timeField}
++        </div>
+ 
+         {!rescheduling && (
+           <label className={ui.field}>

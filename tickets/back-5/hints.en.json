@@ -1,0 +1,7 @@
+{
+  "hints": [
+    "Split the work in two: the list of times, and the route around it. Start with the list as a function that touches neither the database nor the request, for example `freeSlots(periods, booked)`: given the periods of the day and the times already booked, it returns the free times. You can check it by hand with the periods of Dr. Helena Prado before any route exists.",
+    "Times are awkward to walk through as texts and easy as minutes. For each period, go from `minutesOf(period.startsAt)` in steps of `SLOT_MINUTES` while the slot still fits, `start + SLOT_MINUTES <= minutesOf(period.endsAt)`, and turn each start back into a text with `timeOf`. Put the booked times in a `Set` and skip the starts that are in it. That loop condition is the same one `isWorkingTime` uses, which is what keeps the endpoint and the booking in agreement.",
+    "The route goes in `server/src/routes/doctors.ts`, with `{ schema: { querystring: requiredDayQuery } }` so a request without `day` gets its 400 from Fastify. Inside, in this order: 404 with `NotFoundError` when `findDoctor` finds nothing; 400 with `InvalidError` when `isDay(day)` is false (the schema only checks the shape, and `2026-02-30` has the right shape); an empty list when `day < today()`; otherwise `workingPeriods(db, id, weekdayOf(day))` and `bookedTimes(db, id, day)` into your function."
+  ]
+}

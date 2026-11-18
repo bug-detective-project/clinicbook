@@ -1,0 +1,7 @@
+{
+  "hints": [
+    "A component only hears the events of its own elements, and \"a click outside\" happens, by definition, somewhere else. The one place that hears every click and every key of the page is `document`. When should `PatientMenu` start listening there, and when should it stop?",
+    "Use a `useEffect` that depends on `open`: when the menu is open, add the listeners to `document`; in the function the effect returns, remove them. For the click you need to tell inside from outside: put a `ref` on the wrapper `div` and ask `ref.current.contains(event.target)`. Listen to `pointerdown`, which also covers touch.",
+    "For the keyboard, listen to `keydown` on `document` and close when `event.key === 'Escape'`. Then give the focus back: a second `ref` on the button, and `buttonRef.current?.focus()` after closing. You do not need code for \"opening another menu closes this one\": the click on the other button is a click outside this menu."
+  ]
+}

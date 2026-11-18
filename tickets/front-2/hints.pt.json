@@ -1,0 +1,7 @@
+{
+  "hints": [
+    "A linha e o total estão na mesma tela e contam histórias diferentes, e o total se corrige sozinho depois de um tempo. Então o dado está certo e alguma coisa na tela está atrasada. Em `client/src/pages/AgendaPage.tsx`, veja de onde vem a lista e de onde vem o número: é a mesma coisa?",
+    "A página guarda dois estados: `appointments` e `total`. Olhe todo lugar que muda cada um. Carregar a lista grava os dois. O que o `change`, a função que roda depois de **Cancel** e **Confirm**, grava? E o que grava o `total` de novo \"um tempo depois\"?",
+    "O `total` é uma cópia de algo que a lista já diz. Uma cópia precisa ser atualizada em todo lugar em que o original muda, e o `change` esqueceu. A correção mais segura tira a cópia: apague o estado `total` e calcule o número a partir de `appointments` durante a renderização, com um `filter` e `.length`. Um valor calculado a partir do estado nunca discorda dele."
+  ]
+}

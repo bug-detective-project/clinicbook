@@ -1,0 +1,82 @@
+diff --git a/client/src/pages/AgendaPage.total.test.tsx b/client/src/pages/AgendaPage.total.test.tsx
+new file mode 100644
+index 0000000..090e304
+--- /dev/null
++++ b/client/src/pages/AgendaPage.total.test.tsx
+@@ -0,0 +1,45 @@
++import { screen, within } from '@testing-library/react';
++import userEvent from '@testing-library/user-event';
++import { describe, expect, it } from 'vitest';
++import { mockApi } from '../test/mockApi.ts';
++import { renderApp, row } from '../test/renderApp.tsx';
++
++describe('the total of the day in the agenda', () => {
++  it('goes down as soon as an appointment is cancelled', async () => {
++    mockApi();
++    await renderApp();
++    expect(await screen.findByTestId('day-total')).toHaveTextContent('3 appointments');
++
++    await userEvent.click(screen.getByRole('button', { name: 'Cancel Camila Duarte at 09:00' }));
++    await within(row(4)).findByText('Cancelled');
++
++    expect(screen.getByTestId('day-total')).toHaveTextContent('2 appointments');
++  });
++
++  it('follows every cancellation, down to the last appointment', async () => {
++    mockApi();
++    await renderApp();
++    await screen.findByTestId('day-total');
++
++    await userEvent.click(screen.getByRole('button', { name: 'Cancel Camila Duarte at 09:00' }));
++    await within(row(4)).findByText('Cancelled');
++    await userEvent.click(screen.getByRole('button', { name: 'Cancel Bruno Carvalho at 08:30' }));
++    await within(row(3)).findByText('Cancelled');
++    expect(screen.getByTestId('day-total')).toHaveTextContent('1 appointment');
++
++    await userEvent.click(screen.getByRole('button', { name: 'Cancel Ana Beatriz Costa at 08:00' }));
++    await within(row(2)).findByText('Cancelled');
++    expect(screen.getByTestId('day-total')).toHaveTextContent('No appointments');
++  });
++
++  it('stays the same when an appointment is confirmed', async () => {
++    mockApi();
++    await renderApp();
++    await screen.findByTestId('day-total');
++
++    await userEvent.click(screen.getByRole('button', { name: 'Confirm Bruno Carvalho at 08:30' }));
++    await within(row(3)).findByText('Confirmed');
++
++    expect(screen.getByTestId('day-total')).toHaveTextContent('3 appointments');
++  });
++});
+diff --git a/client/src/pages/AgendaPage.tsx b/client/src/pages/AgendaPage.tsx
+index 1042a7b..3305631 100644
+--- a/client/src/pages/AgendaPage.tsx
++++ b/client/src/pages/AgendaPage.tsx
+@@ -24,7 +24,6 @@ export function AgendaPage() {
+   const [params] = useSearchParams();
+   const day = params.get('day') ?? today;
+   const [appointments, setAppointments] = useState<Appointment[] | null>(null);
+-  const [total, setTotal] = useState(0);
+   const [error, setError] = useState('');
+ 
+   useEffect(() => {
+@@ -34,8 +33,6 @@ export function AgendaPage() {
+         .then((list) => {
+           if (current) {
+             setAppointments(list);
+-            // A cancelled appointment stays on the list, and does not count.
+-            setTotal(list.filter((appointment) => appointment.status !== 'cancelled').length);
+           }
+         })
+         .catch(() => {
+@@ -67,6 +64,9 @@ export function AgendaPage() {
+     }
+   }
+ 
++  // A cancelled appointment stays on the list, and does not count.
++  const total = (appointments ?? []).filter((appointment) => appointment.status !== 'cancelled').length;
++
+   return (
+     <section>
+       <div className={ui.titleRow}>

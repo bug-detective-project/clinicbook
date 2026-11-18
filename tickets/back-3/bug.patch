@@ -1,0 +1,34 @@
+diff --git a/server/src/config.ts b/server/src/config.ts
+index 51ca517..5000168 100644
+--- a/server/src/config.ts
++++ b/server/src/config.ts
+@@ -9,28 +9,10 @@ export interface Settings {
+ 
+ type Environment = Record<string, string | undefined>;
+ 
+-/**
+- * An on/off option of the environment. Every value of the environment is a text, so the text is
+- * compared: "true" and "1" turn the option on, "false" and "0" turn it off.
+- */
+-export function readFlag(name: string, value: string | undefined, fallback: boolean): boolean {
+-  const text = (value ?? '').trim().toLowerCase();
+-  if (text === '') {
+-    return fallback;
+-  }
+-  if (text === 'true' || text === '1') {
+-    return true;
+-  }
+-  if (text === 'false' || text === '0') {
+-    return false;
+-  }
+-  throw new Error(`${name} must be "true" or "false", and it is "${value}"`);
+-}
+-
+ export function readSettings(env: Environment): Settings {
+   return {
+     today: env.CLINICBOOK_TODAY || undefined,
+-    remindersEnabled: readFlag('REMINDERS_ENABLED', env.REMINDERS_ENABLED, true),
++    remindersEnabled: Boolean(env.REMINDERS_ENABLED ?? true),
+   };
+ }
+ 

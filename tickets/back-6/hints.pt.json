@@ -1,0 +1,7 @@
+{
+  "hints": [
+    "Antes de escrever qualquer coisa, leia o que existe como um mapa do que falta. A rota em `server/src/routes/appointments.ts` para em um comentário. O `bookAppointment` em `server/src/appointments.ts` é um exemplo completo de função de regra: confere e depois grava. E o `moveAppointment` em `server/src/repository.ts` é uma gravação que ninguém chama. Qual das três camadas ainda não tem nada para a remarcação?",
+    "Escreva uma função ao lado do `bookAppointment`, por exemplo `rescheduleAppointment(db, today, id, day, time)`. Ela precisa primeiro da consulta (o `requireAppointment` a entrega, ou lança o 404), porque duas coisas dependem dela: o status, para a regra das consultas canceladas, e o médico, para as regras do horário. O `assertBookable` está no mesmo arquivo e recebe exatamente um médico, um dia e um horário.",
+    "A ordem dentro da função: carregar a consulta; lançar `new ConflictError('A cancelled appointment cannot be rescheduled')` quando o status é `cancelled` (importe `ConflictError` de `./errors.ts`); `await assertBookable(db, today, appointment.doctorId, day, time)`; e só então `return moveAppointment(db, id, day, time)`, que também devolve o status para agendada. Na rota, troque o 501 por uma chamada à sua função, passando `today()`, o id do endereço e `request.body.day` e `request.body.time`."
+  ]
+}

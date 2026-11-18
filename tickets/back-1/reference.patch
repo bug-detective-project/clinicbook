@@ -1,0 +1,63 @@
+diff --git a/server/src/appointments.ts b/server/src/appointments.ts
+index 6eab799..4de20b3 100644
+--- a/server/src/appointments.ts
++++ b/server/src/appointments.ts
+@@ -51,7 +51,8 @@ export async function bookAppointment(db: Db, today: string, input: AppointmentI
+ }
+ 
+ export async function confirmAppointment(db: Db, id: number): Promise<Appointment> {
+-  await requireAppointment(db, id);
++  const appointment = await requireAppointment(db, id);
++  assertTransition(appointment.status, 'confirmed');
+   return setAppointmentStatus(db, id, 'confirmed');
+ }
+ 
+diff --git a/server/src/confirm-rules.test.ts b/server/src/confirm-rules.test.ts
+new file mode 100644
+index 0000000..b1ecd23
+--- /dev/null
++++ b/server/src/confirm-rules.test.ts
+@@ -0,0 +1,43 @@
++import { describe, expect, it } from 'vitest';
++import type { Appointment } from './repository.ts';
++import { testApi } from './test/api.ts';
++
++interface Failure {
++  error: string;
++}
++
++// In the sample data of today, appointment 7 is scheduled, 6 is confirmed and 9 is cancelled.
++describe('confirming an appointment', () => {
++  it('refuses to confirm a cancelled appointment, which stays cancelled', async () => {
++    const { get, post } = await testApi();
++
++    const { status, body } = await post<Failure>('/api/appointments/9/confirm');
++
++    expect(status).toBe(409);
++    expect(body.error).toBe('A cancelled appointment cannot be confirmed');
++    expect((await get<Appointment>('/api/appointments/9')).body.status).toBe('cancelled');
++  });
++
++  it('refuses to confirm an appointment that was cancelled a moment ago', async () => {
++    const { get, post } = await testApi();
++    await post('/api/appointments/7/cancel');
++
++    expect((await post('/api/appointments/7/confirm')).status).toBe(409);
++    expect((await get<Appointment>('/api/appointments/7')).body.status).toBe('cancelled');
++  });
++
++  it('says that a confirmed appointment is already confirmed', async () => {
++    const { post } = await testApi();
++
++    const { status, body } = await post<Failure>('/api/appointments/6/confirm');
++
++    expect(status).toBe(409);
++    expect(body.error).toBe('This appointment is already confirmed');
++  });
++
++  it('still confirms a scheduled appointment', async () => {
++    const { post } = await testApi();
++
++    expect((await post<Appointment>('/api/appointments/7/confirm')).body.status).toBe('confirmed');
++  });
++});

@@ -1,0 +1,7 @@
+{
+  "hints": [
+    "Veja o problema na API antes de mudar qualquer coisa: cadastre um paciente com o e-mail `ana.costa@example.com` (o formulário de **Patients** faz isso, ou um `curl` para `POST /api/patients`) e leia o corpo da resposta. Depois leia o `handleError` em `server/src/app.ts` de cima a baixo e ache a linha que produziu aquele corpo.",
+    "As últimas linhas do `handleError` enviam `error.message` para todo erro que não seja um dos dois primeiros casos. Acrescente os casos novos acima delas, do mais específico para o mais geral. Um `QueryError` é reconhecido com `error instanceof QueryError`, e o `code` dele distingue os dois casos da tabela. Importe `QueryError` de `./errors.ts`.",
+    "A ordem importa, e o último caso também. Depois dos dois casos de `QueryError`, mantenha a mensagem só para um erro cujo `statusCode` seja um número de 400 a 499: essas são as recusas do Fastify, escritas para quem chamou. O que sobrar não foi previsto: chame `request.log.error(error)` (o parâmetro se chama `_request` hoje porque nada o usava) e responda 500 com o texto fixo `Internal server error`. Nunca `error.message` ali."
+  ]
+}

@@ -1,0 +1,7 @@
+{
+  "hints": [
+    "Siga a requisição pelas camadas do servidor. A rota de `POST /api/appointments/:id/confirm` está em `server/src/routes/appointments.ts`, e ela só chama uma função. Abra essa função, e abra a que cancela, logo ao lado. Leia as duas lado a lado.",
+    "O `cancelAppointment` em `server/src/appointments.ts` carrega a consulta, pergunta `assertTransition(appointment.status, 'cancelled')` e só então grava. O `assertTransition` mora em `server/src/rules.ts`, com a tabela dos estados para os quais uma consulta pode ir a partir de cada estado. O que o `confirmAppointment` faz entre carregar a consulta e gravar?",
+    "O `confirmAppointment` confere que a consulta existe e depois grava o status, qualquer que fosse o status anterior. Guarde a consulta que ele carrega e pergunte à regra antes de gravar: `assertTransition(appointment.status, 'confirmed')`. A regra já diz que nada vem depois de `cancelled`, e ela lança o 409 com a mensagem do ticket. A correção é usar a regra, e não escrever uma segunda."
+  ]
+}

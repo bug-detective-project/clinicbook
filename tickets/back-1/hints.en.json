@@ -1,0 +1,7 @@
+{
+  "hints": [
+    "Follow the request through the layers of the server. The route for `POST /api/appointments/:id/confirm` is in `server/src/routes/appointments.ts`, and it only calls a function. Open that function, and open the one that cancels right next to it. Read the two side by side.",
+    "`cancelAppointment` in `server/src/appointments.ts` loads the appointment, asks `assertTransition(appointment.status, 'cancelled')` and only then writes. `assertTransition` lives in `server/src/rules.ts`, with the table of the states an appointment may go to from each state. What does `confirmAppointment` do between loading the appointment and writing?",
+    "`confirmAppointment` checks that the appointment exists and then sets the status, whatever the status was. Keep the appointment it loads and ask the rule before writing: `assertTransition(appointment.status, 'confirmed')`. The rule already says that nothing follows `cancelled`, and it throws the 409 with the message of the ticket. The fix is using the rule, not writing a second one."
+  ]
+}

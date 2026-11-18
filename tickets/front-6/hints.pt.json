@@ -1,0 +1,7 @@
+{
+  "hints": [
+    "Construa em dois passos e teste cada um sozinho. Primeiro o componente, só com as três props: passe a ele, do formulário, uma lista fixa como `['08:00', '08:30']` e veja as opções. Só depois troque a lista fixa pelos horários do servidor.",
+    "O componente é um `map` sobre `slots`. Cada opção é um `<label>` que envolve `<input type=\"radio\" name=\"time\" value={time} checked={value === time} onChange={() => onChange(time)} />` e o texto do horário. O `name` em comum é o que faz dos rádios um grupo só para as setas. Envolva tudo em `<div role=\"radiogroup\" aria-label=\"Time\">`, e devolva a mensagem no lugar quando `slots.length === 0`.",
+    "No `BookingPage`, crie um estado `slots` e um `useEffect` que dependa de `doctorId` e de `day`: quando os dois estão preenchidos, chame `listSlots(Number(doctorId), day)` e guarde a resposta. No mesmo lugar, descarte um horário escolhido que não está mais livre: `setTime((chosen) => (list.includes(chosen) ? chosen : ''))`. Proteja o efeito de uma resposta que chega depois de o médico ou o dia mudar de novo, do jeito que o outro efeito do arquivo faz com o `current`."
+  ]
+}

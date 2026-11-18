@@ -1,0 +1,7 @@
+{
+  "hints": [
+    "Um componente só ouve os eventos dos próprios elementos, e \"um clique fora\" acontece, por definição, em outro lugar. O único lugar que ouve todo clique e toda tecla da página é o `document`. Quando o `PatientMenu` deveria começar a escutar ali, e quando deveria parar?",
+    "Use um `useEffect` que dependa de `open`: quando o menu está aberto, adicione os listeners ao `document`; na função que o efeito devolve, remova-os. Para o clique, é preciso distinguir dentro de fora: ponha um `ref` na `div` de fora e pergunte `ref.current.contains(event.target)`. Escute `pointerdown`, que também cobre o toque.",
+    "Para o teclado, escute `keydown` no `document` e feche quando `event.key === 'Escape'`. Depois devolva o foco: um segundo `ref` no botão, e `buttonRef.current?.focus()` depois de fechar. Você não precisa de código para \"abrir outro menu fecha este\": o clique no outro botão é um clique fora deste menu."
+  ]
+}

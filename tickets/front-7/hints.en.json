@@ -1,0 +1,7 @@
+{
+  "hints": [
+    "Start with the smallest thing that can be seen: in `client/src/App.tsx`, add a route for `patients/:id` whose element is a new `PatientRecord` that only shows the id of the address (`useParams`). When **Open record** stops showing \"Page not found\", you have the route; everything else goes inside the page.",
+    "In `PatientRecord`, load the patient in a `useEffect` that depends on the id, with `getPatient(Number(id))`. Keep three outcomes apart: still loading, found, and failed (the 404 is the \"Patient not found\" case). The title and the two `NavLink`s only appear once the patient was found. Give the Details link the `end` prop, or it will count as current on the Appointments address too, because that address starts with the same text.",
+    "Each tab needs its own address under the same page, so that the page (and its loaded patient) stays while the tab changes. Declare the route as `patients/:id/*` and, inside `PatientRecord`, render a nested `<Routes>` with an `index` route for `<PatientDetails patient={patient} />` and a route `appointments` for `<PatientAppointments patient={patient} />`. Use full addresses in the links: `/patients/${patient.id}` and `/patients/${patient.id}/appointments`."
+  ]
+}

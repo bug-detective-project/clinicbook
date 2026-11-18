@@ -1,0 +1,7 @@
+{
+  "hints": [
+    "Build it in two steps and test each one by itself. First the component, with nothing but its three props: give it a fixed list such as `['08:00', '08:30']` from the form and see the options. Only then replace the fixed list with the times of the server.",
+    "The component is a `map` over `slots`. Each option is a `<label>` that wraps `<input type=\"radio\" name=\"time\" value={time} checked={value === time} onChange={() => onChange(time)} />` and the text of the time. The shared `name` is what makes the radios one group for the arrow keys. Wrap them in `<div role=\"radiogroup\" aria-label=\"Time\">`, and return the message instead when `slots.length === 0`.",
+    "In `BookingPage`, add a `slots` state and a `useEffect` that depends on `doctorId` and `day`: when both are set, call `listSlots(Number(doctorId), day)` and store the answer. In the same place, drop a chosen time that is not free any more: `setTime((chosen) => (list.includes(chosen) ? chosen : ''))`. Guard the effect against an answer that arrives after the doctor or the day changed again, the way the other effect of the file does with `current`."
+  ]
+}

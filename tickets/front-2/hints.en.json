@@ -1,0 +1,7 @@
+{
+  "hints": [
+    "The row and the total are on the same screen and tell different stories, and the total fixes itself after a while. So the data is right and something on the screen is late. In `client/src/pages/AgendaPage.tsx`, find where the list comes from and where the number comes from: are they the same thing?",
+    "The page keeps two pieces of state: `appointments` and `total`. Look at every place that changes each one. Loading the list sets both. What does `change`, the function that runs after **Cancel** and **Confirm**, set? And what sets `total` again \"a while later\"?",
+    "`total` is a copy of something the list already says. A copy has to be updated everywhere the original changes, and `change` forgot. The safer fix removes the copy: delete the `total` state and compute the number from `appointments` during rendering, with a `filter` and `.length`. A value computed from state can never disagree with it."
+  ]
+}

@@ -1,0 +1,7 @@
+{
+  "type": "fix",
+  "skills": {
+    "en": ["Dates, numbers and text", "Tracing data flow"],
+    "pt": ["Datas, números e texto", "Rastrear o fluxo de dados"]
+  }
+}

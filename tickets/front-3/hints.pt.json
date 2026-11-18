@@ -1,0 +1,7 @@
+{
+  "hints": [
+    "Siga o dia do banco até o título. O ticket diz que o banco e a API têm `2026-03-10`; confira a API você mesmo na aba Network. Então o texto chega certo ao navegador, e em algum ponto entre a resposta da API e a tela ele vira outro dia. Que função transforma `2026-03-10` em \"Tuesday, March 10\"?",
+    "Toda tela formata dias com `client/src/dates.ts`. O `toDate` dali monta um `Date` a partir do texto. No console do navegador, com o fuso de São Paulo, experimente `new Date('2026-03-10')` e depois `.toString()` nele. Que instante é esse, exatamente, e em que dia esse instante cai em São Paulo?",
+    "O JavaScript lê um texto que só tem data, `'2026-03-10'`, como meia-noite em UTC. Meia-noite em UTC são 21:00 do dia anterior em São Paulo, e o `toLocaleDateString` escreve a data no fuso do próprio computador. Um dia não tem hora nem fuso: monte o `Date` pelas partes, `new Date(year, month - 1, date)`, que é meia-noite no calendário do próprio computador. Os testes do projeto rodam em UTC, onde os dois jeitos dão o mesmo dia; por isso nunca perceberam."
+  ]
+}

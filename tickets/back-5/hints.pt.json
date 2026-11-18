@@ -1,0 +1,7 @@
+{
+  "hints": [
+    "Divida o trabalho em dois: a lista de horários, e a rota em volta dela. Comece pela lista, como uma função que não toca no banco nem na requisição, por exemplo `freeSlots(periods, booked)`: dados os períodos do dia e os horários já marcados, ela devolve os horários livres. Dá para conferi-la à mão com os períodos da Dra. Helena Prado antes de existir qualquer rota.",
+    "Horários são chatos de percorrer como texto e fáceis como minutos. Para cada período, vá de `minutesOf(period.startsAt)` em passos de `SLOT_MINUTES` enquanto o horário ainda couber, `start + SLOT_MINUTES <= minutesOf(period.endsAt)`, e transforme cada começo de volta em texto com `timeOf`. Ponha os horários marcados em um `Set` e pule os começos que estão nele. Essa condição do laço é a mesma que o `isWorkingTime` usa, e é isso que mantém o endpoint e a marcação de acordo.",
+    "A rota vai em `server/src/routes/doctors.ts`, com `{ schema: { querystring: requiredDayQuery } }`, para uma requisição sem `day` receber o 400 do Fastify. Dentro, nesta ordem: 404 com `NotFoundError` quando o `findDoctor` não acha nada; 400 com `InvalidError` quando `isDay(day)` é falso (o esquema só confere o formato, e `2026-02-30` tem o formato certo); lista vazia quando `day < today()`; e, fora isso, `workingPeriods(db, id, weekdayOf(day))` e `bookedTimes(db, id, day)` na sua função."
+  ]
+}

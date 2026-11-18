@@ -1,0 +1,7 @@
+{
+  "type": "build",
+  "skills": {
+    "en": ["Web platform: DOM and events", "Accessibility"],
+    "pt": ["Plataforma web: DOM e eventos", "Acessibilidade"]
+  }
+}

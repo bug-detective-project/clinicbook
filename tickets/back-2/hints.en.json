@@ -1,0 +1,7 @@
+{
+  "hints": [
+    "The route that registers a patient has almost no code for checking: Fastify checks the body against a schema before the route runs. Find the schema of that route (`server/src/routes/patients.ts` names it) and read what it says about `phone`. Then compare the phones that are refused with the ones that get in: `1234` is refused, `11 9888-77AB` is not. What do the accepted ones have in common?",
+    "The `phone` of `patientBody` in `server/src/schemas.ts` is checked with `PHONE_PATTERN`, a regular expression. Test it by hand in the terminal: `node -e \"console.log(new RegExp('\\\\\\\\+?[0-9 ()-]{8,20}').test('call 11 98888-7777'))\"`. A regular expression answers \"is there a match somewhere in the text?\" unless it is told where the match has to begin and end.",
+    "The pattern has no anchors. Without `^` and `$`, any text that contains 8 allowed characters in a row passes, whatever is around them. Anchor both ends: `'^\\\\+?[0-9 ()-]{8,20}$'`. Now the whole text has to be a phone, and the 20 becomes a real limit too."
+  ]
+}

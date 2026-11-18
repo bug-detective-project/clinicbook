@@ -1,0 +1,108 @@
+{
+  "client": {
+    "name": "Vila Clara Clinic",
+    "about": "Vila Clara Clinic is a neighborhood clinic in São Paulo: three doctors, a front desk with two computers and a few hundred patients, many of them from the same families. ClinicBook is what the front desk has open all day: the agenda, the bookings and the reminders go through it.",
+    "contacts": "Renata Siqueira (front desk lead), Otávio Brandt (IT and operations, who works from Lisbon) and Dr. Helena Prado (clinical director) report the tickets.",
+    "reporters": [
+      {
+        "name": "Renata Siqueira",
+        "role": "Front desk lead"
+      },
+      {
+        "name": "Otávio Brandt",
+        "role": "IT and operations"
+      },
+      {
+        "name": "Dr. Helena Prado",
+        "role": "Clinical director"
+      }
+    ]
+  },
+  "project": {
+    "name": "ClinicBook",
+    "about": "The front desk of a clinic: the agenda of the day, which refreshes itself, booking, confirming, rescheduling and cancelling appointments, the patients with their records, and the reminders the clinic sends.",
+    "stack": "React, Vite and React Router; Node.js, Fastify and Kysely; SQLite",
+    "skills": [
+      "Forms and validation",
+      "Local and derived state",
+      "Effects and lifecycle",
+      "Dates, numbers and text",
+      "Routes and navigation",
+      "Building components",
+      "Web platform: DOM and events",
+      "Input validation",
+      "Business rules and layers",
+      "Error handling and resilience",
+      "Routes and endpoints",
+      "Configuration and feature flags"
+    ]
+  },
+  "messages": {
+    "welcome": {
+      "subject": "Welcome to the ClinicBook project!",
+      "body": "Hi, and welcome aboard!\n\nI'm Rafaela, the engineering manager here. You're joining **ClinicBook**, the app we build for **Vila Clara Clinic**, a neighborhood clinic in São Paulo. The front desk has it open all day to book, confirm and reschedule appointments, so when something is wrong, a patient is usually standing at the counter while it happens.\n\nHere's how we work:\n\n- Your tickets show up on the **Board**. Take one at a time: drag it to **In Progress** when you start, and to **In QA** when you think it's done. Some tickets are bugs to fix; others ask you to build something that is missing, or to finish something that was left half done.\n- The code lives in your workspace container. **Open in VS Code** attaches your editor to it, with Node, the terminal and the debugger already set up. Run `npm run dev` in the VS Code terminal and use **Open app in browser** to try the app.\n- The sample appointments are written around today, so the agenda looks alive whenever you open it. `npm run db:reset` puts them back whenever you want a clean start.\n- The server is built with Fastify and writes its queries with Kysely. If they are new to you, read `README.md` first: it says where each kind of code lives.\n- QA runs the project tests first, then checks the ticket itself. If something fails, the card comes back with notes.\n- Stuck? Message **Priya** from the ticket. She'll point you in the right direction, one hint at a time.\n\nWhen you're ready, click **Get next assignment**. I picked a nice first one for you.\n\nRafaela"
+    },
+    "assignments": {
+      "front-1": {
+        "subject": "New ticket: CB-101",
+        "body": "Renata found the same patient twice in the agenda, at the same time, three times last week. A double click on **Book** is enough.\n\nReproduce it with the Network tab open and a slow connection: it shows you exactly what the page is sending.\n\nRafaela"
+      },
+      "front-2": {
+        "subject": "New ticket: CB-102",
+        "body": "The agenda says how many appointments the day has. When Renata cancels one, the row changes at once and the number does not, for a few seconds.\n\nThe row and the number are on the same screen. Start by finding where each of them comes from.\n\nRafaela"
+      },
+      "front-3": {
+        "subject": "New ticket: CB-103",
+        "body": "This one is urgent: at the clinic, every date on the screen is one day behind. A patient came on the wrong day because of it.\n\nOtávio, who works from Lisbon, sees the right dates on the same data. Take that as your first clue, and read the ticket to the end before you open the code.\n\nRafaela"
+      },
+      "front-4": {
+        "subject": "New ticket: CB-104",
+        "body": "Otávio was reading the server log and found the front desk computers asking for the agenda dozens of times every 15 seconds, also when nobody is looking at it.\n\nNothing looks wrong on the screen, so measure first: the Network tab is your instrument here.\n\nRafaela"
+      },
+      "front-5": {
+        "subject": "New ticket: CB-105",
+        "body": "The \"⋯\" menu of each patient opens and never closes, unless you click the same button again. The front desk wants it to behave like any menu: a click outside closes it, and so does Esc.\n\nThis is something to build, and the ticket lists the behaviors. Try the result with the keyboard alone before you send it.\n\nRafaela"
+      },
+      "front-6": {
+        "subject": "New ticket: CB-106",
+        "body": "To book an appointment, the front desk types the time in a text field and hopes it is free. The server already knows the free times; the component that shows them was never built.\n\nThe ticket has the specification: the props, the behaviors and where it goes in the form. Build the component first, alone, and plug it in afterwards.\n\nRafaela"
+      },
+      "front-7": {
+        "subject": "New ticket: CB-107",
+        "body": "Every link to the record of a patient ends in \"Page not found\". The two parts of the record are written; the page that holds them, with a tab for each, is yours to build.\n\nDr. Helena wants a link she can send to a colleague for each tab. Keep that sentence in mind while you decide how the tabs work.\n\nRafaela"
+      },
+      "back-1": {
+        "subject": "New ticket: CB-201",
+        "body": "A cancelled appointment was confirmed from the other desk a few seconds later, and two patients showed up for the same time.\n\nThe clinic has a clear rule about it, and I am fairly sure the server knows the rule. Find out why it was not asked.\n\nRafaela"
+      },
+      "back-2": {
+        "subject": "New ticket: CB-202",
+        "body": "One patient was registered with a note inside the phone number, and on Tuesday nobody at the clinic got a reminder because of it.\n\nOtávio thought the phone was being checked, since the form refuses some of them. Find out what exactly is checked.\n\nRafaela"
+      },
+      "back-3": {
+        "subject": "New ticket: CB-203",
+        "body": "This one is urgent. The new unit of the clinic runs the server with the reminders turned off, and twelve patients got a message anyway.\n\nOtávio set the option the way the README says. The ticket has the exact command, and its last comment is worth reading twice.\n\nRafaela"
+      },
+      "back-4": {
+        "subject": "New ticket: CB-204",
+        "body": "The front desk sent a photo of the screen with a whole SQL query under a form, in red. It happens when the database refuses something, and nobody ever decided what the user should read in that case.\n\nThis is something to build: the ticket has the table of what to answer. There is one place in the server where every error ends up, and that is where you will work.\n\nRafaela"
+      },
+      "back-5": {
+        "subject": "New ticket: CB-205",
+        "body": "The booking form asks the server for the free times of a doctor, and the server has no such endpoint. Until it exists, the front desk cannot book from the form.\n\nThe ticket says what the endpoint answers in each case and lists what the server already has for you. Work out the list of times on paper for one doctor before you write the loop.\n\nRafaela"
+      },
+      "back-6": {
+        "subject": "New ticket: CB-206",
+        "body": "Rescheduling was started and never finished: the screen is done, and the server answers \"not available yet\". The front desk cancels and books again by hand, and sometimes forgets the second half.\n\nBefore you write anything, read what is already there, on the three layers of the server. Most of your work is connecting pieces that exist.\n\nRafaela"
+      }
+    },
+    "completion": {
+      "subject": "ClinicBook: project done!",
+      "body": "You completed the whole {{track}} track of ClinicBook, so this project is done on your side. Renata says the front desk stopped keeping a paper list of \"things to double-check in the system\", and Otávio and Dr. Helena send their thanks too.\n\nYou can keep going with the other tracks of ClinicBook whenever you like. New projects are on their way too.\n\nThanks for the effort.\n\nRafaela"
+    },
+    "trackCompletion": {
+      "subject": "The {{track}} track is done!",
+      "body": "You closed every {{track}} ticket of ClinicBook. Renata noticed: it has been a quiet week at the front desk of Vila Clara.\n\nThanks for the effort.\n\nRafaela"
+    }
+  }
+}

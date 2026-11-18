@@ -1,0 +1,222 @@
+diff --git a/client/src/App.tsx b/client/src/App.tsx
+index d819488..ff04b51 100644
+--- a/client/src/App.tsx
++++ b/client/src/App.tsx
+@@ -3,6 +3,7 @@ import { Layout } from './components/Layout.tsx';
+ import { AgendaPage } from './pages/AgendaPage.tsx';
+ import { BookingPage } from './pages/BookingPage.tsx';
+ import { NotFound } from './pages/NotFound.tsx';
++import { PatientRecord } from './pages/PatientRecord.tsx';
+ import { PatientsPage } from './pages/PatientsPage.tsx';
+ import { RemindersPage } from './pages/RemindersPage.tsx';
+ import { TodayProvider } from './TodayContext.tsx';
+@@ -16,6 +17,7 @@ export function App() {
+           <Route path="appointments/new" element={<BookingPage />} />
+           <Route path="appointments/:id/reschedule" element={<BookingPage />} />
+           <Route path="patients" element={<PatientsPage />} />
++          <Route path="patients/:id/*" element={<PatientRecord />} />
+           <Route path="reminders" element={<RemindersPage />} />
+           <Route path="*" element={<NotFound />} />
+         </Route>
+diff --git a/client/src/pages/PatientRecord.module.css b/client/src/pages/PatientRecord.module.css
+new file mode 100644
+index 0000000..b913e0e
+--- /dev/null
++++ b/client/src/pages/PatientRecord.module.css
+@@ -0,0 +1,19 @@
++.tabs {
++  display: flex;
++  gap: 4px;
++  margin-bottom: 16px;
++  border-bottom: 1px solid var(--line);
++}
++
++.tabs a {
++  padding: 8px 16px;
++  border-bottom: 3px solid transparent;
++  color: var(--ink);
++  text-decoration: none;
++}
++
++.tabs a[aria-current='page'] {
++  border-bottom-color: var(--brand);
++  color: var(--brand);
++  font-weight: 600;
++}
+diff --git a/client/src/pages/PatientRecord.test.tsx b/client/src/pages/PatientRecord.test.tsx
+new file mode 100644
+index 0000000..f057927
+--- /dev/null
++++ b/client/src/pages/PatientRecord.test.tsx
+@@ -0,0 +1,89 @@
++import { screen, within } from '@testing-library/react';
++import userEvent from '@testing-library/user-event';
++import { describe, expect, it } from 'vitest';
++import { mockApi } from '../test/mockApi.ts';
++import { renderApp } from '../test/renderApp.tsx';
++
++function tab(name: string): HTMLElement {
++  return within(screen.getByRole('navigation', { name: 'Patient record' })).getByRole('link', { name });
++}
++
++describe('the record of a patient', () => {
++  it('opens on the Details tab, with the name of the patient as the title', async () => {
++    mockApi();
++    await renderApp('/patients/1');
++
++    expect(await screen.findByRole('heading', { level: 2, name: 'Ana Beatriz Costa' })).toBeInTheDocument();
++    expect(screen.getByText('(11) 98888-1001')).toBeInTheDocument();
++    expect(screen.getByText('ana.costa@example.com')).toBeInTheDocument();
++    expect(tab('Details')).toHaveAttribute('aria-current', 'page');
++    expect(tab('Appointments')).not.toHaveAttribute('aria-current');
++  });
++
++  it('has an address for each tab', async () => {
++    mockApi();
++    await renderApp('/patients/1');
++    await screen.findByRole('heading', { level: 2, name: 'Ana Beatriz Costa' });
++
++    expect(tab('Details')).toHaveAttribute('href', '/patients/1');
++    expect(tab('Appointments')).toHaveAttribute('href', '/patients/1/appointments');
++  });
++
++  it('shows the appointments of the patient on the Appointments tab', async () => {
++    mockApi();
++    await renderApp('/patients/1');
++    await screen.findByRole('heading', { level: 2, name: 'Ana Beatriz Costa' });
++
++    await userEvent.click(tab('Appointments'));
++
++    const list = await screen.findByRole('list', { name: 'Appointments of Ana Beatriz Costa' });
++    expect(within(list).getAllByRole('listitem')).toHaveLength(3);
++    expect(tab('Appointments')).toHaveAttribute('aria-current', 'page');
++    expect(tab('Details')).not.toHaveAttribute('aria-current');
++    expect(screen.queryByText('ana.costa@example.com')).not.toBeInTheDocument();
++  });
++
++  it('opens straight on the Appointments tab from its address', async () => {
++    mockApi();
++    await renderApp('/patients/2/appointments');
++
++    expect(await screen.findByRole('heading', { level: 2, name: 'Bruno Carvalho' })).toBeInTheDocument();
++    expect(await screen.findByRole('list', { name: 'Appointments of Bruno Carvalho' })).toBeInTheDocument();
++    expect(tab('Appointments')).toHaveAttribute('aria-current', 'page');
++  });
++
++  it('goes back to Details from the Appointments tab', async () => {
++    mockApi();
++    await renderApp('/patients/2/appointments');
++    await screen.findByRole('list', { name: 'Appointments of Bruno Carvalho' });
++
++    await userEvent.click(tab('Details'));
++
++    expect(await screen.findByText('bruno.carvalho@example.com')).toBeInTheDocument();
++    expect(screen.queryByRole('list', { name: 'Appointments of Bruno Carvalho' })).not.toBeInTheDocument();
++  });
++
++  it('says so when the patient does not exist, on either tab', async () => {
++    mockApi();
++    const view = await renderApp('/patients/999');
++
++    expect(await screen.findByRole('heading', { level: 2, name: 'Patient not found' })).toBeInTheDocument();
++    expect(screen.getByRole('link', { name: 'Back to the patients' })).toHaveAttribute('href', '/patients');
++    expect(screen.queryByRole('navigation', { name: 'Patient record' })).not.toBeInTheDocument();
++
++    view.unmount();
++    await renderApp('/patients/999/appointments');
++    expect(await screen.findByRole('heading', { level: 2, name: 'Patient not found' })).toBeInTheDocument();
++  });
++
++  it('is where "Open record" of the list of patients leads', async () => {
++    mockApi();
++    await renderApp('/patients');
++
++    await userEvent.click(await screen.findByRole('button', { name: 'Actions for Camila Duarte' }));
++    await userEvent.click(screen.getByRole('menuitem', { name: 'Open record' }));
++
++    expect(await screen.findByRole('heading', { level: 2, name: 'Camila Duarte' })).toBeInTheDocument();
++    expect(screen.getByText('No e-mail')).toBeInTheDocument();
++  });
++});
+diff --git a/client/src/pages/PatientRecord.tsx b/client/src/pages/PatientRecord.tsx
+new file mode 100644
+index 0000000..1cca954
+--- /dev/null
++++ b/client/src/pages/PatientRecord.tsx
+@@ -0,0 +1,76 @@
++import { useEffect, useState } from 'react';
++import { Link, NavLink, Route, Routes, useParams } from 'react-router';
++import { ApiError } from '../api/http.ts';
++import { getPatient } from '../api/patients.ts';
++import type { Patient } from '../api/types.ts';
++import { PatientAppointments } from '../components/PatientAppointments.tsx';
++import { PatientDetails } from '../components/PatientDetails.tsx';
++import ui from '../components/ui.module.css';
++import styles from './PatientRecord.module.css';
++
++/**
++ * The record of one patient, at /patients/:id, with one tab per address:
++ * /patients/:id is "Details" and /patients/:id/appointments is "Appointments".
++ */
++export function PatientRecord() {
++  const { id } = useParams();
++  const [patient, setPatient] = useState<Patient | null>(null);
++  const [problem, setProblem] = useState<'missing' | 'failed' | null>(null);
++
++  useEffect(() => {
++    let current = true;
++    setPatient(null);
++    setProblem(null);
++    getPatient(Number(id))
++      .then((found) => {
++        if (current) {
++          setPatient(found);
++        }
++      })
++      .catch((failure: unknown) => {
++        if (current) {
++          setProblem(failure instanceof ApiError && failure.status < 500 ? 'missing' : 'failed');
++        }
++      });
++    return () => {
++      current = false;
++    };
++  }, [id]);
++
++  if (problem !== null) {
++    return (
++      <section>
++        <h2>{problem === 'missing' ? 'Patient not found' : 'The patient could not be loaded'}</h2>
++        <p>
++          <Link to="/patients">Back to the patients</Link>
++        </p>
++      </section>
++    );
++  }
++  if (patient === null) {
++    return <p>Loading…</p>;
++  }
++
++  return (
++    <section>
++      <div className={ui.titleRow}>
++        <h2>{patient.name}</h2>
++        <Link className={ui.button} to="/patients">
++          Back to the patients
++        </Link>
++      </div>
++
++      <nav aria-label="Patient record" className={styles.tabs}>
++        <NavLink to={`/patients/${patient.id}`} end>
++          Details
++        </NavLink>
++        <NavLink to={`/patients/${patient.id}/appointments`}>Appointments</NavLink>
++      </nav>
++
++      <Routes>
++        <Route index element={<PatientDetails patient={patient} />} />
++        <Route path="appointments" element={<PatientAppointments patient={patient} />} />
++      </Routes>
++    </section>
++  );
++}

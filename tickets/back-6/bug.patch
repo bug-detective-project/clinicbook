@@ -1,0 +1,61 @@
+diff --git a/server/src/appointments.ts b/server/src/appointments.ts
+index 4de20b3..ceeea77 100644
+--- a/server/src/appointments.ts
++++ b/server/src/appointments.ts
+@@ -1,12 +1,11 @@
+ import { isDay, weekdayOf } from './dates.ts';
+ import type { Db } from './db.ts';
+-import { ConflictError, InvalidError, NotFoundError } from './errors.ts';
++import { InvalidError, NotFoundError } from './errors.ts';
+ import {
+   createAppointment,
+   findAppointment,
+   findDoctor,
+   findPatient,
+-  moveAppointment,
+   setAppointmentStatus,
+   workingPeriods,
+ } from './repository.ts';
+@@ -61,16 +60,3 @@ export async function cancelAppointment(db: Db, id: number): Promise<Appointment
+   assertTransition(appointment.status, 'cancelled');
+   return setAppointmentStatus(db, id, 'cancelled');
+ }
+-
+-/**
+- * Moves an appointment to another day and time of the same doctor, under the rules of a new
+- * booking. The patient has to confirm again, so the appointment goes back to scheduled.
+- */
+-export async function rescheduleAppointment(db: Db, today: string, id: number, day: string, time: string): Promise<Appointment> {
+-  const appointment = await requireAppointment(db, id);
+-  if (appointment.status === 'cancelled') {
+-    throw new ConflictError('A cancelled appointment cannot be rescheduled');
+-  }
+-  await assertBookable(db, today, appointment.doctorId, day, time);
+-  return moveAppointment(db, id, day, time);
+-}
+diff --git a/server/src/routes/appointments.ts b/server/src/routes/appointments.ts
+index db85346..9f7e9dc 100644
+--- a/server/src/routes/appointments.ts
++++ b/server/src/routes/appointments.ts
+@@ -4,7 +4,6 @@ import {
+   cancelAppointment,
+   confirmAppointment,
+   requireAppointment,
+-  rescheduleAppointment,
+ } from '../appointments.ts';
+ import type { Context } from '../context.ts';
+ import { listAppointmentsOfDay } from '../repository.ts';
+@@ -49,8 +48,11 @@ export function appointmentRoutes(app: FastifyInstance, { db, today }: Context):
+   app.patch<{ Params: Id; Body: { day: string; time: string } }>(
+     '/api/appointments/:id',
+     { schema: { body: rescheduleBody } },
+-    (request) => {
+-      return rescheduleAppointment(db, today(), Number(request.params.id), request.body.day, request.body.time);
++    async (request, reply) => {
++      // TODO: finish rescheduling. The request is checked and the appointment is found; it is not
++      // moved yet. It has to follow the rules of a new booking (see bookAppointment).
++      await requireAppointment(db, Number(request.params.id));
++      return reply.status(501).send({ error: 'Rescheduling is not available yet' });
+     },
+   );
+ }

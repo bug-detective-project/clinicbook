@@ -1,0 +1,7 @@
+{
+  "hints": [
+    "A rota é inocente: `server/src/routes/reminders.ts` não envia nada quando `settings.remindersEnabled` é falso. Então, com `REMINDERS_ENABLED=false`, essa configuração é verdadeira. Ache onde a configuração é feita a partir da variável, e releia a última linha do ticket: `false`, `0` e `no` deixam a opção ligada, e um valor vazio a desliga. O que os três têm em comum que o vazio não tem?",
+    "O `readSettings` em `server/src/config.ts` faz a configuração com `Boolean(env.REMINDERS_ENABLED ?? true)`. Tudo o que vem do ambiente é texto. No terminal, experimente `node -e \"console.log(Boolean('false'), Boolean('0'), Boolean(''))\"`.",
+    "O `Boolean` de um texto pergunta uma coisa só: o texto está vazio? `'false'` é um texto de cinco letras, então é verdadeiro. Uma opção do ambiente precisa ser lida comparando textos: tire os espaços e passe para minúsculas, trate `'true'` e `'1'` como ligado e `'false'` e `'0'` como desligado, use o padrão quando a variável falta ou está vazia, e recuse qualquer outra coisa com um erro que diga o nome da variável, para um erro de digitação ser notado quando o servidor sobe."
+  ]
+}

@@ -1,0 +1,177 @@
+diff --git a/server/src/routes/doctors.ts b/server/src/routes/doctors.ts
+index d15ac61..a79a773 100644
+--- a/server/src/routes/doctors.ts
++++ b/server/src/routes/doctors.ts
+@@ -1,7 +1,32 @@
+ import type { FastifyInstance } from 'fastify';
+ import type { Context } from '../context.ts';
+-import { listDoctors } from '../repository.ts';
++import { isDay, weekdayOf } from '../dates.ts';
++import { InvalidError, NotFoundError } from '../errors.ts';
++import { bookedTimes, findDoctor, listDoctors, workingPeriods } from '../repository.ts';
++import { requiredDayQuery } from '../schemas.ts';
++import { freeSlots } from '../slots.ts';
+ 
+-export function doctorRoutes(app: FastifyInstance, { db }: Context): void {
++export function doctorRoutes(app: FastifyInstance, { db, today }: Context): void {
+   app.get('/api/doctors', () => listDoctors(db));
++
++  // The times a doctor is free on a day. A day that is over has none.
++  app.get<{ Params: { id: string }; Querystring: { day: string } }>(
++    '/api/doctors/:id/slots',
++    { schema: { querystring: requiredDayQuery } },
++    async (request) => {
++      const id = Number(request.params.id);
++      const { day } = request.query;
++      if (!Number.isInteger(id) || !(await findDoctor(db, id))) {
++        throw new NotFoundError('Doctor not found');
++      }
++      if (!isDay(day)) {
++        throw new InvalidError('The day must be a date, as YYYY-MM-DD', { day: 'Not a date' });
++      }
++      if (day < today()) {
++        return { day, slots: [] };
++      }
++      const periods = await workingPeriods(db, id, weekdayOf(day));
++      return { day, slots: freeSlots(periods, await bookedTimes(db, id, day)) };
++    },
++  );
+ }
+diff --git a/server/src/slots.test.ts b/server/src/slots.test.ts
+new file mode 100644
+index 0000000..0c8da8f
+--- /dev/null
++++ b/server/src/slots.test.ts
+@@ -0,0 +1,104 @@
++import { describe, expect, it } from 'vitest';
++import { testApi, TODAY, TOMORROW } from './test/api.ts';
++
++interface Slots {
++  day: string;
++  slots: string[];
++}
++
++interface Failure {
++  error: string;
++}
++
++// Dr. Helena Prado (1) works Monday to Friday, 08:00 to 12:00 and 14:00 to 17:00.
++// Dr. Marcos Oliveira (2) works Monday, Wednesday and Friday, 09:00 to 13:00.
++// Dr. Yuki Tanabe (3) works Tuesday and Thursday, 13:00 to 18:00, and Saturday, 08:00 to 12:00.
++describe('GET /api/doctors/:id/slots', () => {
++  it('lists every slot of a day without appointments, in order, in both periods', async () => {
++    const { get } = await testApi();
++
++    const { status, body } = await get<Slots>('/api/doctors/1/slots?day=2026-03-17');
++
++    expect(status).toBe(200);
++    expect(body).toEqual({
++      day: '2026-03-17',
++      slots: [
++        '08:00', '08:30', '09:00', '09:30', '10:00', '10:30', '11:00', '11:30',
++        '14:00', '14:30', '15:00', '15:30', '16:00', '16:30',
++      ],
++    });
++  });
++
++  it('leaves out the times that already have an appointment', async () => {
++    const { get } = await testApi();
++
++    // Tomorrow Dr. Helena Prado sees patients at 09:00 and at 11:00.
++    const { body } = await get<Slots>(`/api/doctors/1/slots?day=${TOMORROW}`);
++
++    expect(body.slots).toEqual([
++      '08:00', '08:30', '09:30', '10:00', '10:30', '11:30',
++      '14:00', '14:30', '15:00', '15:30', '16:00', '16:30',
++    ]);
++  });
++
++  it('offers again the time of a cancelled appointment', async () => {
++    const { get, post } = await testApi();
++
++    // Today Dr. Marcos Oliveira has 09:00 scheduled and 09:30 cancelled.
++    const before = await get<Slots>(`/api/doctors/2/slots?day=${TODAY}`);
++    await post('/api/appointments/8/cancel');
++    const after = await get<Slots>(`/api/doctors/2/slots?day=${TODAY}`);
++
++    expect(before.body.slots).toEqual(['09:30', '10:00', '10:30', '11:00', '11:30', '12:00', '12:30']);
++    expect(after.body.slots).toEqual(['09:00', '09:30', '10:00', '10:30', '11:00', '11:30', '12:00', '12:30']);
++  });
++
++  it('takes a time off the list once it is booked', async () => {
++    const { get, post } = await testApi();
++
++    await post('/api/appointments', { patientId: 3, doctorId: 3, day: TOMORROW, time: '17:30' });
++    const { body } = await get<Slots>(`/api/doctors/3/slots?day=${TOMORROW}`);
++
++    // 13:00 was taken already; 15:30 belongs to a cancelled appointment.
++    expect(body.slots).toEqual(['13:30', '14:00', '14:30', '15:00', '15:30', '16:00', '16:30', '17:00']);
++  });
++
++  it('answers an empty list for a day the doctor does not work', async () => {
++    const { get } = await testApi();
++
++    expect((await get<Slots>('/api/doctors/2/slots?day=2026-03-10')).body).toEqual({ day: '2026-03-10', slots: [] });
++    expect((await get<Slots>('/api/doctors/1/slots?day=2026-03-15')).body.slots).toEqual([]);
++  });
++
++  it('answers an empty list for a day that is over', async () => {
++    const { get } = await testApi();
++
++    expect((await get<Slots>('/api/doctors/1/slots?day=2026-03-06')).body).toEqual({ day: '2026-03-06', slots: [] });
++  });
++
++  it('answers 404 for a doctor the clinic does not have', async () => {
++    const { get } = await testApi();
++
++    expect(await get<Failure>(`/api/doctors/999/slots?day=${TODAY}`)).toEqual({ status: 404, body: { error: 'Doctor not found' } });
++    expect((await get(`/api/doctors/abc/slots?day=${TODAY}`)).status).toBe(404);
++  });
++
++  it('answers 400 without a day, and for a day that is not a date', async () => {
++    const { get } = await testApi();
++
++    expect((await get('/api/doctors/1/slots')).status).toBe(400);
++    expect((await get('/api/doctors/1/slots?day=tomorrow')).status).toBe(400);
++    expect((await get('/api/doctors/1/slots?day=2026-02-30')).status).toBe(400);
++  });
++
++  it('offers exactly the times a booking accepts', async () => {
++    const { get, post } = await testApi();
++    const { body } = await get<Slots>('/api/doctors/3/slots?day=2026-03-14');
++
++    expect(body.slots).toEqual(['08:30', '09:00', '09:30', '10:00', '10:30', '11:00', '11:30']);
++    for (const time of body.slots) {
++      expect((await post('/api/appointments', { patientId: 5, doctorId: 3, day: '2026-03-14', time })).status, time).toBe(201);
++    }
++    expect((await get<Slots>('/api/doctors/3/slots?day=2026-03-14')).body.slots).toEqual([]);
++  });
++});
+diff --git a/server/src/slots.ts b/server/src/slots.ts
+new file mode 100644
+index 0000000..11df7eb
+--- /dev/null
++++ b/server/src/slots.ts
+@@ -0,0 +1,22 @@
++import { minutesOf, timeOf } from './dates.ts';
++import { SLOT_MINUTES } from './schedule.ts';
++import type { Period } from './schedule.ts';
++
++/**
++ * The times a doctor is free on a day, in order: every slot of the working periods whose time is
++ * not in `booked`.
++ */
++export function freeSlots(periods: Period[], booked: string[]): string[] {
++  const taken = new Set(booked);
++  const slots: string[] = [];
++  for (const period of periods) {
++    const until = minutesOf(period.endsAt);
++    for (let start = minutesOf(period.startsAt); start + SLOT_MINUTES <= until; start += SLOT_MINUTES) {
++      const time = timeOf(start);
++      if (!taken.has(time)) {
++        slots.push(time);
++      }
++    }
++  }
++  return slots.sort();
++}

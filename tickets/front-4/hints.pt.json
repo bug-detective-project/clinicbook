@@ -1,0 +1,7 @@
+{
+  "hints": [
+    "Use a aba Network como instrumento de medida: filtre por `appointments` e conte as requisições de cada rodada de 15 segundos. Uma rodada depois de abrir a agenda tem uma requisição. Troque o dia três vezes e conte de novo. Cada número que você obtém é o número de temporizadores vivos.",
+    "A atualização começa no `useEffect` de `client/src/pages/AgendaPage.tsx`, aquele que depende de `day`. Um efeito roda de novo toda vez que `day` muda, e cada execução cria um `setInterval` novo. O que para o intervalo da execução anterior? E o que para o último quando o usuário vai para outra tela e o componente é removido?",
+    "Um efeito que começa alguma coisa precisa devolver uma função que a pare. O React chama essa função antes de rodar o efeito de novo e quando o componente sai da tela. Guarde o id que o `setInterval` devolve e chame `window.clearInterval(timer)` na função que o efeito devolve, junto do `current = false`."
+  ]
+}

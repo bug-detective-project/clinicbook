@@ -1,0 +1,7 @@
+{
+  "hints": [
+    "Abra a aba Network do DevTools, ponha a limitação em uma conexão lenta e dê um clique duplo em **Book**. Conte as requisições `POST /api/appointments`. Cada uma é uma marcação completa e válida, então o servidor grava as duas: a pergunta é por que a página enviou duas.",
+    "O formulário está em `client/src/pages/BookingPage.tsx`, e o `submit` roda uma vez para cada clique. Entre o primeiro clique e a resposta do servidor há um intervalo em que o formulário fica exatamente como antes. O que a página sabe, nesse intervalo, sobre a requisição que já está a caminho?",
+    "O formulário precisa de um estado que diga \"uma marcação está sendo enviada\": grave-o antes da requisição e use-o duas vezes, para sair cedo do `submit` e para desabilitar o botão. Quando o servidor recusa a marcação, o estado tem que voltar, senão o usuário fica com um botão morto. Quando a marcação dá certo, a página navega para outra tela, então não há nada a desfazer."
+  ]
+}

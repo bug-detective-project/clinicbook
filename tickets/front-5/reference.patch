@@ -1,0 +1,128 @@
+diff --git a/client/src/components/PatientMenu.close.test.tsx b/client/src/components/PatientMenu.close.test.tsx
+new file mode 100644
+index 0000000..678e2af
+--- /dev/null
++++ b/client/src/components/PatientMenu.close.test.tsx
+@@ -0,0 +1,72 @@
++import { screen } from '@testing-library/react';
++import userEvent from '@testing-library/user-event';
++import { describe, expect, it } from 'vitest';
++import { mockApi } from '../test/mockApi.ts';
++import { renderApp } from '../test/renderApp.tsx';
++
++async function openMenu(name: string): Promise<HTMLElement> {
++  const toggle = await screen.findByRole('button', { name: `Actions for ${name}` });
++  await userEvent.click(toggle);
++  expect(screen.getByRole('menu', { name: `Actions for ${name}` })).toBeInTheDocument();
++  return toggle;
++}
++
++describe('closing the menu of a patient', () => {
++  it('closes when the user clicks somewhere else on the page', async () => {
++    mockApi();
++    await renderApp('/patients');
++    const toggle = await openMenu('Bruno Carvalho');
++
++    await userEvent.click(screen.getByRole('heading', { level: 2, name: 'Patients' }));
++
++    expect(screen.queryByRole('menu')).not.toBeInTheDocument();
++    expect(toggle).toHaveAttribute('aria-expanded', 'false');
++  });
++
++  it('closes with Escape and gives the focus back to its button', async () => {
++    mockApi();
++    await renderApp('/patients');
++    const toggle = await openMenu('Bruno Carvalho');
++    await userEvent.tab();
++    expect(screen.getByRole('menuitem', { name: 'Open record' })).toHaveFocus();
++
++    await userEvent.keyboard('{Escape}');
++
++    expect(screen.queryByRole('menu')).not.toBeInTheDocument();
++    expect(toggle).toHaveFocus();
++  });
++
++  it('closes when the menu of another patient is opened', async () => {
++    mockApi();
++    await renderApp('/patients');
++    await openMenu('Bruno Carvalho');
++
++    await openMenu('Camila Duarte');
++
++    expect(screen.getAllByRole('menu')).toHaveLength(1);
++    expect(screen.queryByRole('menu', { name: 'Actions for Bruno Carvalho' })).not.toBeInTheDocument();
++  });
++
++  it('stays open while the user clicks inside it, and its items still work', async () => {
++    mockApi();
++    await renderApp('/patients');
++    await openMenu('Davi Fernandes');
++
++    await userEvent.click(screen.getByRole('menu', { name: 'Actions for Davi Fernandes' }));
++    expect(screen.getByRole('menu', { name: 'Actions for Davi Fernandes' })).toBeInTheDocument();
++
++    await userEvent.click(screen.getByRole('menuitem', { name: 'Book appointment' }));
++    expect(await screen.findByRole('heading', { level: 2, name: 'Book appointment' })).toBeInTheDocument();
++  });
++
++  it('does nothing on Escape while every menu is closed', async () => {
++    mockApi();
++    await renderApp('/patients');
++    const field = await screen.findByLabelText('Name');
++    await userEvent.click(field);
++
++    await userEvent.keyboard('{Escape}');
++
++    expect(field).toHaveFocus();
++  });
++});
+diff --git a/client/src/components/PatientMenu.tsx b/client/src/components/PatientMenu.tsx
+index 8ee1928..dbfefbb 100644
+--- a/client/src/components/PatientMenu.tsx
++++ b/client/src/components/PatientMenu.tsx
+@@ -1,4 +1,4 @@
+-import { useState } from 'react';
++import { useEffect, useRef, useState } from 'react';
+ import { Link } from 'react-router';
+ import type { Patient } from '../api/types.ts';
+ import styles from './PatientMenu.module.css';
+@@ -11,10 +11,38 @@ export interface PatientMenuProps {
+ /** The "..." button of a patient and the menu of actions it opens. */
+ export function PatientMenu({ patient, onRemove }: PatientMenuProps) {
+   const [open, setOpen] = useState(false);
++  const containerRef = useRef<HTMLDivElement>(null);
++  const buttonRef = useRef<HTMLButtonElement>(null);
++
++  // While the menu is open, a click anywhere else and the Escape key close it.
++  useEffect(() => {
++    if (!open) {
++      return;
++    }
++    function onPointerDown(event: PointerEvent) {
++      if (!containerRef.current?.contains(event.target as Node)) {
++        setOpen(false);
++      }
++    }
++    function onKeyDown(event: KeyboardEvent) {
++      if (event.key === 'Escape') {
++        setOpen(false);
++        // Whoever uses the keyboard goes on from where the menu was opened.
++        buttonRef.current?.focus();
++      }
++    }
++    document.addEventListener('pointerdown', onPointerDown);
++    document.addEventListener('keydown', onKeyDown);
++    return () => {
++      document.removeEventListener('pointerdown', onPointerDown);
++      document.removeEventListener('keydown', onKeyDown);
++    };
++  }, [open]);
+ 
+   return (
+-    <div className={styles.wrapper}>
++    <div ref={containerRef} className={styles.wrapper}>
+       <button
++        ref={buttonRef}
+         type="button"
+         className={styles.toggle}
+         aria-haspopup="menu"
