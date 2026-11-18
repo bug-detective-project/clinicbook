@@ -1,0 +1,14 @@
+.data {
+  display: grid;
+  grid-template-columns: 120px 1fr;
+  gap: 8px 16px;
+  margin: 0 0 16px;
+}
+
+.data dt {
+  color: var(--muted);
+}
+
+.data dd {
+  margin: 0;
+}
