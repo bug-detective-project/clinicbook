@@ -1,0 +1,110 @@
+/* Pieces every screen uses: the title row, buttons, cards, form fields and messages. */
+
+.titleRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+
+.titleRow h2 {
+  margin: 0;
+}
+
+.muted {
+  color: var(--muted);
+}
+
+.button,
+.primary,
+.danger {
+  display: inline-block;
+  padding: 6px 14px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--ink);
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.primary {
+  border-color: var(--brand);
+  background: var(--brand);
+  color: var(--brand-ink);
+}
+
+.danger {
+  color: var(--danger);
+}
+
+.button:disabled,
+.primary:disabled,
+.danger:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.card {
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+
+.list {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.form {
+  display: grid;
+  gap: 16px;
+  max-width: 520px;
+}
+
+.field {
+  display: grid;
+  gap: 4px;
+}
+
+.field > span:first-child,
+.field > label,
+.legend {
+  font-weight: 600;
+}
+
+.field input,
+.field select {
+  padding: 8px 10px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+
+.fieldError {
+  color: var(--danger);
+  font-size: 0.875rem;
+}
+
+.alert {
+  margin: 0 0 16px;
+  padding: 10px 14px;
+  border: 1px solid #f1b9b3;
+  border-radius: var(--radius);
+  background: #fdf1f0;
+  color: var(--danger);
+}
+
+.notice {
+  margin: 0 0 16px;
+  padding: 10px 14px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
