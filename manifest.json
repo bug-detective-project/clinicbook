@@ -1,0 +1,358 @@
+{
+  "format": "bug-detective-project",
+  "formatVersion": 1,
+  "project": {
+    "id": "clinicbook",
+    "name": "ClinicBook",
+    "difficulty": "beginner",
+    "stack": {
+      "frontend": "React · Vite · React Router",
+      "backend": "Node.js · Fastify · Kysely",
+      "database": "SQLite"
+    }
+  },
+  "version": "1.0.0",
+  "createdAt": "2026-11-18T20:45:36.187Z",
+  "tickets": {
+    "total": 13,
+    "front": 7,
+    "back": 6
+  },
+  "entries": [
+    {
+      "id": "front-1",
+      "track": "front",
+      "order": 1,
+      "branch": "front-1",
+      "tag": "front-1-v1.0.0",
+      "commit": "b2d61c1dab2ba7e6b4a3f121460fdcfac7685750",
+      "commitMessage": "ClinicBook release front-1",
+      "codeDigest": "sha256:d97787a98f2cae1d96b82ce508fb4fbe772b42af7a74b03468e219009c686a66",
+      "codeFiles": 103,
+      "package": {
+        "path": "tickets/front-1",
+        "files": 31,
+        "digest": "sha256:e234b383d7b30ed9695e2119171d3fbbc6ee838a054b46d25d6f31f36ed24fc0"
+      },
+      "type": "fix",
+      "skills": {
+        "en": [
+          "Forms and validation"
+        ],
+        "pt": [
+          "Formulários e validação"
+        ]
+      }
+    },
+    {
+      "id": "front-2",
+      "track": "front",
+      "order": 2,
+      "branch": "front-2",
+      "tag": "front-2-v1.0.0",
+      "commit": "3d37ef49b8519f32b34e3e184a19fefa0a24af3f",
+      "commitMessage": "ClinicBook release front-2",
+      "codeDigest": "sha256:8daf0d301730e131c08b299a0c8ea123994e1b2ebe5a69c92a209a6918967b91",
+      "codeFiles": 103,
+      "package": {
+        "path": "tickets/front-2",
+        "files": 31,
+        "digest": "sha256:842993d9f3df679f65064b0dbcc7c3217f6ae43fe80004712b29ce93121357b4"
+      },
+      "type": "fix",
+      "skills": {
+        "en": [
+          "Local and derived state"
+        ],
+        "pt": [
+          "Estado local e derivado"
+        ]
+      }
+    },
+    {
+      "id": "front-3",
+      "track": "front",
+      "order": 3,
+      "branch": "front-3",
+      "tag": "front-3-v1.0.0",
+      "commit": "5f860d9659b744eb4390b8bfa1bd6cf08dd57e65",
+      "commitMessage": "ClinicBook release front-3",
+      "codeDigest": "sha256:712e23ace7b44b88b928471be40bede3c36ae77b98543087343a97bf575f5a44",
+      "codeFiles": 103,
+      "package": {
+        "path": "tickets/front-3",
+        "files": 31,
+        "digest": "sha256:6b53be4c751938c7d8ad6ea79c5e922f10ccbc1d6be3801114c90e7789032c1c"
+      },
+      "type": "fix",
+      "skills": {
+        "en": [
+          "Dates, numbers and text",
+          "Tracing data flow"
+        ],
+        "pt": [
+          "Datas, números e texto",
+          "Rastrear o fluxo de dados"
+        ]
+      }
+    },
+    {
+      "id": "front-4",
+      "track": "front",
+      "order": 4,
+      "branch": "front-4",
+      "tag": "front-4-v1.0.0",
+      "commit": "01b6842897d8447d530d3b58858d49cc897a9909",
+      "commitMessage": "ClinicBook release front-4",
+      "codeDigest": "sha256:3579ffea7f5cba976120d3cf7433e758e37103696537e861525ee75def7933ca",
+      "codeFiles": 103,
+      "package": {
+        "path": "tickets/front-4",
+        "files": 31,
+        "digest": "sha256:0b596479acaa50b0fcc5b5488de73d63de43a544dcd036574f92f8e44aef0030"
+      },
+      "type": "fix",
+      "skills": {
+        "en": [
+          "Effects and lifecycle"
+        ],
+        "pt": [
+          "Efeitos e ciclo de vida"
+        ]
+      }
+    },
+    {
+      "id": "front-5",
+      "track": "front",
+      "order": 5,
+      "branch": "front-5",
+      "tag": "front-5-v1.0.0",
+      "commit": "e912c2770bb15652af8fc0d8eabc75d66266dc3d",
+      "commitMessage": "ClinicBook release front-5",
+      "codeDigest": "sha256:3b508eed2c55ad377475c4f8d31afac6541e4b3ad8e4e876e91534ba188d6259",
+      "codeFiles": 103,
+      "package": {
+        "path": "tickets/front-5",
+        "files": 31,
+        "digest": "sha256:4416157dc5c449d7cf5a5f3bca5af6146962f3815a43fc552ee0da2917ac1be7"
+      },
+      "type": "build",
+      "skills": {
+        "en": [
+          "Web platform: DOM and events",
+          "Accessibility"
+        ],
+        "pt": [
+          "Plataforma web: DOM e eventos",
+          "Acessibilidade"
+        ]
+      }
+    },
+    {
+      "id": "front-6",
+      "track": "front",
+      "order": 6,
+      "branch": "front-6",
+      "tag": "front-6-v1.0.0",
+      "commit": "a520ed1819c5df5bd44b84dde72b42b92affe272",
+      "commitMessage": "ClinicBook release front-6",
+      "codeDigest": "sha256:92aac0bbbbd3134b1618fba92bdae6156108e0d55d480e5fe276d30617123f91",
+      "codeFiles": 101,
+      "package": {
+        "path": "tickets/front-6",
+        "files": 31,
+        "digest": "sha256:0277d3d04b963c2dc71e0816c93cddccef3656e1bc2481c22f6fa247ca9632ae"
+      },
+      "type": "build",
+      "skills": {
+        "en": [
+          "Building components"
+        ],
+        "pt": [
+          "Criação de componentes"
+        ]
+      }
+    },
+    {
+      "id": "front-7",
+      "track": "front",
+      "order": 7,
+      "branch": "front-7",
+      "tag": "front-7-v1.0.0",
+      "commit": "db7740a1732847f3e77e924e6d0dd674228b75ed",
+      "commitMessage": "ClinicBook release front-7",
+      "codeDigest": "sha256:da18ca39c5dd3456c9b24ddd132ffe48883e34546a3b0fbca47766def983885b",
+      "codeFiles": 101,
+      "package": {
+        "path": "tickets/front-7",
+        "files": 31,
+        "digest": "sha256:acad32559a3e5b0ffa29a778d923f537d348765c746e37b82a48efe480f4afbd"
+      },
+      "type": "build",
+      "skills": {
+        "en": [
+          "Routes and navigation"
+        ],
+        "pt": [
+          "Criação de rotas e navegação"
+        ]
+      }
+    },
+    {
+      "id": "back-1",
+      "track": "back",
+      "order": 1,
+      "branch": "back-1",
+      "tag": "back-1-v1.0.0",
+      "commit": "499015386e45b0b42f089b02af24656c211c66ac",
+      "commitMessage": "ClinicBook release back-1",
+      "codeDigest": "sha256:7f341bd8678d85ad22fe0e52d87b5fdf36a9ca526c518ed3a0648cc0c6e5f8cf",
+      "codeFiles": 103,
+      "package": {
+        "path": "tickets/back-1",
+        "files": 31,
+        "digest": "sha256:0a99ba4bfb7efe977517c3f0aacf7eae4d77cce76fc0e08c5b27b75adf1dd02a"
+      },
+      "type": "fix",
+      "skills": {
+        "en": [
+          "Business rules and layers"
+        ],
+        "pt": [
+          "Regras de negócio e camadas"
+        ]
+      }
+    },
+    {
+      "id": "back-2",
+      "track": "back",
+      "order": 2,
+      "branch": "back-2",
+      "tag": "back-2-v1.0.0",
+      "commit": "e3eee46038192267f412b40844d55f916e0c4187",
+      "commitMessage": "ClinicBook release back-2",
+      "codeDigest": "sha256:4bd0b161d3eb3510681ec12d3db6ebff4c0f11f6d2e763ebd621fa25770526ce",
+      "codeFiles": 103,
+      "package": {
+        "path": "tickets/back-2",
+        "files": 31,
+        "digest": "sha256:80a4d145fd980a76a1934152b69cf93659cae3e58eafc1630ec96a81a426bd7d"
+      },
+      "type": "fix",
+      "skills": {
+        "en": [
+          "Input validation",
+          "Regular expressions"
+        ],
+        "pt": [
+          "Validação de entrada",
+          "Expressões regulares"
+        ]
+      }
+    },
+    {
+      "id": "back-3",
+      "track": "back",
+      "order": 3,
+      "branch": "back-3",
+      "tag": "back-3-v1.0.0",
+      "commit": "15058082aa1eca6f15e73c904363f921104cae79",
+      "commitMessage": "ClinicBook release back-3",
+      "codeDigest": "sha256:873eea807b2bd9deb89b22c4e834d52970ddc16303d055e81fc3586e14bc6d8d",
+      "codeFiles": 103,
+      "package": {
+        "path": "tickets/back-3",
+        "files": 31,
+        "digest": "sha256:27760dcd2197cd387eaee0e73f061325e39a148deb6c3cf4c11fdb2bdd5808e9"
+      },
+      "type": "fix",
+      "skills": {
+        "en": [
+          "Configuration and feature flags",
+          "Language and types"
+        ],
+        "pt": [
+          "Configuração e opções de funcionalidade",
+          "Linguagem e tipos"
+        ]
+      }
+    },
+    {
+      "id": "back-4",
+      "track": "back",
+      "order": 4,
+      "branch": "back-4",
+      "tag": "back-4-v1.0.0",
+      "commit": "b7109f51e068dc6354348db82fc8f3ef0ba0c6d7",
+      "commitMessage": "ClinicBook release back-4",
+      "codeDigest": "sha256:01fbc282f22aa15108a01cdd2fe1cdb083a2c2728f44c0deafd372051da80a34",
+      "codeFiles": 103,
+      "package": {
+        "path": "tickets/back-4",
+        "files": 31,
+        "digest": "sha256:431867f25fac62d871ac88449e92e95e81c44b0370745de04f5bcdef397d7b1f"
+      },
+      "type": "build",
+      "skills": {
+        "en": [
+          "Error handling and resilience"
+        ],
+        "pt": [
+          "Erros e resiliência"
+        ]
+      }
+    },
+    {
+      "id": "back-5",
+      "track": "back",
+      "order": 5,
+      "branch": "back-5",
+      "tag": "back-5-v1.0.0",
+      "commit": "e16e0f02962b439ae19b2960dfd5c9b400921585",
+      "commitMessage": "ClinicBook release back-5",
+      "codeDigest": "sha256:9e1c5337c3a9e953f1e290805719590d4c729f2387555886a29aca16d5ea021b",
+      "codeFiles": 102,
+      "package": {
+        "path": "tickets/back-5",
+        "files": 31,
+        "digest": "sha256:105035d9b254c5c63d162ac8fbbda3636f9b04b7bda4cb07bbffe4f6cec2719f"
+      },
+      "type": "build",
+      "skills": {
+        "en": [
+          "Routes and endpoints",
+          "Everyday data structures and algorithms"
+        ],
+        "pt": [
+          "Criação de rotas e endpoints",
+          "Estruturas de dados e algoritmos do dia a dia"
+        ]
+      }
+    },
+    {
+      "id": "back-6",
+      "track": "back",
+      "order": 6,
+      "branch": "back-6",
+      "tag": "back-6-v1.0.0",
+      "commit": "2a42e63197784a478cfac5537060a3bde0cb9632",
+      "commitMessage": "ClinicBook release back-6",
+      "codeDigest": "sha256:b87aa201432bd54c445daab1a3f2e29adaa9ff86e2ba506e293b1521df5167d6",
+      "codeFiles": 103,
+      "package": {
+        "path": "tickets/back-6",
+        "files": 31,
+        "digest": "sha256:5e200f020380bb408a937490d47a382119891281389e436ed494d1f57d86150f"
+      },
+      "type": "complete",
+      "skills": {
+        "en": [
+          "Routes and endpoints"
+        ],
+        "pt": [
+          "Criação de rotas e endpoints"
+        ]
+      }
+    }
+  ]
+}
