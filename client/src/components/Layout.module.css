@@ -1,0 +1,41 @@
+.page {
+  min-height: 100vh;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+  padding: 12px 24px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--line);
+}
+
+.name {
+  margin: 0;
+  font-size: 1.25rem;
+  color: var(--brand);
+}
+
+.nav {
+  display: flex;
+  gap: 4px;
+}
+
+.nav a {
+  padding: 6px 12px;
+  border-radius: var(--radius);
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.nav a[aria-current='page'] {
+  background: var(--brand);
+  color: var(--brand-ink);
+}
+
+.main {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 24px;
+}
