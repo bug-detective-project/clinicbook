@@ -1,0 +1,10 @@
+.row {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr 1.4fr auto;
+  align-items: center;
+  gap: 16px;
+}
+
+.formTitle {
+  margin: 32px 0 12px;
+}
