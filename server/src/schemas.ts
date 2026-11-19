@@ -24,6 +24,9 @@ export const patientBody = {
   },
 } as const;
 
+/** A change to a patient: any of the fields of a patient, and only those sent change. */
+export const patientPatchBody = { ...patientBody, required: [] } as const;
+
 export const doctorBody = {
   type: 'object',
   required: ['name', 'specialty', 'hours'],

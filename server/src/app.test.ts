@@ -309,6 +309,17 @@ describe('patients', () => {
     expect(wrong.body.fields).toEqual({ cpf: 'Enter a valid CPF: its check digits do not match' });
   });
 
+  it('changes only the fields sent, and clears a field sent as null', async () => {
+    const { patch } = await testApi();
+
+    const plan = await patch<Patient>('/api/patients/1', { healthPlan: 'Amparo Vida' });
+    const cleared = await patch<Patient>('/api/patients/1', { birthDate: null });
+
+    expect(plan.status).toBe(200);
+    expect(plan.body).toMatchObject({ name: 'Ana Beatriz Costa', email: 'ana.costa@example.com', birthDate: '1988-04-12', healthPlan: 'Amparo Vida' });
+    expect(cleared.body).toMatchObject({ email: 'ana.costa@example.com', birthDate: null, healthPlan: 'Amparo Vida' });
+  });
+
   it('answers 404 when changing a patient that does not exist', async () => {
     const { patch } = await testApi();
 

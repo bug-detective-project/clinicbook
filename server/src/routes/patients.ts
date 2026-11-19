@@ -5,7 +5,7 @@ import { cpfDigits, isValidCpf } from '../cpf.ts';
 import { HttpError, InvalidError, NotFoundError } from '../errors.ts';
 import { cpfInUse, createPatient, deletePatient, findPatient, listAppointmentsOfPatient, listPatients, updatePatient } from '../repository.ts';
 import type { Patient, PatientInput } from '../repository.ts';
-import { patientBody } from '../schemas.ts';
+import { patientBody, patientPatchBody } from '../schemas.ts';
 
 interface Id {
   id: string;
@@ -58,9 +58,19 @@ export function patientRoutes(app: FastifyInstance, { db }: Context): void {
     return reply.status(201).send(patient);
   });
 
-  app.patch<{ Params: Id; Body: PatientBody }>('/api/patients/:id', { schema: { body: patientBody } }, async (request) => {
+  // Only the fields sent change: a field left out keeps its value, and an e-mail or a birth date sent as null is cleared.
+  app.patch<{ Params: Id; Body: Partial<PatientBody> }>('/api/patients/:id', { schema: { body: patientPatchBody } }, async (request) => {
     const patient = await requirePatient(db, Number(request.params.id));
-    return updatePatient(db, patient.id, await inputOf(db, request.body, patient.id));
+    const body = request.body;
+    const merged: PatientBody = {
+      name: body.name ?? patient.name,
+      phone: body.phone ?? patient.phone,
+      email: 'email' in body ? body.email : patient.email,
+      birthDate: 'birthDate' in body ? body.birthDate : patient.birthDate,
+      cpf: body.cpf ?? patient.cpf,
+      healthPlan: body.healthPlan ?? patient.healthPlan,
+    };
+    return updatePatient(db, patient.id, await inputOf(db, merged, patient.id));
   });
 
   app.get<{ Params: Id }>('/api/patients/:id', (request) => {

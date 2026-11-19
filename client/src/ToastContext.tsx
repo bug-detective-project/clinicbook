@@ -32,18 +32,19 @@ export function ToastProvider({ children }: { children: ReactNode }) {
       {children}
       <div className={styles.region} aria-label="Notifications">
         {toasts.map((toast) => (
-          <ToastItem key={toast.id} toast={toast} onDismiss={() => dismiss(toast.id)} />
+          <ToastItem key={toast.id} toast={toast} dismiss={dismiss} />
         ))}
       </div>
     </ToastContext>
   );
 }
 
-function ToastItem({ toast, onDismiss }: { toast: Toast; onDismiss: () => void }) {
+/** One toast. Its time starts when it shows and depends on nothing else, so another toast does not reset it. */
+function ToastItem({ toast, dismiss }: { toast: Toast; dismiss: (id: number) => void }) {
   useEffect(() => {
-    const timer = setTimeout(onDismiss, DURATION[toast.tone]);
+    const timer = setTimeout(() => dismiss(toast.id), DURATION[toast.tone]);
     return () => clearTimeout(timer);
-  }, [toast.tone, onDismiss]);
+  }, [toast.id, toast.tone, dismiss]);
 
   return (
     <div data-testid="toast" className={`${styles.toast} ${styles[toast.tone]}`}>
@@ -54,7 +55,7 @@ function ToastItem({ toast, onDismiss }: { toast: Toast; onDismiss: () => void }
       <p role={toast.tone === 'success' ? 'status' : 'alert'} className={styles.message}>
         {toast.message}
       </p>
-      <button type="button" className={styles.dismiss} aria-label="Dismiss" onClick={onDismiss}>
+      <button type="button" className={styles.dismiss} aria-label="Dismiss" onClick={() => dismiss(toast.id)}>
         ×
       </button>
     </div>

@@ -78,4 +78,22 @@ describe('the toasts', () => {
     await user.click(within(await toast()).getByRole('button', { name: 'Dismiss' }));
     expect(screen.queryByTestId('toast')).not.toBeInTheDocument();
   });
+
+  it('keep their own time when another toast comes', async () => {
+    vi.useFakeTimers({ shouldAdvanceTime: true });
+    mockApi();
+    await renderApp('/');
+    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
+
+    await user.click(await screen.findByRole('button', { name: 'Confirm Bruno Carvalho at 08:30' }));
+    await screen.findByText('The appointment of Bruno Carvalho at 08:30 was confirmed.');
+    await act(() => vi.advanceTimersByTimeAsync(3000));
+    await user.click(screen.getByRole('button', { name: 'Confirm Camila Duarte at 09:00' }));
+    await screen.findByText('The appointment of Camila Duarte at 09:00 was confirmed.');
+    await act(() => vi.advanceTimersByTimeAsync(1500));
+
+    // The first one is over its 4 seconds; the second one still has time.
+    expect(screen.queryByText('The appointment of Bruno Carvalho at 08:30 was confirmed.')).not.toBeInTheDocument();
+    expect(screen.getByText('The appointment of Camila Duarte at 09:00 was confirmed.')).toBeInTheDocument();
+  });
 });
