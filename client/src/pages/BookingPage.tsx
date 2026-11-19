@@ -6,6 +6,7 @@ import { listDoctors, listSlots } from '../api/doctors.ts';
 import { ApiError } from '../api/http.ts';
 import { listPatients } from '../api/patients.ts';
 import type { Appointment, Doctor, Patient } from '../api/types.ts';
+import { DatePicker } from '../components/DatePicker.tsx';
 import { TimeSlotPicker } from '../components/TimeSlotPicker.tsx';
 import ui from '../components/ui.module.css';
 import { useToday } from '../useToday.ts';
@@ -167,10 +168,7 @@ export function BookingPage() {
           </>
         )}
 
-        <label className={ui.field}>
-          <span>Day</span>
-          <input type="date" value={day} min={today} onChange={(event) => setDay(event.target.value)} />
-        </label>
+        <DatePicker label="Day" value={day} min={today} onChange={setDay} />
 
         <div className={ui.field}>
           <span className={ui.legend}>Time</span>
