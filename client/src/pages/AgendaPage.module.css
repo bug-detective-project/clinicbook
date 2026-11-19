@@ -94,6 +94,12 @@
     grid-template-columns: 64px 1fr;
   }
 
+  /* The badge gets a line of its own, as wide as its text: a 64px column would squeeze it. */
+  .row > [data-status] {
+    grid-column: 1 / -1;
+    justify-self: start;
+  }
+
   .actions {
     grid-column: 1 / -1;
     min-width: 0;

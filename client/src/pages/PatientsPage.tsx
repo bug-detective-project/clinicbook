@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import type { FormEvent } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import type { FormEvent, KeyboardEvent } from 'react';
 import { ApiError } from '../api/http.ts';
 import { createPatient, listPatients, removePatient } from '../api/patients.ts';
 import type { Patient } from '../api/types.ts';
@@ -15,6 +15,52 @@ export function PatientsPage() {
   const [form, setForm] = useState(EMPTY_FORM);
   const [formError, setFormError] = useState('');
   const [fields, setFields] = useState<Record<string, string>>({});
+  // The form of a new patient opens in a dialog over the list.
+  const [registering, setRegistering] = useState(false);
+  const openerRef = useRef<HTMLButtonElement>(null);
+  const dialogRef = useRef<HTMLDivElement>(null);
+
+  // The dialog takes the focus when it opens, on its first field.
+  useEffect(() => {
+    if (registering) {
+      dialogRef.current?.querySelector('input')?.focus();
+    }
+  }, [registering]);
+
+  function openDialog() {
+    setForm(EMPTY_FORM);
+    setFormError('');
+    setFields({});
+    setRegistering(true);
+  }
+
+  /** Closes the dialog and gives the focus back to the button that opened it. */
+  function closeDialog() {
+    setRegistering(false);
+    openerRef.current?.focus();
+  }
+
+  /** Escape closes the dialog, and Tab stays inside it while it is open. */
+  function dialogKey(event: KeyboardEvent<HTMLDivElement>) {
+    if (event.key === 'Escape') {
+      event.stopPropagation();
+      closeDialog();
+      return;
+    }
+    if (event.key !== 'Tab') {
+      return;
+    }
+    const stops = [...(dialogRef.current?.querySelectorAll<HTMLElement>('button, input') ?? [])];
+    const first = stops[0];
+    const last = stops.at(-1);
+    if (event.shiftKey && document.activeElement === first) {
+      event.preventDefault();
+      last?.focus();
+    } else if (!event.shiftKey && document.activeElement === last) {
+      event.preventDefault();
+      first?.focus();
+    }
+  }
 
   useEffect(() => {
     let current = true;
@@ -57,6 +103,7 @@ export function PatientsPage() {
       });
       setPatients((list) => [...(list ?? []), created].sort((a, b) => a.name.localeCompare(b.name)));
       setForm(EMPTY_FORM);
+      closeDialog();
     } catch (failure) {
       setFormError(failure instanceof ApiError ? failure.message : 'The patient could not be registered.');
       setFields(failure instanceof ApiError ? failure.fields : {});
@@ -89,6 +136,9 @@ export function PatientsPage() {
     <section>
       <div className={ui.titleRow}>
         <h2>Patients</h2>
+        <button ref={openerRef} type="button" className={ui.primary} aria-haspopup="dialog" onClick={openDialog}>
+          New patient
+        </button>
       </div>
 
       {error !== '' && (
@@ -112,23 +162,38 @@ export function PatientsPage() {
         </ul>
       )}
 
-      <h3 className={styles.formTitle}>New patient</h3>
-      {formError !== '' && (
-        <p role="alert" className={ui.alert}>
-          {formError}
-        </p>
-      )}
-      <form aria-label="New patient" className={`${ui.card} ${ui.form}`} noValidate onSubmit={(event) => void register(event)}>
-        {field('name', 'Name')}
-        {field('phone', 'Phone', 'tel')}
-        {field('email', 'E-mail (optional)', 'email')}
-        {field('birthDate', 'Birth date (optional)', 'date')}
-        <div>
-          <button type="submit" className={ui.primary}>
-            Register
-          </button>
+      {registering && (
+        // A press on the dark area around the dialog closes it, like its Cancel button.
+        <div className={styles.backdrop} onMouseDown={(event) => event.target === event.currentTarget && closeDialog()}>
+          <div ref={dialogRef} role="dialog" aria-modal="true" aria-labelledby="new-patient-title" className={styles.dialog} onKeyDown={dialogKey}>
+            <div className={styles.dialogHead}>
+              <h3 id="new-patient-title">New patient</h3>
+              <button type="button" className={styles.close} aria-label="Close" onClick={closeDialog}>
+                ×
+              </button>
+            </div>
+            {formError !== '' && (
+              <p role="alert" className={ui.alert}>
+                {formError}
+              </p>
+            )}
+            <form aria-label="New patient" className={`${ui.form} ${styles.dialogForm}`} noValidate onSubmit={(event) => void register(event)}>
+              {field('name', 'Name')}
+              {field('phone', 'Phone', 'tel')}
+              {field('email', 'E-mail (optional)', 'email')}
+              {field('birthDate', 'Birth date (optional)', 'date')}
+              <div className={styles.dialogActions}>
+                <button type="button" className={ui.button} onClick={closeDialog}>
+                  Cancel
+                </button>
+                <button type="submit" className={ui.primary}>
+                  Register
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
-      </form>
+      )}
     </section>
   );
 }

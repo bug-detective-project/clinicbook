@@ -7,6 +7,9 @@
   font-size: 0.8125rem;
   font-weight: 700;
   white-space: nowrap;
+  /* In a grid or a flex row the badge keeps the width of its text. */
+  justify-self: start;
+  flex: none;
 }
 
 /* A dot in the color of the state, before its name. */

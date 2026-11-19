@@ -152,7 +152,8 @@ describe('patients', () => {
   it('registers a patient and puts it on the list', async () => {
     const api = mockApi();
     await renderApp('/patients');
-    const form = await screen.findByRole('form', { name: 'New patient' });
+    await userEvent.click(await screen.findByRole('button', { name: 'New patient' }));
+    const form = screen.getByRole('form', { name: 'New patient' });
 
     await userEvent.type(within(form).getByLabelText('Name'), 'Bianca Rocha');
     await userEvent.type(within(form).getByLabelText('Phone'), '(11) 91111-9009');
@@ -166,7 +167,40 @@ describe('patients', () => {
       email: null,
       birthDate: null,
     });
-    expect(within(form).getByLabelText('Name')).toHaveValue('');
+    // The dialog closes, and the focus goes back to the button that opened it.
+    await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument());
+    expect(screen.getByRole('button', { name: 'New patient' })).toHaveFocus();
+  });
+
+  it('opens the form of a new patient in a dialog, with the focus on its first field', async () => {
+    mockApi();
+    await renderApp('/patients');
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+
+    await userEvent.click(await screen.findByRole('button', { name: 'New patient' }));
+
+    const dialog = screen.getByRole('dialog', { name: 'New patient' });
+    expect(dialog).toHaveAttribute('aria-modal', 'true');
+    expect(within(dialog).getByLabelText('Name')).toHaveFocus();
+  });
+
+  it.each([
+    ['Escape', () => userEvent.keyboard('{Escape}')],
+    ['Cancel', () => userEvent.click(screen.getByRole('button', { name: 'Cancel' }))],
+    ['the close button', () => userEvent.click(screen.getByRole('button', { name: 'Close' }))],
+  ])('closes the dialog with %s, registers nobody and starts empty the next time', async (_name, close) => {
+    const api = mockApi();
+    await renderApp('/patients');
+    await userEvent.click(await screen.findByRole('button', { name: 'New patient' }));
+    await userEvent.type(screen.getByLabelText('Name'), 'Half Typed');
+
+    await close();
+
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+    expect(api.calls('POST', '/api/patients')).toEqual([]);
+    expect(screen.getByRole('button', { name: 'New patient' })).toHaveFocus();
+    await userEvent.click(screen.getByRole('button', { name: 'New patient' }));
+    expect(screen.getByLabelText('Name')).toHaveValue('');
   });
 
   it('shows next to each field what the server refused', async () => {
@@ -177,7 +211,8 @@ describe('patients', () => {
           : undefined,
     });
     await renderApp('/patients');
-    const form = await screen.findByRole('form', { name: 'New patient' });
+    await userEvent.click(await screen.findByRole('button', { name: 'New patient' }));
+    const form = screen.getByRole('form', { name: 'New patient' });
 
     await userEvent.type(within(form).getByLabelText('Name'), 'Bianca Rocha');
     await userEvent.type(within(form).getByLabelText('Phone'), '12');

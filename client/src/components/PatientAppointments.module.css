@@ -9,3 +9,10 @@
   font-weight: 700;
   font-variant-numeric: tabular-nums;
 }
+
+@media (max-width: 720px) {
+  .row {
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
+}
