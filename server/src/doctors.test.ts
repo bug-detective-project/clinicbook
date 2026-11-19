@@ -76,6 +76,34 @@ describe('a doctor', () => {
     expect(overlapping.body.fields).toEqual({ hours: 'Tuesday: two periods overlap' });
   });
 
+  it('registers a new doctor with its hours, who then has free times', async () => {
+    const { get, post } = await testApi();
+    const hours = [{ weekday: 2, startsAt: '09:00', endsAt: '11:00' }];
+
+    const created = await post<DoctorWithHours>('/api/doctors', { name: ' Dr. Ana Ribeiro ', specialty: 'Cardiology', hours });
+
+    expect(created.status).toBe(201);
+    expect(created.body).toMatchObject({ name: 'Dr. Ana Ribeiro', specialty: 'Cardiology', hours });
+    expect((await get<{ id: number }[]>('/api/doctors')).body.map((doctor) => doctor.id)).toContain(created.body.id);
+    expect((await get<{ slots: string[] }>(`/api/doctors/${created.body.id}/slots?day=${TOMORROW}`)).body.slots[0]).toBe('09:00');
+  });
+
+  it('refuses a new doctor whose hours overlap', async () => {
+    const { post } = await testApi();
+
+    const { status, body } = await post<Failure>('/api/doctors', {
+      name: 'Dr. Ana Ribeiro',
+      specialty: 'Cardiology',
+      hours: [
+        { weekday: 1, startsAt: '08:00', endsAt: '12:00' },
+        { weekday: 1, startsAt: '10:00', endsAt: '13:00' },
+      ],
+    });
+
+    expect(status).toBe(400);
+    expect(body.fields).toEqual({ hours: 'Monday: two periods overlap' });
+  });
+
   it('refuses a doctor without a name or a specialty, and answers 404 for one that does not exist', async () => {
     const { patch } = await testApi();
 

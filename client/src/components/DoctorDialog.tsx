@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import type { FormEvent, KeyboardEvent } from 'react';
 import { ApiError } from '../api/http.ts';
-import { updateDoctor } from '../api/doctors.ts';
 import type { DoctorWithHours, Hours } from '../api/types.ts';
 import { WEEKDAY_NAMES } from '../calendar.ts';
 import styles from './DoctorDialog.module.css';
@@ -24,15 +23,27 @@ function weekOf(hours: Hours[]): Week {
   return week;
 }
 
+interface DoctorDialogProps {
+  /** "New doctor" or "Edit doctor": the title of the dialog and the name of its form. */
+  title: string;
+  /** The text of the button that saves: "Register" or "Save". */
+  submitLabel: string;
+  /** The doctor to change; left out for a new one. */
+  doctor?: DoctorWithHours;
+  save: (doctor: { name: string; specialty: string; hours: Hours[] }) => Promise<DoctorWithHours>;
+  onSaved: (doctor: DoctorWithHours) => void;
+  onClose: () => void;
+}
+
 /**
- * The name, the specialty and the week of hours of a doctor, in a dialog over its page: each day has
- * no period (a day off), or one or more. It opens on the name; Escape, Cancel, × and a press around
- * it close it, and Tab stays inside it.
+ * The name, the specialty and the week of hours of a doctor (a new one, or one to change), in a
+ * dialog: each day has no period (a day off), or one or more. It opens on the name; Escape, Cancel, ×
+ * and a press around it close it, and Tab stays inside it.
  */
-export function DoctorDialog({ doctor, onSaved, onClose }: { doctor: DoctorWithHours; onSaved: (doctor: DoctorWithHours) => void; onClose: () => void }) {
-  const [name, setName] = useState(doctor.name);
-  const [specialty, setSpecialty] = useState(doctor.specialty);
-  const [week, setWeek] = useState(() => weekOf(doctor.hours));
+export function DoctorDialog({ title, submitLabel, doctor, save, onSaved, onClose }: DoctorDialogProps) {
+  const [name, setName] = useState(doctor?.name ?? '');
+  const [specialty, setSpecialty] = useState(doctor?.specialty ?? '');
+  const [week, setWeek] = useState(() => weekOf(doctor?.hours ?? []));
   const [formError, setFormError] = useState('');
   const [fields, setFields] = useState<Record<string, string>>({});
   const dialogRef = useRef<HTMLDivElement>(null);
@@ -72,7 +83,7 @@ export function DoctorDialog({ doctor, onSaved, onClose }: { doctor: DoctorWithH
     setFields({});
     const hours = Object.entries(week).flatMap(([weekday, periods]) => periods.map(({ startsAt, endsAt }) => ({ weekday: Number(weekday), startsAt, endsAt })));
     try {
-      onSaved(await updateDoctor(doctor.id, { name, specialty, hours }));
+      onSaved(await save({ name, specialty, hours }));
     } catch (failure) {
       setFormError(failure instanceof ApiError ? failure.message : 'The doctor could not be saved.');
       setFields(failure instanceof ApiError ? failure.fields : {});
@@ -83,7 +94,7 @@ export function DoctorDialog({ doctor, onSaved, onClose }: { doctor: DoctorWithH
     <div className={dialog.backdrop} onMouseDown={(event) => event.target === event.currentTarget && onClose()}>
       <div ref={dialogRef} role="dialog" aria-modal="true" aria-labelledby="doctor-dialog-title" className={`${dialog.dialog} ${styles.wide}`} onKeyDown={key}>
         <div className={dialog.dialogHead}>
-          <h3 id="doctor-dialog-title">Edit doctor</h3>
+          <h3 id="doctor-dialog-title">{title}</h3>
           <button type="button" className={dialog.close} aria-label="Close" onClick={onClose}>
             ×
           </button>
@@ -93,7 +104,7 @@ export function DoctorDialog({ doctor, onSaved, onClose }: { doctor: DoctorWithH
             {formError}
           </p>
         )}
-        <form aria-label="Edit doctor" className={`${ui.form} ${dialog.dialogForm}`} noValidate onSubmit={(event) => void submit(event)}>
+        <form aria-label={title} className={`${ui.form} ${dialog.dialogForm}`} noValidate onSubmit={(event) => void submit(event)}>
           <div className={ui.field}>
             <label htmlFor="doctor-name">Name</label>
             <input id="doctor-name" value={name} aria-invalid={fields.name !== undefined} aria-describedby={fields.name ? 'doctor-name-error' : undefined} onChange={(event) => setName(event.target.value)} />
@@ -179,7 +190,7 @@ export function DoctorDialog({ doctor, onSaved, onClose }: { doctor: DoctorWithH
               Cancel
             </button>
             <button type="submit" className={ui.primary}>
-              Save
+              {submitLabel}
             </button>
           </div>
         </form>

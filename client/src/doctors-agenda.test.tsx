@@ -15,6 +15,27 @@ describe('the doctors', () => {
     expect(screen.getByTestId('doctor-2')).toHaveTextContent('Pediatrics');
   });
 
+  it('register a new doctor with its hours', async () => {
+    const api = mockApi();
+    await renderApp('/doctors');
+    await userEvent.click(await screen.findByRole('button', { name: 'New doctor' }));
+    const form = screen.getByRole('form', { name: 'New doctor' });
+
+    await userEvent.type(within(form).getByLabelText('Name'), 'Dr. Ana Ribeiro');
+    await userEvent.type(within(form).getByLabelText('Specialty'), 'Cardiology');
+    await userEvent.click(within(form).getByRole('button', { name: 'Add a period on Tuesday' }));
+    await userEvent.click(within(form).getByRole('button', { name: 'Register' }));
+
+    expect(await screen.findByRole('status')).toHaveTextContent('Dr. Ana Ribeiro was registered.');
+    expect(screen.getByRole('link', { name: 'Dr. Ana Ribeiro' })).toBeInTheDocument();
+    expect(api.calls('POST', '/api/doctors')[0].body).toEqual({
+      name: 'Dr. Ana Ribeiro',
+      specialty: 'Cardiology',
+      hours: [{ weekday: 2, startsAt: '08:00', endsAt: '12:00' }],
+    });
+    expect(screen.getByRole('button', { name: 'New doctor' })).toHaveFocus();
+  });
+
   it('open the page of a doctor with its week of appointments', async () => {
     mockApi();
     await renderApp('/doctors');

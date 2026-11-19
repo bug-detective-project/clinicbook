@@ -2,7 +2,7 @@ import type { FastifyInstance } from 'fastify';
 import type { Context } from '../context.ts';
 import { isDay, weekdayOf } from '../dates.ts';
 import { InvalidError, NotFoundError } from '../errors.ts';
-import { bookedTimes, findDoctor, findDoctorWithHours, listDoctors, updateDoctor, workingPeriods } from '../repository.ts';
+import { bookedTimes, createDoctor, findDoctor, findDoctorWithHours, listDoctors, updateDoctor, workingPeriods } from '../repository.ts';
 import type { Hours } from '../repository.ts';
 import { doctorBody, requiredDayQuery } from '../schemas.ts';
 import { freeSlots } from '../slots.ts';
@@ -29,6 +29,15 @@ function hoursProblem(hours: Hours[]): string | null {
 
 export function doctorRoutes(app: FastifyInstance, { db, today }: Context): void {
   app.get('/api/doctors', () => listDoctors(db));
+
+  app.post<{ Body: { name: string; specialty: string; hours: Hours[] } }>('/api/doctors', { schema: { body: doctorBody } }, async (request, reply) => {
+    const problem = hoursProblem(request.body.hours);
+    if (problem !== null) {
+      throw new InvalidError('Some fields are not valid', { hours: problem });
+    }
+    const doctor = await createDoctor(db, { name: request.body.name.trim(), specialty: request.body.specialty.trim() }, request.body.hours);
+    return reply.status(201).send(doctor);
+  });
 
   app.get<{ Params: { id: string } }>('/api/doctors/:id', async (request) => {
     const doctor = await findDoctorWithHours(db, Number(request.params.id));

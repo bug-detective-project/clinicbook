@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link, useParams } from 'react-router';
 import { listSchedule } from '../api/appointments.ts';
-import { getDoctor } from '../api/doctors.ts';
+import { getDoctor, updateDoctor } from '../api/doctors.ts';
 import type { Appointment, DoctorWithHours } from '../api/types.ts';
 import { DoctorDialog } from '../components/DoctorDialog.tsx';
 import ui from '../components/ui.module.css';
@@ -108,7 +108,10 @@ export function DoctorPage() {
 
       {editing && (
         <DoctorDialog
+          title="Edit doctor"
+          submitLabel="Save"
           doctor={doctor}
+          save={(input) => updateDoctor(doctor.id, input)}
           onSaved={(saved) => {
             setDoctor(saved);
             closeEdit();

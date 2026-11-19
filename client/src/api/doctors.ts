@@ -19,3 +19,8 @@ export function getDoctor(id: number): Promise<DoctorWithHours> {
 export function updateDoctor(id: number, doctor: { name: string; specialty: string; hours: Hours[] }): Promise<DoctorWithHours> {
   return request(`/api/doctors/${id}`, { method: 'PATCH', body: doctor });
 }
+
+/** Registers a doctor with its week of hours. */
+export function createDoctor(doctor: { name: string; specialty: string; hours: Hours[] }): Promise<DoctorWithHours> {
+  return request('/api/doctors', { method: 'POST', body: doctor });
+}

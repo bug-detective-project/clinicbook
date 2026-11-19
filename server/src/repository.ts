@@ -87,6 +87,18 @@ export async function findDoctorWithHours(db: Db, id: number): Promise<DoctorWit
   return { ...doctor, hours };
 }
 
+/** Registers a doctor with its week of hours, all or nothing. */
+export async function createDoctor(db: Db, doctor: { name: string; specialty: string }, hours: Hours[]): Promise<DoctorWithHours> {
+  const id = await db.transaction().execute(async (trx) => {
+    const created = await first(trx.insertInto('doctors').values(doctor).returning('id'));
+    if (hours.length > 0) {
+      await rows(trx.insertInto('workingHours').values(hours.map((period) => ({ doctorId: created!.id, ...period }))));
+    }
+    return created!.id;
+  });
+  return (await findDoctorWithHours(db, id))!;
+}
+
 /** Changes the name and the specialty of a doctor, and puts `hours` in place of the old ones, all or nothing. */
 export async function updateDoctor(db: Db, id: number, doctor: { name: string; specialty: string }, hours: Hours[]): Promise<DoctorWithHours> {
   await db.transaction().execute(async (trx) => {

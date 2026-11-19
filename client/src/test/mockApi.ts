@@ -121,6 +121,12 @@ export function mockApi(options: MockApiOptions = {}) {
         return json({ today: TODAY });
       case 'GET /api/doctors':
         return json(doctors);
+      case 'POST /api/doctors': {
+        const created = { id: Math.max(0, ...doctors.map((item) => item.id)) + 1, name: String(data.name).trim(), specialty: String(data.specialty).trim() };
+        doctors.push(created);
+        hours = { ...hours, [created.id]: data.hours as { weekday: number; startsAt: string; endsAt: string }[] };
+        return json({ ...created, hours: hours[created.id] }, 201);
+      }
       case 'GET /api/doctors/:id': {
         const doctor = doctors.find((item) => item.id === id);
         return doctor ? json({ ...doctor, hours: hours[id] ?? [] }) : notFound('Doctor');

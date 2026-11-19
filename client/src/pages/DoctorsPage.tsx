@@ -1,13 +1,23 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router';
-import { listDoctors } from '../api/doctors.ts';
+import { createDoctor, listDoctors } from '../api/doctors.ts';
 import type { Doctor } from '../api/types.ts';
+import { DoctorDialog } from '../components/DoctorDialog.tsx';
 import ui from '../components/ui.module.css';
+import { useToast } from '../useToast.ts';
 import styles from './DoctorsPage.module.css';
 
 /** The doctors of the clinic, each with its specialty; a click anywhere on a card opens the doctor. */
 export function DoctorsPage() {
+  const toast = useToast();
   const [doctors, setDoctors] = useState<Doctor[] | null>(null);
+  const [registering, setRegistering] = useState(false);
+  const openerRef = useRef<HTMLButtonElement>(null);
+
+  function closeDialog() {
+    setRegistering(false);
+    openerRef.current?.focus();
+  }
   const [error, setError] = useState('');
 
   useEffect(() => {
@@ -24,6 +34,9 @@ export function DoctorsPage() {
     <section>
       <div className={ui.titleRow}>
         <h2>Doctors</h2>
+        <button ref={openerRef} type="button" className={ui.primary} aria-haspopup="dialog" onClick={() => setRegistering(true)}>
+          New doctor
+        </button>
       </div>
       {error !== '' && (
         <p role="alert" className={ui.alert}>
@@ -53,6 +66,19 @@ export function DoctorsPage() {
             </li>
           ))}
         </ul>
+      )}
+      {registering && (
+        <DoctorDialog
+          title="New doctor"
+          submitLabel="Register"
+          save={createDoctor}
+          onSaved={(created) => {
+            setDoctors((list) => [...(list ?? []), { id: created.id, name: created.name, specialty: created.specialty }].sort((first, second) => first.name.localeCompare(second.name)));
+            closeDialog();
+            toast.success(`${created.name} was registered.`);
+          }}
+          onClose={closeDialog}
+        />
       )}
     </section>
   );
