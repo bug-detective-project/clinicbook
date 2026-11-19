@@ -30,6 +30,8 @@ interface PatientsTable {
   phone: string;
   email: string | null;
   birthDate: string | null;
+  cpf: string;
+  healthPlan: string;
   createdAt: string;
 }
 
@@ -87,11 +89,16 @@ const schema = `
     phone TEXT NOT NULL,
     email TEXT,
     birth_date TEXT,
+    cpf TEXT NOT NULL,
+    health_plan TEXT NOT NULL,
     created_at TEXT NOT NULL
   );
 
   -- Two patients never share an e-mail; a patient may have none.
   CREATE UNIQUE INDEX IF NOT EXISTS patients_email ON patients (email);
+
+  -- A CPF belongs to one patient: it is kept as its 11 digits.
+  CREATE UNIQUE INDEX IF NOT EXISTS patients_cpf ON patients (cpf);
 
   CREATE TABLE IF NOT EXISTS appointments (
     id INTEGER PRIMARY KEY,

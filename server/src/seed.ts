@@ -1,3 +1,4 @@
+import { cpfFrom } from './cpf.ts';
 import { addDays, mondayOf } from './dates.ts';
 import type { AppointmentStatus } from './db.ts';
 
@@ -23,15 +24,16 @@ export const seedWorkingHours = HOURS.flatMap(([doctorId, weekdays, startsAt, en
   weekdays.map((weekday) => ({ doctorId, weekday, startsAt, endsAt })),
 );
 
+// The sample CPFs are valid ones (their check digits are worked out); the plans are made up.
 export const seedPatients = [
-  { id: 1, name: 'Ana Beatriz Costa', phone: '(11) 98888-1001', email: 'ana.costa@example.com', birthDate: '1988-04-12' },
-  { id: 2, name: 'Bruno Carvalho', phone: '11 97777-2002', email: 'bruno.carvalho@example.com', birthDate: '1975-11-03' },
-  { id: 3, name: 'Camila Duarte', phone: '+55 11 96666-3003', email: 'camila.duarte@example.com', birthDate: '1993-07-25' },
-  { id: 4, name: 'Davi Fernandes', phone: '(11) 3555-4004', email: 'familia.fernandes@example.com', birthDate: '2019-02-14' },
-  { id: 5, name: 'Elisa Gomes', phone: '11955555005', email: null, birthDate: '2021-09-30' },
-  { id: 6, name: 'Fábio Henrique Lima', phone: '(11) 94444-6006', email: 'fabio.lima@example.com', birthDate: '1962-01-19' },
-  { id: 7, name: 'Giovana Martins', phone: '11 93333-7007', email: 'giovana.martins@example.com', birthDate: '2001-06-08' },
-  { id: 8, name: 'Heitor Nogueira', phone: '(11) 92222-8008', email: 'heitor.nogueira@example.com', birthDate: '1949-12-27' },
+  { id: 1, name: 'Ana Beatriz Costa', phone: '(11) 98888-1001', email: 'ana.costa@example.com', birthDate: '1988-04-12', cpf: cpfFrom('390533447'), healthPlan: 'Horizonte Saúde' },
+  { id: 2, name: 'Bruno Carvalho', phone: '11 97777-2002', email: 'bruno.carvalho@example.com', birthDate: '1975-11-03', cpf: cpfFrom('153509460'), healthPlan: 'Amparo Vida' },
+  { id: 3, name: 'Camila Duarte', phone: '+55 11 96666-3003', email: 'camila.duarte@example.com', birthDate: '1993-07-25', cpf: cpfFrom('713498016'), healthPlan: 'Private' },
+  { id: 4, name: 'Davi Fernandes', phone: '(11) 3555-4004', email: 'familia.fernandes@example.com', birthDate: '2019-02-14', cpf: cpfFrom('426117238'), healthPlan: 'Horizonte Saúde' },
+  { id: 5, name: 'Elisa Gomes', phone: '11955555005', email: null, birthDate: '2021-09-30', cpf: cpfFrom('829365104'), healthPlan: 'Horizonte Saúde' },
+  { id: 6, name: 'Fábio Henrique Lima', phone: '(11) 94444-6006', email: 'fabio.lima@example.com', birthDate: '1962-01-19', cpf: cpfFrom('261804973'), healthPlan: 'Vila Clara Care' },
+  { id: 7, name: 'Giovana Martins', phone: '11 93333-7007', email: 'giovana.martins@example.com', birthDate: '2001-06-08', cpf: cpfFrom('548271690'), healthPlan: 'Amparo Vida' },
+  { id: 8, name: 'Heitor Nogueira', phone: '(11) 92222-8008', email: 'heitor.nogueira@example.com', birthDate: '1949-12-27', cpf: cpfFrom('937046152'), healthPlan: 'Private' },
 ];
 
 /** [week (0 is this week), day of the week, doctor, time, patient, status, reason] */

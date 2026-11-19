@@ -6,10 +6,11 @@ import type { Patient } from '../api/types.ts';
 import { DatePicker } from '../components/DatePicker.tsx';
 import { PatientMenu } from '../components/PatientMenu.tsx';
 import ui from '../components/ui.module.css';
+import { maskCpf, maskPhone } from '../masks.ts';
 import { useToday } from '../useToday.ts';
 import styles from './PatientsPage.module.css';
 
-const EMPTY_FORM = { name: '', phone: '', email: '', birthDate: '' };
+const EMPTY_FORM = { name: '', phone: '', email: '', birthDate: '', cpf: '', healthPlan: '' };
 
 export function PatientsPage() {
   const today = useToday();
@@ -103,6 +104,8 @@ export function PatientsPage() {
         phone: form.phone,
         email: form.email.trim() === '' ? null : form.email,
         birthDate: form.birthDate === '' ? null : form.birthDate,
+        cpf: form.cpf,
+        healthPlan: form.healthPlan,
       });
       setPatients((list) => [...(list ?? []), created].sort((a, b) => a.name.localeCompare(b.name)));
       setForm(EMPTY_FORM);
@@ -113,7 +116,8 @@ export function PatientsPage() {
     }
   }
 
-  function field(name: keyof typeof EMPTY_FORM, label: string, type = 'text') {
+  /** A field of the form; `mask` reshapes what is typed (the CPF and the phone take digits only). */
+  function field(name: keyof typeof EMPTY_FORM, label: string, type = 'text', mask?: (text: string) => string, placeholder?: string) {
     const problem = fields[name];
     return (
       <div className={ui.field}>
@@ -121,10 +125,12 @@ export function PatientsPage() {
         <input
           id={`patient-${name}`}
           type={type}
+          inputMode={mask === undefined ? undefined : 'numeric'}
+          placeholder={placeholder}
           value={form[name]}
           aria-invalid={problem !== undefined}
           aria-describedby={problem === undefined ? undefined : `patient-${name}-error`}
-          onChange={(event) => setForm({ ...form, [name]: event.target.value })}
+          onChange={(event) => setForm({ ...form, [name]: mask === undefined ? event.target.value : mask(event.target.value) })}
         />
         {problem !== undefined && (
           <span id={`patient-${name}-error`} className={ui.fieldError}>
@@ -182,7 +188,9 @@ export function PatientsPage() {
             )}
             <form aria-label="New patient" className={`${ui.form} ${styles.dialogForm}`} noValidate onSubmit={(event) => void register(event)}>
               {field('name', 'Name')}
-              {field('phone', 'Phone', 'tel')}
+              {field('cpf', 'CPF', 'text', maskCpf, '000.000.000-00')}
+              {field('phone', 'Phone', 'tel', maskPhone, '(00) 00000-0000')}
+              {field('healthPlan', 'Health plan', 'text', undefined, 'Private, or the name of the plan')}
               {field('email', 'E-mail (optional)', 'email')}
               <div className={ui.field}>
                 <DatePicker

@@ -4,18 +4,23 @@
 export const DAY_PATTERN = '^\\d{4}-\\d{2}-\\d{2}$';
 export const TIME_PATTERN = '^([01]\\d|2[0-3]):[0-5]\\d$';
 
+/** A CPF: 11 digits, with or without the dots and the dash (123.456.789-09). Its check digits are checked by the route. */
+export const CPF_PATTERN = '^\\d{3}\\.?\\d{3}\\.?\\d{3}-?\\d{2}$';
+
 /** A phone: digits, spaces, dashes and parentheses, with an optional + in front; 8 to 20 characters. */
 export const PHONE_PATTERN = '^\\+?[0-9 ()-]{8,20}$';
 
 export const patientBody = {
   type: 'object',
-  required: ['name', 'phone'],
+  required: ['name', 'phone', 'cpf', 'healthPlan'],
   additionalProperties: false,
   properties: {
     name: { type: 'string', minLength: 2, maxLength: 80, pattern: '\\S' },
     phone: { type: 'string', pattern: PHONE_PATTERN },
     email: { type: ['string', 'null'], format: 'email', maxLength: 120 },
     birthDate: { type: ['string', 'null'], pattern: DAY_PATTERN },
+    cpf: { type: 'string', pattern: CPF_PATTERN },
+    healthPlan: { type: 'string', minLength: 2, maxLength: 60, pattern: '\\S' },
   },
 } as const;
 
@@ -57,6 +62,8 @@ const FIELD_MESSAGES: Record<string, string> = {
   phone: 'Use only digits, spaces, dashes and parentheses (8 to 20 characters)',
   email: 'Enter an e-mail address, such as name@example.com',
   birthDate: 'Use a date, as YYYY-MM-DD',
+  cpf: 'Enter a CPF, such as 123.456.789-09',
+  healthPlan: 'Enter the health plan, or Private',
   patientId: 'Choose a patient',
   doctorId: 'Choose a doctor',
   day: 'Use a date, as YYYY-MM-DD',

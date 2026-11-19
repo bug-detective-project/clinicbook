@@ -24,6 +24,10 @@ export interface Patient {
   phone: string;
   email: string | null;
   birthDate: string | null;
+  /** The 11 digits of the patient's CPF. */
+  cpf: string;
+  /** The health plan, as the front desk wrote it ("Private" for none). */
+  healthPlan: string;
 }
 
 export interface Reminder {

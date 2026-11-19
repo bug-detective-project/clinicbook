@@ -156,7 +156,12 @@ describe('patients', () => {
     const form = screen.getByRole('form', { name: 'New patient' });
 
     await userEvent.type(within(form).getByLabelText('Name'), 'Bianca Rocha');
-    await userEvent.type(within(form).getByLabelText('Phone'), '(11) 91111-9009');
+    // The CPF and the phone take digits only, and show them with their mask.
+    await userEvent.type(within(form).getByLabelText('CPF'), '12345678909');
+    expect(within(form).getByLabelText('CPF')).toHaveValue('123.456.789-09');
+    await userEvent.type(within(form).getByLabelText('Phone'), '11911119009');
+    expect(within(form).getByLabelText('Phone')).toHaveValue('(11) 91111-9009');
+    await userEvent.type(within(form).getByLabelText('Health plan'), 'Amparo Vida');
     await userEvent.click(within(form).getByRole('button', { name: 'Register' }));
 
     const list = screen.getByRole('list', { name: 'Patients' });
@@ -166,6 +171,8 @@ describe('patients', () => {
       phone: '(11) 91111-9009',
       email: null,
       birthDate: null,
+      cpf: '123.456.789-09',
+      healthPlan: 'Amparo Vida',
     });
     // The dialog closes, and the focus goes back to the button that opened it.
     await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument());
@@ -221,6 +228,14 @@ describe('patients', () => {
     expect(await screen.findByRole('alert')).toHaveTextContent('Some fields are not valid');
     expect(within(form).getByText('Use only digits, spaces, dashes and parentheses')).toBeInTheDocument();
     expect(within(form).getByLabelText('Phone')).toHaveAttribute('aria-invalid', 'true');
+  });
+
+  it('shows the CPF, with its mask, and the health plan in the record of a patient', async () => {
+    mockApi();
+    await renderApp('/patients/1');
+
+    expect(await screen.findByText('390.533.447-05')).toBeInTheDocument();
+    expect(screen.getByText('Horizonte Saúde')).toBeInTheDocument();
   });
 
   it('opens the menu of a patient, with a link to the record and one to book', async () => {

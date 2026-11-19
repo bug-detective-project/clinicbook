@@ -1,8 +1,9 @@
 import type { FastifyInstance } from 'fastify';
 import type { Context } from '../context.ts';
 import type { Db } from '../db.ts';
-import { NotFoundError } from '../errors.ts';
-import { createPatient, deletePatient, findPatient, listAppointmentsOfPatient, listPatients } from '../repository.ts';
+import { cpfDigits, isValidCpf } from '../cpf.ts';
+import { HttpError, InvalidError, NotFoundError } from '../errors.ts';
+import { cpfInUse, createPatient, deletePatient, findPatient, listAppointmentsOfPatient, listPatients } from '../repository.ts';
 import type { Patient } from '../repository.ts';
 import { patientBody } from '../schemas.ts';
 
@@ -15,6 +16,8 @@ interface PatientBody {
   phone: string;
   email?: string | null;
   birthDate?: string | null;
+  cpf: string;
+  healthPlan: string;
 }
 
 async function requirePatient(db: Db, id: number): Promise<Patient> {
@@ -30,11 +33,21 @@ export function patientRoutes(app: FastifyInstance, { db }: Context): void {
 
   app.post<{ Body: PatientBody }>('/api/patients', { schema: { body: patientBody } }, async (request, reply) => {
     const { name, phone, email, birthDate } = request.body;
+    // The schema checked the shape of the CPF; its check digits and its owner are checked here.
+    const cpf = cpfDigits(request.body.cpf);
+    if (cpf === null || !isValidCpf(cpf)) {
+      throw new InvalidError('Some fields are not valid', { cpf: 'Enter a valid CPF: its check digits do not match' });
+    }
+    if (await cpfInUse(db, cpf)) {
+      throw new HttpError(409, 'This CPF belongs to another patient', { cpf: 'This CPF belongs to another patient' });
+    }
     const patient = await createPatient(db, {
       name: name.trim(),
       phone: phone.trim(),
       email: email ? email.trim().toLowerCase() : null,
       birthDate: birthDate || null,
+      cpf,
+      healthPlan: request.body.healthPlan.trim(),
     });
     return reply.status(201).send(patient);
   });

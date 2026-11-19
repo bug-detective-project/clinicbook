@@ -14,10 +14,10 @@ export function createTestDoctors(): Doctor[] {
 
 export function createTestPatients(): Patient[] {
   return [
-    { id: 1, name: 'Ana Beatriz Costa', phone: '(11) 98888-1001', email: 'ana.costa@example.com', birthDate: '1988-04-12' },
-    { id: 2, name: 'Bruno Carvalho', phone: '11 97777-2002', email: 'bruno.carvalho@example.com', birthDate: '1975-11-03' },
-    { id: 3, name: 'Camila Duarte', phone: '+55 11 96666-3003', email: null, birthDate: null },
-    { id: 4, name: 'Davi Fernandes', phone: '(11) 3555-4004', email: 'familia.fernandes@example.com', birthDate: '2019-02-14' },
+    { id: 1, name: 'Ana Beatriz Costa', phone: '(11) 98888-1001', email: 'ana.costa@example.com', birthDate: '1988-04-12', cpf: '39053344705', healthPlan: 'Horizonte Saúde' },
+    { id: 2, name: 'Bruno Carvalho', phone: '11 97777-2002', email: 'bruno.carvalho@example.com', birthDate: '1975-11-03', cpf: '15350946056', healthPlan: 'Amparo Vida' },
+    { id: 3, name: 'Camila Duarte', phone: '+55 11 96666-3003', email: null, birthDate: null, cpf: '71349801623', healthPlan: 'Private' },
+    { id: 4, name: 'Davi Fernandes', phone: '(11) 3555-4004', email: 'familia.fernandes@example.com', birthDate: '2019-02-14', cpf: '42611723800', healthPlan: 'Horizonte Saúde' },
   ];
 }
 
@@ -152,6 +152,8 @@ export function mockApi(options: MockApiOptions = {}) {
           phone: String(data.phone).trim(),
           email: typeof data.email === 'string' ? data.email : null,
           birthDate: typeof data.birthDate === 'string' ? data.birthDate : null,
+          cpf: String(data.cpf ?? '').replace(/\D/g, ''),
+          healthPlan: String(data.healthPlan ?? '').trim(),
         };
         patients.push(created);
         return json(created, 201);

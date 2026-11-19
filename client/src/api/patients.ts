@@ -6,6 +6,9 @@ export interface NewPatient {
   phone: string;
   email: string | null;
   birthDate: string | null;
+  /** With or without the dots and the dash: the API keeps the digits. */
+  cpf: string;
+  healthPlan: string;
 }
 
 export function listPatients(): Promise<Patient[]> {

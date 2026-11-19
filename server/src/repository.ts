@@ -14,6 +14,10 @@ export interface Patient {
   phone: string;
   email: string | null;
   birthDate: string | null;
+  /** The 11 digits of the patient's CPF. */
+  cpf: string;
+  /** The health plan, as the front desk writes it ("Private" for none). */
+  healthPlan: string;
 }
 
 export interface PatientInput {
@@ -21,6 +25,8 @@ export interface PatientInput {
   phone: string;
   email: string | null;
   birthDate: string | null;
+  cpf: string;
+  healthPlan: string;
 }
 
 /** An appointment as the API answers it: with the names the screen shows. */
@@ -64,10 +70,15 @@ export function workingPeriods(db: Db, doctorId: number, weekday: number): Promi
   );
 }
 
-const PATIENT_COLUMNS = ['id', 'name', 'phone', 'email', 'birthDate'] as const;
+const PATIENT_COLUMNS = ['id', 'name', 'phone', 'email', 'birthDate', 'cpf', 'healthPlan'] as const;
 
 export function listPatients(db: Db): Promise<Patient[]> {
   return rows(db.selectFrom('patients').select(PATIENT_COLUMNS).orderBy('name'));
+}
+
+/** True when a patient already has this CPF (its 11 digits). */
+export async function cpfInUse(db: Db, cpf: string): Promise<boolean> {
+  return (await first(db.selectFrom('patients').select('id').where('cpf', '=', cpf))) !== undefined;
 }
 
 export function findPatient(db: Db, id: number): Promise<Patient | undefined> {
