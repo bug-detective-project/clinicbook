@@ -5,6 +5,7 @@ import { ApiError } from '../api/http.ts';
 import type { Appointment } from '../api/types.ts';
 import { StatusBadge } from '../components/StatusBadge.tsx';
 import ui from '../components/ui.module.css';
+import { useToast } from '../useToast.ts';
 import { addDays, formatDay } from '../dates.ts';
 import { useToday } from '../useToday.ts';
 import styles from './AgendaPage.module.css';
@@ -24,6 +25,7 @@ export function AgendaPage() {
   const [params] = useSearchParams();
   const day = params.get('day') ?? today;
   const [appointments, setAppointments] = useState<Appointment[] | null>(null);
+  const toast = useToast();
   const [error, setError] = useState('');
 
   useEffect(() => {
@@ -56,9 +58,9 @@ export function AgendaPage() {
     try {
       const updated = await action(id);
       setAppointments((list) => list?.map((item) => (item.id === updated.id ? updated : item)) ?? null);
-      setError('');
+      toast.success(`The appointment of ${updated.patientName} at ${updated.time} was ${updated.status}.`);
     } catch (failure) {
-      setError(failure instanceof ApiError ? failure.message : 'The change could not be saved.');
+      toast.error(failure instanceof ApiError ? failure.message : 'The change could not be saved.');
       // The screen may be showing an appointment as it was before someone else changed it.
       setAppointments(await listToday(day).catch(() => appointments));
     }

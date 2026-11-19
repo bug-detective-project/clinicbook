@@ -3,12 +3,13 @@ import { ApiError } from '../api/http.ts';
 import { getOutbox, sendReminders } from '../api/reminders.ts';
 import type { Outbox } from '../api/reminders.ts';
 import ui from '../components/ui.module.css';
+import { useToast } from '../useToast.ts';
 import styles from './RemindersPage.module.css';
 
 export function RemindersPage() {
   const [outbox, setOutbox] = useState<Outbox | null>(null);
   const [error, setError] = useState('');
-  const [result, setResult] = useState('');
+  const toast = useToast();
 
   useEffect(() => {
     let current = true;
@@ -29,14 +30,12 @@ export function RemindersPage() {
   }, []);
 
   async function send() {
-    setError('');
-    setResult('');
     try {
       const { sent } = await sendReminders();
-      setResult(sent === 0 ? 'No reminder to send.' : sent === 1 ? '1 reminder sent.' : `${sent} reminders sent.`);
+      toast.success(sent === 0 ? 'No reminder to send.' : sent === 1 ? '1 reminder sent.' : `${sent} reminders sent.`);
       setOutbox(await getOutbox());
     } catch (failure) {
-      setError(failure instanceof ApiError ? `The reminders were not sent: ${failure.message}` : 'The reminders were not sent.');
+      toast.error(failure instanceof ApiError ? `The reminders were not sent: ${failure.message}` : 'The reminders were not sent.');
     }
   }
 
@@ -54,11 +53,6 @@ export function RemindersPage() {
       {error !== '' && (
         <p role="alert" className={ui.alert}>
           {error}
-        </p>
-      )}
-      {result !== '' && (
-        <p role="status" className={ui.notice}>
-          {result}
         </p>
       )}
 

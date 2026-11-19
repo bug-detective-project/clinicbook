@@ -9,6 +9,8 @@ import type { Appointment, Doctor, Patient } from '../api/types.ts';
 import { DatePicker } from '../components/DatePicker.tsx';
 import { TimeSlotPicker } from '../components/TimeSlotPicker.tsx';
 import ui from '../components/ui.module.css';
+import { formatShortDay } from '../dates.ts';
+import { useToast } from '../useToast.ts';
 import { useToday } from '../useToday.ts';
 
 /**
@@ -18,6 +20,7 @@ import { useToday } from '../useToday.ts';
  */
 export function BookingPage() {
   const today = useToday();
+  const toast = useToast();
   const navigate = useNavigate();
   const { id } = useParams();
   const [params] = useSearchParams();
@@ -104,6 +107,7 @@ export function BookingPage() {
       } else {
         await bookAppointment({ patientId: Number(patientId), doctorId: Number(doctorId), day, time, reason });
       }
+      toast.success(rescheduling ? `The appointment was moved to ${formatShortDay(day)} at ${time}.` : `Appointment booked for ${formatShortDay(day)} at ${time}.`);
       await navigate(`/?day=${day}`);
     } catch (failure) {
       setError(failure instanceof ApiError ? failure.message : 'The appointment could not be saved.');

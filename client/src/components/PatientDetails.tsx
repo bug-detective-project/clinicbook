@@ -5,11 +5,13 @@ import type { Patient } from '../api/types.ts';
 import ui from '../components/ui.module.css';
 import { formatShortDay } from '../dates.ts';
 import { maskCpf } from '../masks.ts';
+import { useToast } from '../useToast.ts';
 import { PatientDialog } from './PatientDialog.tsx';
 import styles from './PatientDetails.module.css';
 
 /** The registration data of a patient, the first tab of the patient record, with Edit to change it. */
 export function PatientDetails({ patient, onChange }: { patient: Patient; onChange: (patient: Patient) => void }) {
+  const toast = useToast();
   const [editing, setEditing] = useState(false);
   const editRef = useRef<HTMLButtonElement>(null);
 
@@ -49,6 +51,7 @@ export function PatientDetails({ patient, onChange }: { patient: Patient; onChan
           onSaved={(saved) => {
             onChange(saved);
             close();
+            toast.success(`The data of ${saved.name} were saved.`);
           }}
           onClose={close}
         />

@@ -5,10 +5,13 @@ import type { Patient } from '../api/types.ts';
 import { PatientDialog } from '../components/PatientDialog.tsx';
 import { PatientMenu } from '../components/PatientMenu.tsx';
 import ui from '../components/ui.module.css';
+import { useToast } from '../useToast.ts';
 import styles from './PatientsPage.module.css';
 
 export function PatientsPage() {
   const [patients, setPatients] = useState<Patient[] | null>(null);
+  const toast = useToast();
+  // Only a list that could not be loaded is shown on the page; what an action did is a toast.
   const [error, setError] = useState('');
   // The form of a new patient opens in a dialog over the list.
   const [registering, setRegistering] = useState(false);
@@ -42,9 +45,9 @@ export function PatientsPage() {
     try {
       await removePatient(patient.id);
       setPatients((list) => list?.filter((item) => item.id !== patient.id) ?? null);
-      setError('');
+      toast.success(`${patient.name} was removed.`);
     } catch (failure) {
-      setError(failure instanceof ApiError ? `${patient.name}: ${failure.message}` : `${patient.name} could not be removed.`);
+      toast.error(failure instanceof ApiError ? `${patient.name}: ${failure.message}` : `${patient.name} could not be removed.`);
     }
   }
 
@@ -86,6 +89,7 @@ export function PatientsPage() {
           onSaved={(created) => {
             setPatients((list) => [...(list ?? []), created].sort((first, second) => first.name.localeCompare(second.name)));
             closeDialog();
+            toast.success(`${created.name} was registered.`);
           }}
           onClose={closeDialog}
         />

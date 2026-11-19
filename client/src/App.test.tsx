@@ -130,7 +130,9 @@ describe('booking an appointment', () => {
 
     expect(await screen.findByRole('heading', { level: 2, name: 'Monday, March 9' })).toBeInTheDocument();
     expect(api.calls('PATCH', '/api/appointments/3')[0].body).toEqual({ day: '2026-03-09', time: '11:00' });
-    expect(await within(row(3)).findByText('11:00')).toBeInTheDocument();
+    // The list of the agenda loads after its title.
+    expect(await within(await screen.findByTestId('appointment-3')).findByText('11:00')).toBeInTheDocument();
+    expect(screen.getByRole('status')).toHaveTextContent('The appointment was moved to Mar 9, 2026 at 11:00.');
   });
 });
 
