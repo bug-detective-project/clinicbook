@@ -24,6 +24,41 @@ export const patientBody = {
   },
 } as const;
 
+export const doctorBody = {
+  type: 'object',
+  required: ['name', 'specialty', 'hours'],
+  additionalProperties: false,
+  properties: {
+    name: { type: 'string', minLength: 2, maxLength: 80, pattern: '\\S' },
+    specialty: { type: 'string', minLength: 2, maxLength: 60, pattern: '\\S' },
+    hours: {
+      type: 'array',
+      maxItems: 21,
+      items: {
+        type: 'object',
+        required: ['weekday', 'startsAt', 'endsAt'],
+        additionalProperties: false,
+        properties: {
+          weekday: { type: 'integer', minimum: 1, maximum: 7 },
+          startsAt: { type: 'string', pattern: TIME_PATTERN },
+          endsAt: { type: 'string', pattern: TIME_PATTERN },
+        },
+      },
+    },
+  },
+} as const;
+
+/** The days of a schedule: from one day to another, both included. */
+export const scheduleQuery = {
+  type: 'object',
+  required: ['from', 'to'],
+  properties: {
+    from: { type: 'string', pattern: DAY_PATTERN },
+    to: { type: 'string', pattern: DAY_PATTERN },
+    doctor: { type: 'integer', minimum: 1 },
+  },
+} as const;
+
 export const appointmentBody = {
   type: 'object',
   required: ['patientId', 'doctorId', 'day', 'time'],
@@ -63,6 +98,10 @@ const FIELD_MESSAGES: Record<string, string> = {
   email: 'Enter an e-mail address, such as name@example.com',
   birthDate: 'Use a date, as YYYY-MM-DD',
   cpf: 'Enter a CPF, such as 123.456.789-09',
+  specialty: 'Enter the specialty, with at least 2 characters',
+  hours: 'Use a day of the week from 1 to 7 and times as HH:MM',
+  from: 'Use a date, as YYYY-MM-DD',
+  to: 'Use a date, as YYYY-MM-DD',
   healthPlan: 'Enter the health plan, or Private',
   patientId: 'Choose a patient',
   doctorId: 'Choose a doctor',

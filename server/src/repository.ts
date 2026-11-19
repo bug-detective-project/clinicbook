@@ -8,6 +8,17 @@ export interface Doctor {
   specialty: string;
 }
 
+/** A period a doctor works on a day of the week (1 is Monday, 7 is Sunday). */
+export interface Hours {
+  weekday: number;
+  startsAt: string;
+  endsAt: string;
+}
+
+export interface DoctorWithHours extends Doctor {
+  hours: Hours[];
+}
+
 export interface Patient {
   id: number;
   name: string;
@@ -59,6 +70,35 @@ export function findDoctor(db: Db, id: number): Promise<Doctor | undefined> {
 }
 
 /** The periods a doctor works on a day of the week (1 is Monday), the earliest first. */
+/** A doctor with every period of the week, by day and then by start. */
+export async function findDoctorWithHours(db: Db, id: number): Promise<DoctorWithHours | undefined> {
+  const doctor = await findDoctor(db, id);
+  if (!doctor) {
+    return undefined;
+  }
+  const hours = await rows(
+    db
+      .selectFrom('workingHours')
+      .select(['weekday', 'startsAt', 'endsAt'])
+      .where('doctorId', '=', id)
+      .orderBy('weekday')
+      .orderBy('startsAt'),
+  );
+  return { ...doctor, hours };
+}
+
+/** Changes the name and the specialty of a doctor, and puts `hours` in place of the old ones, all or nothing. */
+export async function updateDoctor(db: Db, id: number, doctor: { name: string; specialty: string }, hours: Hours[]): Promise<DoctorWithHours> {
+  await db.transaction().execute(async (trx) => {
+    await rows(trx.updateTable('doctors').set(doctor).where('id', '=', id));
+    await rows(trx.deleteFrom('workingHours').where('doctorId', '=', id));
+    if (hours.length > 0) {
+      await rows(trx.insertInto('workingHours').values(hours.map((period) => ({ doctorId: id, ...period }))));
+    }
+  });
+  return (await findDoctorWithHours(db, id))!;
+}
+
 export function workingPeriods(db: Db, doctorId: number, weekday: number): Promise<Period[]> {
   return rows(
     db
@@ -126,6 +166,15 @@ function appointments(db: Db) {
 /** The appointments of a day, the earliest first. */
 export function listAppointmentsOfDay(db: Db, day: string): Promise<Appointment[]> {
   return rows(appointments(db).where('appointments.day', '=', day).orderBy('appointments.time').orderBy('appointments.id'));
+}
+
+/** The appointments from `from` to `to` (of one doctor, or of all), the earliest first. */
+export function listAppointmentsBetween(db: Db, from: string, to: string, doctorId?: number): Promise<Appointment[]> {
+  let query = appointments(db).where('appointments.day', '>=', from).where('appointments.day', '<=', to);
+  if (doctorId !== undefined) {
+    query = query.where('appointments.doctorId', '=', doctorId);
+  }
+  return rows(query.orderBy('appointments.day').orderBy('appointments.time').orderBy('appointments.id'));
 }
 
 /** Every appointment of a patient, the most recent first. */
