@@ -97,6 +97,10 @@ export function mockApi(options: MockApiOptions = {}) {
     return WORKING_TIMES.filter((time) => !taken.includes(time));
   }
 
+  /** The appointments of tomorrow that the next run of the reminders sends to. */
+  const dueTomorrow = () =>
+    appointments.filter((item) => item.day === TOMORROW && item.status !== 'cancelled' && !reminders.some((sent) => sent.appointmentId === item.id));
+
   function handle({ method, path, query, body }: MockRequest): Response {
     const data = (body ?? {}) as Record<string, unknown>;
     const route = `${method} ${path.replace(/\/\d+(?=\/|$)/, '/:id')}`;
@@ -184,15 +188,24 @@ export function mockApi(options: MockApiOptions = {}) {
         }
         patients = patients.filter((item) => item.id !== id);
         return new Response(null, { status: 204 });
-      case 'GET /api/reminders':
-        return json({ enabled: options.remindersEnabled ?? true, reminders: [...reminders].reverse() });
+      case 'GET /api/reminders': {
+        const enabled = options.remindersEnabled ?? true;
+        const due = enabled
+          ? dueTomorrow().map((item) => ({
+              appointmentId: item.id,
+              time: item.time,
+              patientName: item.patientName,
+              phone: patients.find((one) => one.id === item.patientId)?.phone ?? '',
+              doctorName: item.doctorName,
+            }))
+          : [];
+        return json({ enabled, day: TOMORROW, due, reminders: [...reminders].reverse() });
+      }
       case 'POST /api/reminders/run': {
         if (!(options.remindersEnabled ?? true)) {
           return json({ enabled: false, sent: 0 });
         }
-        const due = appointments.filter(
-          (item) => item.day === TOMORROW && item.status !== 'cancelled' && !reminders.some((sent) => sent.appointmentId === item.id),
-        );
+        const due = dueTomorrow();
         for (const item of due) {
           reminders.push({
             id: reminders.length + 1,

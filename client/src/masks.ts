@@ -23,3 +23,13 @@ export function maskPhone(text: string): string {
   const split = rest.length === 9 ? 5 : 4;
   return rest.length <= split ? `${area}${rest}` : `${area}${rest.slice(0, split)}-${rest.slice(split)}`;
 }
+
+/**
+ * A saved phone the way the screen shows it: with the mask when it has an area code and a number
+ * (10 or 11 digits, after a +55), and as it was saved otherwise, so nothing is made up.
+ */
+export function formatPhone(phone: string): string {
+  const all = phone.replace(/\D/g, '');
+  const digits = all.length > 11 && all.startsWith('55') ? all.slice(2) : all;
+  return digits.length === 10 || digits.length === 11 ? maskPhone(digits) : phone;
+}

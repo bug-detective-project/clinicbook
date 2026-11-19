@@ -4,7 +4,7 @@ import { updatePatient } from '../api/patients.ts';
 import type { Patient } from '../api/types.ts';
 import ui from '../components/ui.module.css';
 import { formatShortDay } from '../dates.ts';
-import { maskCpf } from '../masks.ts';
+import { formatPhone, maskCpf } from '../masks.ts';
 import { useToast } from '../useToast.ts';
 import { PatientDialog } from './PatientDialog.tsx';
 import styles from './PatientDetails.module.css';
@@ -28,7 +28,7 @@ export function PatientDetails({ patient, onChange }: { patient: Patient; onChan
         <dt>Health plan</dt>
         <dd>{patient.healthPlan}</dd>
         <dt>Phone</dt>
-        <dd>{patient.phone}</dd>
+        <dd>{formatPhone(patient.phone)}</dd>
         <dt>E-mail</dt>
         <dd>{patient.email ?? 'No e-mail'}</dd>
         <dt>Birth date</dt>

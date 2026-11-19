@@ -322,9 +322,39 @@ describe('reminders', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Send the reminders of tomorrow' }));
 
     expect(await screen.findByRole('status')).toHaveTextContent('1 reminder sent.');
-    const sent = within(screen.getByRole('list', { name: 'Sent reminders' })).getAllByRole('listitem');
+    const sent = within(await screen.findByRole('list', { name: 'Sent reminders' })).getAllByRole('listitem');
     expect(sent).toHaveLength(1);
     expect(sent[0]).toHaveTextContent('Camila Duarte');
+    expect(sent[0]).toHaveTextContent(/Sent Mar \d+, 2026/);
+  });
+
+  it('shows which appointments of tomorrow will get a reminder, until it is sent', async () => {
+    mockApi();
+    await renderApp('/reminders');
+
+    expect(await screen.findByRole('heading', { name: 'Due tomorrow, Tuesday, March 10' })).toBeInTheDocument();
+    const due = within(screen.getByRole('list', { name: 'Due reminders' })).getAllByRole('listitem');
+    // The cancelled appointment of tomorrow gets no reminder.
+    expect(due).toHaveLength(1);
+    expect(due[0]).toHaveTextContent('Camila Duarte');
+    expect(due[0]).toHaveTextContent('(11) 96666-3003');
+
+    await userEvent.click(screen.getByRole('button', { name: 'Send the reminders of tomorrow' }));
+
+    expect(await screen.findByText('No appointment of tomorrow is waiting for a reminder.')).toBeInTheDocument();
+  });
+
+  it('explains the screen behind its i button', async () => {
+    mockApi();
+    await renderApp('/reminders');
+    const info = await screen.findByRole('button', { name: 'About reminders' });
+
+    await userEvent.click(info);
+    expect(screen.getByRole('note')).toHaveTextContent('The day before an appointment, the patient gets a text message');
+    expect(info).toHaveAttribute('aria-expanded', 'true');
+
+    await userEvent.keyboard('{Escape}');
+    expect(screen.queryByRole('note')).not.toBeInTheDocument();
   });
 
   it('says that the reminders are off, and offers nothing to send', async () => {

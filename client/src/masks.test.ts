@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { maskCpf, maskPhone } from './masks.ts';
+import { formatPhone, maskCpf, maskPhone } from './masks.ts';
 
 describe('the CPF mask', () => {
   it('puts the dots and the dash as the digits come', () => {
@@ -33,5 +33,18 @@ describe('the phone mask', () => {
     expect(maskPhone('(11) 98888-1001')).toBe('(11) 98888-1001');
     expect(maskPhone('+55 11 98888-1001')).toBe('(11) 98888-1001');
     expect(maskPhone('')).toBe('');
+  });
+});
+
+describe('a saved phone on the screen', () => {
+  it('gets the mask whatever way it was saved', () => {
+    expect(formatPhone('11 97777-2002')).toBe('(11) 97777-2002');
+    expect(formatPhone('11955555005')).toBe('(11) 95555-5005');
+    expect(formatPhone('+55 11 96666-3003')).toBe('(11) 96666-3003');
+    expect(formatPhone('11 3555 4004')).toBe('(11) 3555-4004');
+  });
+
+  it('stays as it was saved when it has no area code', () => {
+    expect(formatPhone('3555-4004')).toBe('3555-4004');
   });
 });

@@ -358,6 +358,23 @@ describe('reminders', () => {
     );
   });
 
+  it('tells which appointments of tomorrow the next run will remind, until they are reminded', async () => {
+    const { get, post } = await testApi();
+    interface Due {
+      day: string;
+      due: { patientName: string; doctorName: string; time: string }[];
+    }
+
+    const before = (await get<Due>('/api/reminders')).body;
+    await post('/api/reminders/run');
+    const after = (await get<Due>('/api/reminders')).body;
+
+    expect(before.day).toBe(TOMORROW);
+    expect(before.due.map((item) => item.patientName).sort()).toEqual(['Bruno Carvalho', 'Giovana Martins', 'Heitor Nogueira']);
+    expect(before.due.find((item) => item.patientName === 'Giovana Martins')).toMatchObject({ doctorName: 'Dr. Helena Prado', time: '09:00' });
+    expect(after.due).toEqual([]);
+  });
+
   it('sends each reminder once', async () => {
     const { post } = await testApi();
 
@@ -370,6 +387,6 @@ describe('reminders', () => {
     const { get, post } = await testApi({ remindersEnabled: false });
 
     expect((await post('/api/reminders/run')).body).toEqual({ enabled: false, sent: 0 });
-    expect((await get<Outbox>('/api/reminders')).body).toEqual({ enabled: false, reminders: [] });
+    expect((await get<Outbox>('/api/reminders')).body).toEqual({ enabled: false, day: TOMORROW, due: [], reminders: [] });
   });
 });
