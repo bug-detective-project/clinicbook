@@ -160,6 +160,19 @@ export function mockApi(options: MockApiOptions = {}) {
       }
       case 'GET /api/patients/:id':
         return patient ? json(patient) : notFound('Patient');
+      case 'PATCH /api/patients/:id':
+        if (!patient) {
+          return notFound('Patient');
+        }
+        Object.assign(patient, {
+          name: String(data.name).trim(),
+          phone: String(data.phone).trim(),
+          email: typeof data.email === 'string' ? data.email : null,
+          birthDate: typeof data.birthDate === 'string' ? data.birthDate : null,
+          cpf: String(data.cpf ?? '').replace(/\D/g, ''),
+          healthPlan: String(data.healthPlan ?? '').trim(),
+        });
+        return json(patient);
       case 'GET /api/patients/:id/appointments':
         return patient ? json(appointments.filter((item) => item.patientId === id).sort((a, b) => byDayAndTime(b, a))) : notFound('Patient');
       case 'DELETE /api/patients/:id':

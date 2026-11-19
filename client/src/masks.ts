@@ -11,7 +11,9 @@ export function maskCpf(text: string): string {
 
 /** "(11) 98888-1001" for a mobile, "(11) 3555-4004" for a landline: a phone with its area code, as it is typed. */
 export function maskPhone(text: string): string {
-  const digits = digitsOf(text, 11);
+  // A phone saved with the country code (+55) is shown without it: the clinic only calls Brazil.
+  const all = text.replace(/\D/g, '');
+  const digits = (all.length > 11 && all.startsWith('55') ? all.slice(2) : all).slice(0, 11);
   if (digits.length <= 2) {
     return digits.length === 0 ? '' : `(${digits}`;
   }

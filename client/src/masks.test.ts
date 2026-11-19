@@ -29,9 +29,9 @@ describe('the phone mask', () => {
     expect(maskPhone('11988881001')).toBe('(11) 98888-1001');
   });
 
-  it('keeps only the digits, eleven at most', () => {
+  it('keeps only the digits, eleven at most, without the country code', () => {
     expect(maskPhone('(11) 98888-1001')).toBe('(11) 98888-1001');
-    expect(maskPhone('+55 11 98888-1001')).toBe('(55) 11988-8810');
+    expect(maskPhone('+55 11 98888-1001')).toBe('(11) 98888-1001');
     expect(maskPhone('')).toBe('');
   });
 });

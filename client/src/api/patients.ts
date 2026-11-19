@@ -23,6 +23,11 @@ export function createPatient(patient: NewPatient): Promise<Patient> {
   return request('/api/patients', { method: 'POST', body: patient });
 }
 
+/** Changes every field of a patient; what the API refuses comes back as an ApiError with its fields. */
+export function updatePatient(id: number, patient: NewPatient): Promise<Patient> {
+  return request(`/api/patients/${id}`, { method: 'PATCH', body: patient });
+}
+
 export function removePatient(id: number): Promise<void> {
   return request(`/api/patients/${id}`, { method: 'DELETE' });
 }

@@ -68,7 +68,7 @@ export function PatientRecord() {
       </nav>
 
       <Routes>
-        <Route index element={<PatientDetails patient={patient} />} />
+        <Route index element={<PatientDetails patient={patient} onChange={setPatient} />} />
         <Route path="appointments" element={<PatientAppointments patient={patient} />} />
       </Routes>
     </section>

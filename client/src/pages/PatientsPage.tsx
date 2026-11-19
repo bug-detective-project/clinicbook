@@ -1,69 +1,23 @@
 import { useEffect, useRef, useState } from 'react';
-import type { FormEvent, KeyboardEvent } from 'react';
 import { ApiError } from '../api/http.ts';
 import { createPatient, listPatients, removePatient } from '../api/patients.ts';
 import type { Patient } from '../api/types.ts';
-import { DatePicker } from '../components/DatePicker.tsx';
+import { PatientDialog } from '../components/PatientDialog.tsx';
 import { PatientMenu } from '../components/PatientMenu.tsx';
 import ui from '../components/ui.module.css';
-import { maskCpf, maskPhone } from '../masks.ts';
-import { useToday } from '../useToday.ts';
 import styles from './PatientsPage.module.css';
 
-const EMPTY_FORM = { name: '', phone: '', email: '', birthDate: '', cpf: '', healthPlan: '' };
-
 export function PatientsPage() {
-  const today = useToday();
   const [patients, setPatients] = useState<Patient[] | null>(null);
   const [error, setError] = useState('');
-  const [form, setForm] = useState(EMPTY_FORM);
-  const [formError, setFormError] = useState('');
-  const [fields, setFields] = useState<Record<string, string>>({});
   // The form of a new patient opens in a dialog over the list.
   const [registering, setRegistering] = useState(false);
   const openerRef = useRef<HTMLButtonElement>(null);
-  const dialogRef = useRef<HTMLDivElement>(null);
-
-  // The dialog takes the focus when it opens, on its first field.
-  useEffect(() => {
-    if (registering) {
-      dialogRef.current?.querySelector('input')?.focus();
-    }
-  }, [registering]);
-
-  function openDialog() {
-    setForm(EMPTY_FORM);
-    setFormError('');
-    setFields({});
-    setRegistering(true);
-  }
 
   /** Closes the dialog and gives the focus back to the button that opened it. */
   function closeDialog() {
     setRegistering(false);
     openerRef.current?.focus();
-  }
-
-  /** Escape closes the dialog, and Tab stays inside it while it is open. */
-  function dialogKey(event: KeyboardEvent<HTMLDivElement>) {
-    if (event.key === 'Escape') {
-      event.stopPropagation();
-      closeDialog();
-      return;
-    }
-    if (event.key !== 'Tab') {
-      return;
-    }
-    const stops = [...(dialogRef.current?.querySelectorAll<HTMLElement>('button, input') ?? [])];
-    const first = stops[0];
-    const last = stops.at(-1);
-    if (event.shiftKey && document.activeElement === first) {
-      event.preventDefault();
-      last?.focus();
-    } else if (!event.shiftKey && document.activeElement === last) {
-      event.preventDefault();
-      first?.focus();
-    }
   }
 
   useEffect(() => {
@@ -94,58 +48,11 @@ export function PatientsPage() {
     }
   }
 
-  async function register(event: FormEvent) {
-    event.preventDefault();
-    setFormError('');
-    setFields({});
-    try {
-      const created = await createPatient({
-        name: form.name,
-        phone: form.phone,
-        email: form.email.trim() === '' ? null : form.email,
-        birthDate: form.birthDate === '' ? null : form.birthDate,
-        cpf: form.cpf,
-        healthPlan: form.healthPlan,
-      });
-      setPatients((list) => [...(list ?? []), created].sort((a, b) => a.name.localeCompare(b.name)));
-      setForm(EMPTY_FORM);
-      closeDialog();
-    } catch (failure) {
-      setFormError(failure instanceof ApiError ? failure.message : 'The patient could not be registered.');
-      setFields(failure instanceof ApiError ? failure.fields : {});
-    }
-  }
-
-  /** A field of the form; `mask` reshapes what is typed (the CPF and the phone take digits only). */
-  function field(name: keyof typeof EMPTY_FORM, label: string, type = 'text', mask?: (text: string) => string, placeholder?: string) {
-    const problem = fields[name];
-    return (
-      <div className={ui.field}>
-        <label htmlFor={`patient-${name}`}>{label}</label>
-        <input
-          id={`patient-${name}`}
-          type={type}
-          inputMode={mask === undefined ? undefined : 'numeric'}
-          placeholder={placeholder}
-          value={form[name]}
-          aria-invalid={problem !== undefined}
-          aria-describedby={problem === undefined ? undefined : `patient-${name}-error`}
-          onChange={(event) => setForm({ ...form, [name]: mask === undefined ? event.target.value : mask(event.target.value) })}
-        />
-        {problem !== undefined && (
-          <span id={`patient-${name}-error`} className={ui.fieldError}>
-            {problem}
-          </span>
-        )}
-      </div>
-    );
-  }
-
   return (
     <section>
       <div className={ui.titleRow}>
         <h2>Patients</h2>
-        <button ref={openerRef} type="button" className={ui.primary} aria-haspopup="dialog" onClick={openDialog}>
+        <button ref={openerRef} type="button" className={ui.primary} aria-haspopup="dialog" onClick={() => setRegistering(true)}>
           New patient
         </button>
       </div>
@@ -172,54 +79,16 @@ export function PatientsPage() {
       )}
 
       {registering && (
-        // A press on the dark area around the dialog closes it, like its Cancel button.
-        <div className={styles.backdrop} onMouseDown={(event) => event.target === event.currentTarget && closeDialog()}>
-          <div ref={dialogRef} role="dialog" aria-modal="true" aria-labelledby="new-patient-title" className={styles.dialog} onKeyDown={dialogKey}>
-            <div className={styles.dialogHead}>
-              <h3 id="new-patient-title">New patient</h3>
-              <button type="button" className={styles.close} aria-label="Close" onClick={closeDialog}>
-                ×
-              </button>
-            </div>
-            {formError !== '' && (
-              <p role="alert" className={ui.alert}>
-                {formError}
-              </p>
-            )}
-            <form aria-label="New patient" className={`${ui.form} ${styles.dialogForm}`} noValidate onSubmit={(event) => void register(event)}>
-              {field('name', 'Name')}
-              {field('cpf', 'CPF', 'text', maskCpf, '000.000.000-00')}
-              {field('phone', 'Phone', 'tel', maskPhone, '(00) 00000-0000')}
-              {field('healthPlan', 'Health plan', 'text', undefined, 'Private, or the name of the plan')}
-              {field('email', 'E-mail (optional)', 'email')}
-              <div className={ui.field}>
-                <DatePicker
-                  label="Birth date (optional)"
-                  value={form.birthDate}
-                  today={today}
-                  max={today}
-                  optional
-                  invalid={fields.birthDate !== undefined}
-                  describedBy={fields.birthDate === undefined ? undefined : 'patient-birthDate-error'}
-                  onChange={(birthDate) => setForm({ ...form, birthDate })}
-                />
-                {fields.birthDate !== undefined && (
-                  <span id="patient-birthDate-error" className={ui.fieldError}>
-                    {fields.birthDate}
-                  </span>
-                )}
-              </div>
-              <div className={styles.dialogActions}>
-                <button type="button" className={ui.button} onClick={closeDialog}>
-                  Cancel
-                </button>
-                <button type="submit" className={ui.primary}>
-                  Register
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
+        <PatientDialog
+          title="New patient"
+          submitLabel="Register"
+          save={createPatient}
+          onSaved={(created) => {
+            setPatients((list) => [...(list ?? []), created].sort((first, second) => first.name.localeCompare(second.name)));
+            closeDialog();
+          }}
+          onClose={closeDialog}
+        />
       )}
     </section>
   );

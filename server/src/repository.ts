@@ -76,9 +76,10 @@ export function listPatients(db: Db): Promise<Patient[]> {
   return rows(db.selectFrom('patients').select(PATIENT_COLUMNS).orderBy('name'));
 }
 
-/** True when a patient already has this CPF (its 11 digits). */
-export async function cpfInUse(db: Db, cpf: string): Promise<boolean> {
-  return (await first(db.selectFrom('patients').select('id').where('cpf', '=', cpf))) !== undefined;
+/** True when a patient (other than `exceptId`) already has this CPF (its 11 digits). */
+export async function cpfInUse(db: Db, cpf: string, exceptId?: number): Promise<boolean> {
+  const owner = await first(db.selectFrom('patients').select('id').where('cpf', '=', cpf));
+  return owner !== undefined && owner.id !== exceptId;
 }
 
 export function findPatient(db: Db, id: number): Promise<Patient | undefined> {
@@ -93,6 +94,11 @@ export async function createPatient(db: Db, input: PatientInput): Promise<Patien
       .returning(PATIENT_COLUMNS),
   );
   return created!;
+}
+
+export async function updatePatient(db: Db, id: number, input: PatientInput): Promise<Patient> {
+  const updated = await first(db.updateTable('patients').set(input).where('id', '=', id).returning(PATIENT_COLUMNS));
+  return updated!;
 }
 
 export async function deletePatient(db: Db, id: number): Promise<void> {

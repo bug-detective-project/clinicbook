@@ -270,6 +270,53 @@ describe('patients', () => {
     ]);
   });
 
+  it('changes the data of a patient', async () => {
+    const { get, patch } = await testApi();
+    const ana = cpfFrom('390533447');
+
+    const changed = await patch<Patient>('/api/patients/1', {
+      name: 'Ana Beatriz Costa Lima',
+      phone: '(11) 98888-2002',
+      email: 'Ana.Lima@Example.com',
+      birthDate: '1988-04-12',
+      cpf: ana,
+      healthPlan: ' Amparo Vida ',
+    });
+
+    expect(changed.status).toBe(200);
+    expect(changed.body).toEqual({
+      id: 1,
+      name: 'Ana Beatriz Costa Lima',
+      phone: '(11) 98888-2002',
+      email: 'ana.lima@example.com',
+      birthDate: '1988-04-12',
+      cpf: ana,
+      healthPlan: 'Amparo Vida',
+    });
+    expect((await get<Patient>('/api/patients/1')).body.healthPlan).toBe('Amparo Vida');
+  });
+
+  it('refuses to give a patient the CPF of another, or one whose digits do not match', async () => {
+    const { patch } = await testApi();
+    const data = { name: 'Ana Beatriz Costa', phone: '(11) 98888-1001', healthPlan: 'Private' };
+
+    const taken = await patch<Failure>('/api/patients/1', { ...data, cpf: cpfFrom('153509460') });
+    const wrong = await patch<Failure>('/api/patients/1', { ...data, cpf: '123.456.789-00' });
+
+    expect(taken.status).toBe(409);
+    expect(taken.body.fields).toEqual({ cpf: 'This CPF belongs to another patient' });
+    expect(wrong.status).toBe(400);
+    expect(wrong.body.fields).toEqual({ cpf: 'Enter a valid CPF: its check digits do not match' });
+  });
+
+  it('answers 404 when changing a patient that does not exist', async () => {
+    const { patch } = await testApi();
+
+    const { status } = await patch('/api/patients/999', { name: 'Nobody', phone: '11 90000-0000', cpf: '123.456.789-09', healthPlan: 'Private' });
+
+    expect(status).toBe(404);
+  });
+
   it('removes a patient who has no appointments', async () => {
     const { get, post, delete: remove } = await testApi();
     const created = await post<Patient>('/api/patients', { name: 'Passing By', phone: '11 90000-0000', cpf: '123.456.789-09', healthPlan: 'Private' });

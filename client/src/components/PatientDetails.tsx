@@ -1,12 +1,23 @@
+import { useRef, useState } from 'react';
 import { Link } from 'react-router';
+import { updatePatient } from '../api/patients.ts';
 import type { Patient } from '../api/types.ts';
 import ui from '../components/ui.module.css';
 import { formatShortDay } from '../dates.ts';
 import { maskCpf } from '../masks.ts';
+import { PatientDialog } from './PatientDialog.tsx';
 import styles from './PatientDetails.module.css';
 
-/** The registration data of a patient: the first tab of the patient record. */
-export function PatientDetails({ patient }: { patient: Patient }) {
+/** The registration data of a patient, the first tab of the patient record, with Edit to change it. */
+export function PatientDetails({ patient, onChange }: { patient: Patient; onChange: (patient: Patient) => void }) {
+  const [editing, setEditing] = useState(false);
+  const editRef = useRef<HTMLButtonElement>(null);
+
+  function close() {
+    setEditing(false);
+    editRef.current?.focus();
+  }
+
   return (
     <div className={ui.card}>
       <dl className={styles.data}>
@@ -21,9 +32,27 @@ export function PatientDetails({ patient }: { patient: Patient }) {
         <dt>Birth date</dt>
         <dd>{patient.birthDate === null ? 'Not informed' : formatShortDay(patient.birthDate)}</dd>
       </dl>
-      <Link className={ui.primary} to={`/appointments/new?patient=${patient.id}`}>
-        Book appointment
-      </Link>
+      <div className={styles.actions}>
+        <Link className={ui.primary} to={`/appointments/new?patient=${patient.id}`}>
+          Book appointment
+        </Link>
+        <button ref={editRef} type="button" className={ui.button} aria-haspopup="dialog" onClick={() => setEditing(true)}>
+          Edit
+        </button>
+      </div>
+      {editing && (
+        <PatientDialog
+          title="Edit patient"
+          submitLabel="Save"
+          patient={patient}
+          save={(input) => updatePatient(patient.id, input)}
+          onSaved={(saved) => {
+            onChange(saved);
+            close();
+          }}
+          onClose={close}
+        />
+      )}
     </div>
   );
 }
