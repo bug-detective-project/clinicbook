@@ -168,7 +168,7 @@ export function BookingPage() {
           </>
         )}
 
-        <DatePicker label="Day" value={day} min={today} onChange={setDay} />
+        <DatePicker label="Day" value={day} today={today} min={today} onChange={setDay} />
 
         <div className={ui.field}>
           <span className={ui.legend}>Time</span>

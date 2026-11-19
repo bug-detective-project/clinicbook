@@ -4,12 +4,12 @@ import styles from './DatePicker.module.css';
 
 // Days are plain texts, YYYY-MM-DD; the calendar works on them in UTC, so no time zone moves a day.
 const WEEKDAYS = ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su'];
+const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 const STEPS: Record<string, number> = { ArrowLeft: -1, ArrowRight: 1, ArrowUp: -7, ArrowDown: 7 };
 const utc = (day: string) => new Date(`${day}T00:00:00Z`);
 const SHORT = new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' });
 const LONG = new Intl.DateTimeFormat('en-US', { month: 'long', day: 'numeric', year: 'numeric', timeZone: 'UTC' });
 const SPOKEN = new Intl.DateTimeFormat('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric', timeZone: 'UTC' });
-const MONTH = new Intl.DateTimeFormat('en-US', { month: 'long', year: 'numeric', timeZone: 'UTC' });
 
 function addDays(day: string, amount: number): string {
   const date = utc(day);
@@ -35,41 +35,64 @@ function sameDayIn(first: string, day: string): string {
 interface DatePickerProps {
   /** What the date is for, shown above the button and read with the date ("Day, March 11, 2026"). */
   label: string;
-  /** The chosen day, as YYYY-MM-DD. */
+  /** The chosen day, as YYYY-MM-DD, or "" when none is chosen yet. */
   value: string;
   onChange: (day: string) => void;
+  /** The date the clinic calls today: it is marked, and "Today" picks it. */
+  today: string;
   /** The first and the last day that can be picked; the others are shown but disabled. */
   min?: string;
   max?: string;
+  /** An optional date can be cleared. */
+  optional?: boolean;
+  /** For a refused value: the field is marked invalid and points at the message. */
+  invalid?: boolean;
+  describedBy?: string;
 }
 
 /**
- * A button that shows a date and opens a calendar under it. The calendar opens on the chosen day;
- * arrows move by a day or a week, PageUp and PageDown by a month, Enter picks, and Escape or a click
- * outside close it, giving the focus back to the button.
+ * A button that shows a date and opens a calendar under it: a month and a year to choose, the days
+ * of the month, today marked, and Today (and Clear for an optional date) at the bottom. Arrows move by
+ * a day or a week, PageUp and PageDown by a month, Enter picks, and Escape or a click outside close it,
+ * giving the focus back to the button.
  */
-export function DatePicker({ label, value, onChange, min, max }: DatePickerProps) {
+export function DatePicker({ label, value, onChange, today, min, max, optional = false, invalid, describedBy }: DatePickerProps) {
   const labelId = useId();
   const [open, setOpen] = useState(false);
+  const allowed = (day: string) => (min === undefined || day >= min) && (max === undefined || day <= max);
+  const clamp = (day: string) => (min !== undefined && day < min ? min : max !== undefined && day > max ? max : day);
   // The day that has the focus in the calendar; its month is the month on show.
-  const [focused, setFocused] = useState(value);
+  const [focused, setFocused] = useState(() => clamp(value || today));
+  // Whether the focus should move to the focused day (keyboard and opening), or stay where it is (the selects).
+  const [moveFocus, setMoveFocus] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
   const gridRef = useRef<HTMLTableElement>(null);
 
-  const allowed = (day: string) => (min === undefined || day >= min) && (max === undefined || day <= max);
-  const clamp = (day: string) => (min !== undefined && day < min ? min : max !== undefined && day > max ? max : day);
+  const thisYear = Number(today.slice(0, 4));
+  const firstYear = min === undefined ? thisYear - 110 : Number(min.slice(0, 4));
+  const lastYear = max === undefined ? thisYear + 5 : Number(max.slice(0, 4));
 
   function close() {
     setOpen(false);
     triggerRef.current?.focus();
   }
 
+  function choose(day: string) {
+    onChange(day);
+    close();
+  }
+
+  function show(day: string, focus: boolean) {
+    setFocused(clamp(day));
+    setMoveFocus(focus);
+  }
+
   useEffect(() => {
-    if (open) {
+    if (open && moveFocus) {
       gridRef.current?.querySelector<HTMLButtonElement>(`[data-day="${focused}"]`)?.focus();
     }
-  }, [open, focused]);
+  }, [open, focused, moveFocus]);
 
   useEffect(() => {
     if (!open) {
@@ -86,8 +109,13 @@ export function DatePicker({ label, value, onChange, min, max }: DatePickerProps
 
   function key(event: KeyboardEvent<HTMLDivElement>) {
     if (event.key === 'Escape') {
+      // Only the calendar closes: a dialog around the picker stays open.
       event.preventDefault();
+      event.stopPropagation();
       close();
+      return;
+    }
+    if ((event.target as HTMLElement).dataset.day === undefined) {
       return;
     }
     const step = STEPS[event.key];
@@ -97,9 +125,9 @@ export function DatePicker({ label, value, onChange, min, max }: DatePickerProps
         : event.key === 'PageUp' || event.key === 'PageDown'
           ? sameDayIn(monthStart(focused, event.key === 'PageUp' ? -1 : 1), focused)
           : undefined;
-    if (target !== undefined && (event.target as HTMLElement).dataset.day !== undefined) {
+    if (target !== undefined) {
       event.preventDefault();
-      setFocused(clamp(target));
+      show(target, true);
     }
   }
 
@@ -111,55 +139,90 @@ export function DatePicker({ label, value, onChange, min, max }: DatePickerProps
   const blanks = (utc(month).getUTCDay() + 6) % 7;
   const cells: (string | null)[] = [...Array<null>(blanks).fill(null), ...days];
   const weeks = Array.from({ length: Math.ceil(cells.length / 7) }, (_, index) => cells.slice(index * 7, index * 7 + 7));
-  const previousEnd = addDays(month, -1);
-  const nextStart = monthStart(month, 1);
+  const years = Array.from({ length: lastYear - firstYear + 1 }, (_, index) => lastYear - index);
 
   return (
     <div ref={rootRef} className={styles.root}>
       <span id={labelId} className={styles.label}>
         {label}
       </span>
-      <button
-        ref={triggerRef}
-        type="button"
-        className={styles.trigger}
-        aria-haspopup="dialog"
-        aria-expanded={open}
-        aria-label={`${label}, ${LONG.format(utc(value))}`}
-        onClick={() => {
-          setFocused(value);
-          setOpen(!open);
-        }}
-      >
-        <span>{SHORT.format(utc(value))}</span>
-        <svg aria-hidden="true" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <rect x="3" y="5" width="18" height="16" rx="2" />
-          <path d="M16 3v4M8 3v4M3 10h18" />
-        </svg>
-      </button>
+      <div className={styles.control}>
+        <button
+          ref={triggerRef}
+          type="button"
+          className={styles.trigger}
+          aria-haspopup="dialog"
+          aria-expanded={open}
+          aria-invalid={invalid || undefined}
+          aria-describedby={describedBy}
+          aria-label={`${label}, ${value === '' ? 'not chosen' : LONG.format(utc(value))}`}
+          onClick={() => {
+            show(value || today, true);
+            setOpen(!open);
+          }}
+        >
+          <svg aria-hidden="true" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <rect x="3" y="5" width="18" height="16" rx="2" />
+            <path d="M16 3v4M8 3v4M3 10h18" />
+          </svg>
+          <span className={value === '' ? styles.placeholder : undefined}>{value === '' ? 'Choose a date' : SHORT.format(utc(value))}</span>
+        </button>
+        {optional && value !== '' && (
+          <button type="button" className={styles.clearInline} aria-label={`Clear ${label}`} onClick={() => onChange('')}>
+            ×
+          </button>
+        )}
+      </div>
       {open && (
         <div className={styles.popover} role="dialog" aria-label={`Choose the date for ${label}`} onKeyDown={key}>
           <div className={styles.head}>
             <button
               type="button"
-              className={styles.month}
+              className={styles.nav}
               aria-label="Previous month"
-              disabled={min !== undefined && previousEnd < min}
-              onClick={() => setFocused(clamp(sameDayIn(monthStart(month, -1), focused)))}
+              disabled={min !== undefined && addDays(month, -1) < min}
+              onClick={() => show(sameDayIn(monthStart(month, -1), focused), false)}
             >
-              ‹
+              <svg aria-hidden="true" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+                <path d="m15 18-6-6 6-6" />
+              </svg>
             </button>
-            <p className={styles.title} aria-live="polite">
-              {MONTH.format(utc(month))}
-            </p>
+            <div className={styles.selects}>
+              <select
+                className={styles.select}
+                aria-label="Month"
+                value={Number(month.slice(5, 7)) - 1}
+                onChange={(event) => show(sameDayIn(`${month.slice(0, 5)}${String(Number(event.target.value) + 1).padStart(2, '0')}-01`, focused), false)}
+              >
+                {MONTHS.map((name, index) => (
+                  <option key={name} value={index}>
+                    {name}
+                  </option>
+                ))}
+              </select>
+              <select
+                className={styles.select}
+                aria-label="Year"
+                value={Number(month.slice(0, 4))}
+                onChange={(event) => show(sameDayIn(`${event.target.value}${month.slice(4, 8)}01`, focused), false)}
+              >
+                {years.map((year) => (
+                  <option key={year} value={year}>
+                    {year}
+                  </option>
+                ))}
+              </select>
+            </div>
             <button
               type="button"
-              className={styles.month}
+              className={styles.nav}
               aria-label="Next month"
-              disabled={max !== undefined && nextStart > max}
-              onClick={() => setFocused(clamp(sameDayIn(nextStart, focused)))}
+              disabled={max !== undefined && monthStart(month, 1) > max}
+              onClick={() => show(sameDayIn(monthStart(month, 1), focused), false)}
             >
-              ›
+              <svg aria-hidden="true" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+                <path d="m9 18 6-6-6-6" />
+              </svg>
             </button>
           </div>
           <table ref={gridRef} className={styles.grid} role="grid" aria-labelledby={labelId}>
@@ -180,20 +243,19 @@ export function DatePicker({ label, value, onChange, min, max }: DatePickerProps
                     if (day === null) {
                       return <td key={column} />;
                     }
+                    const classes = [styles.day, day === value && styles.chosen, day === today && styles.today].filter(Boolean).join(' ');
                     return (
                       <td key={day}>
                         <button
                           type="button"
-                          className={day === value ? `${styles.day} ${styles.chosen}` : styles.day}
+                          className={classes}
                           data-day={day}
                           tabIndex={day === focused ? 0 : -1}
                           aria-label={SPOKEN.format(utc(day))}
                           aria-pressed={day === value}
+                          aria-current={day === today ? 'date' : undefined}
                           disabled={!allowed(day)}
-                          onClick={() => {
-                            onChange(day);
-                            close();
-                          }}
+                          onClick={() => choose(day)}
                         >
                           {Number(day.slice(8))}
                         </button>
@@ -204,6 +266,25 @@ export function DatePicker({ label, value, onChange, min, max }: DatePickerProps
               ))}
             </tbody>
           </table>
+          <div className={styles.foot}>
+            {optional ? (
+              <button
+                type="button"
+                className={styles.link}
+                onClick={() => {
+                  onChange('');
+                  close();
+                }}
+              >
+                Clear
+              </button>
+            ) : (
+              <span />
+            )}
+            <button type="button" className={styles.link} disabled={!allowed(today)} onClick={() => choose(today)}>
+              Today
+            </button>
+          </div>
         </div>
       )}
     </div>

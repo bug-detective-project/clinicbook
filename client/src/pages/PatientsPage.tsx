@@ -3,13 +3,16 @@ import type { FormEvent, KeyboardEvent } from 'react';
 import { ApiError } from '../api/http.ts';
 import { createPatient, listPatients, removePatient } from '../api/patients.ts';
 import type { Patient } from '../api/types.ts';
+import { DatePicker } from '../components/DatePicker.tsx';
 import { PatientMenu } from '../components/PatientMenu.tsx';
 import ui from '../components/ui.module.css';
+import { useToday } from '../useToday.ts';
 import styles from './PatientsPage.module.css';
 
 const EMPTY_FORM = { name: '', phone: '', email: '', birthDate: '' };
 
 export function PatientsPage() {
+  const today = useToday();
   const [patients, setPatients] = useState<Patient[] | null>(null);
   const [error, setError] = useState('');
   const [form, setForm] = useState(EMPTY_FORM);
@@ -181,7 +184,23 @@ export function PatientsPage() {
               {field('name', 'Name')}
               {field('phone', 'Phone', 'tel')}
               {field('email', 'E-mail (optional)', 'email')}
-              {field('birthDate', 'Birth date (optional)', 'date')}
+              <div className={ui.field}>
+                <DatePicker
+                  label="Birth date (optional)"
+                  value={form.birthDate}
+                  today={today}
+                  max={today}
+                  optional
+                  invalid={fields.birthDate !== undefined}
+                  describedBy={fields.birthDate === undefined ? undefined : 'patient-birthDate-error'}
+                  onChange={(birthDate) => setForm({ ...form, birthDate })}
+                />
+                {fields.birthDate !== undefined && (
+                  <span id="patient-birthDate-error" className={ui.fieldError}>
+                    {fields.birthDate}
+                  </span>
+                )}
+              </div>
               <div className={styles.dialogActions}>
                 <button type="button" className={ui.button} onClick={closeDialog}>
                   Cancel
