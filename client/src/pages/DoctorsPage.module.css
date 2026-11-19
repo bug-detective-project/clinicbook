@@ -8,9 +8,22 @@
 }
 
 .card {
+  position: relative;
   display: flex;
   gap: 14px;
   align-items: flex-start;
+  cursor: pointer;
+  transition:
+    border-color 0.15s,
+    box-shadow 0.15s;
+}
+
+.card:hover,
+.card:focus-within {
+  border-color: var(--brand);
+  box-shadow:
+    0 0 0 3px var(--brand-soft),
+    var(--shadow);
 }
 
 .avatar {
@@ -35,10 +48,17 @@
   color: var(--ink);
   font-size: 1.0625rem;
   font-weight: 700;
+  text-decoration: none;
 }
 
-.hours {
-  color: var(--ink);
-  font-size: 0.875rem;
-  font-variant-numeric: tabular-nums;
+/* The link of the name covers the whole card, so a click anywhere on it opens the doctor. */
+.name::after {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  content: '';
+}
+
+.name:focus-visible {
+  outline: none;
 }

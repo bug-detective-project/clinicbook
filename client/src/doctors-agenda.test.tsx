@@ -5,15 +5,14 @@ import { mockApi } from './test/mockApi.ts';
 import { renderApp } from './test/renderApp.tsx';
 
 describe('the doctors', () => {
-  it('list each doctor with its specialty and its hours', async () => {
+  it('list each doctor with its specialty', async () => {
     mockApi();
     await renderApp('/doctors');
 
     const prado = await screen.findByTestId('doctor-1');
     expect(prado).toHaveTextContent('Dr. Helena Prado');
     expect(prado).toHaveTextContent('General practice');
-    expect(prado).toHaveTextContent('Mon–Fri 08:00–12:00, 14:00–17:00');
-    expect(screen.getByTestId('doctor-2')).toHaveTextContent('Mon 09:00–13:00 · Wed 09:00–13:00 · Fri 09:00–13:00');
+    expect(screen.getByTestId('doctor-2')).toHaveTextContent('Pediatrics');
   });
 
   it('open the page of a doctor with its week of appointments', async () => {
