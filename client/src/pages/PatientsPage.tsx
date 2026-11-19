@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { Link } from 'react-router';
 import { ApiError } from '../api/http.ts';
 import { createPatient, listPatients, removePatient } from '../api/patients.ts';
 import type { Patient } from '../api/types.ts';
@@ -70,13 +71,31 @@ export function PatientsPage() {
       {patients === null ? (
         <p>Loading…</p>
       ) : (
-        <ul aria-label="Patients" className={ui.list}>
+        <ul aria-label="Patients" className={styles.grid}>
           {patients.map((patient) => (
-            <li key={patient.id} data-testid={`patient-${patient.id}`} className={`${ui.card} ${styles.row}`}>
-              <strong>{patient.name}</strong>
-              <span>{formatPhone(patient.phone)}</span>
-              <span className={ui.muted}>{patient.email ?? 'No e-mail'}</span>
-              <PatientMenu patient={patient} onRemove={(removed) => void remove(removed)} />
+            <li key={patient.id} data-testid={`patient-${patient.id}`} className={`${ui.card} ${styles.card}`}>
+              <span aria-hidden="true" className={styles.avatar}>
+                {patient.name
+                  .split(' ')
+                  .filter((part) => part.length > 2)
+                  .map((part) => part[0])
+                  .slice(0, 2)
+                  .join('')}
+              </span>
+              <div className={styles.body}>
+                {/* The link of the name covers the card: a click anywhere on it opens the record. */}
+                <Link to={`/patients/${patient.id}`} className={styles.name}>
+                  <strong>{patient.name}</strong>
+                </Link>
+                <span className={styles.plan}>{patient.healthPlan}</span>
+                <span>{formatPhone(patient.phone)}</span>
+                <span className={`${ui.muted} ${styles.email}`} title={patient.email ?? undefined}>
+                  {patient.email ?? 'No e-mail'}
+                </span>
+              </div>
+              <div className={styles.menu}>
+                <PatientMenu patient={patient} onRemove={(removed) => void remove(removed)} />
+              </div>
             </li>
           ))}
         </ul>

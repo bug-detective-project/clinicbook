@@ -1,22 +1,87 @@
-.row {
+.grid {
   display: grid;
-  grid-template-columns: 1.2fr 1fr 1.4fr auto;
-  align-items: center;
-  gap: 16px;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
+  gap: 14px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
 }
 
-.row > :first-child {
+.card {
+  position: relative;
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  cursor: pointer;
+  transition:
+    border-color 0.15s,
+    box-shadow 0.15s;
+}
+
+.card:hover,
+.card:focus-within {
+  border-color: var(--brand);
+  box-shadow:
+    0 0 0 3px var(--brand-soft),
+    var(--shadow);
+}
+
+.avatar {
+  display: grid;
+  flex-shrink: 0;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  border-radius: 999px;
+  background: var(--brand-soft);
+  color: var(--brand-strong);
+  font-weight: 800;
+}
+
+.body {
+  display: grid;
+  flex: 1;
+  gap: 3px;
+  min-width: 0;
+}
+
+.email {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.name {
+  color: var(--ink);
+  font-size: 1.0625rem;
+  text-decoration: none;
+}
+
+/* The link of the name covers the whole card, so a click anywhere on it opens the record. */
+.name::after {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  content: '';
+}
+
+.name:focus-visible {
+  outline: none;
+}
+
+.plan {
+  justify-self: start;
+  margin-bottom: 4px;
+  padding: 1px 8px;
+  border-radius: 999px;
+  background: var(--sunken);
+  color: var(--muted);
+  font-size: 0.75rem;
   font-weight: 700;
 }
 
-/* The dialog of a new patient, over a darkened page. */
-@media (max-width: 720px) {
-  .row {
-    grid-template-columns: 1fr auto;
-  }
-
-  .row > :nth-child(2),
-  .row > :nth-child(3) {
-    grid-column: 1;
-  }
+/* The menu sits above the link of the card, so its button still opens the menu. */
+.menu {
+  position: relative;
+  z-index: 1;
 }
