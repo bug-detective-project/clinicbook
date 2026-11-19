@@ -1,28 +1,23 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router';
 import { listSchedule } from '../api/appointments.ts';
-import { getDoctor, updateDoctor } from '../api/doctors.ts';
+import { getDoctor } from '../api/doctors.ts';
 import type { Appointment, DoctorWithHours } from '../api/types.ts';
-import { DoctorDialog } from '../components/DoctorDialog.tsx';
 import ui from '../components/ui.module.css';
 import { WeekGrid } from '../components/WeekGrid.tsx';
 import { addDays, daysFrom, hoursSummary, mondayOf, weekName } from '../calendar.ts';
-import { useToast } from '../useToast.ts';
 import { useToday } from '../useToday.ts';
 import weekStyles from './AgendaWeekPage.module.css';
 import styles from './DoctorPage.module.css';
 
-/** A doctor: its specialty and hours (with Edit to change them), and its week of appointments. */
+/** A doctor: its specialty and hours (Edit opens their screen), and its week of appointments. */
 export function DoctorPage() {
   const id = Number(useParams().id);
   const today = useToday();
-  const toast = useToast();
   const [doctor, setDoctor] = useState<DoctorWithHours | null>(null);
   const [missing, setMissing] = useState(false);
   const [monday, setMonday] = useState(() => mondayOf(today));
   const [appointments, setAppointments] = useState<Appointment[] | null>(null);
-  const [editing, setEditing] = useState(false);
-  const editRef = useRef<HTMLButtonElement>(null);
   const sunday = addDays(monday, 6);
 
   useEffect(() => {
@@ -64,11 +59,6 @@ export function DoctorPage() {
   const busy = (date: string) => (appointments ?? []).some((item) => item.day === date);
   const lastDay = doctor.hours.some((period) => period.weekday === 7) || busy(sunday) ? sunday : doctor.hours.some((period) => period.weekday === 6) || busy(addDays(monday, 5)) ? addDays(monday, 5) : addDays(monday, 4);
 
-  function closeEdit() {
-    setEditing(false);
-    editRef.current?.focus();
-  }
-
   return (
     <section>
       <div className={ui.titleRow}>
@@ -80,9 +70,9 @@ export function DoctorPage() {
           <Link className={ui.button} to="/doctors">
             Back to the doctors
           </Link>
-          <button ref={editRef} type="button" className={ui.primary} aria-haspopup="dialog" onClick={() => setEditing(true)}>
+          <Link className={ui.primary} to={`/doctors/${doctor.id}/edit`}>
             Edit
-          </button>
+          </Link>
         </div>
       </div>
 
@@ -106,20 +96,6 @@ export function DoctorPage() {
       </div>
       {appointments === null ? <p>Loading…</p> : <WeekGrid days={daysFrom(monday, lastDay)} appointments={appointments} today={today} hours={doctor.hours} />}
 
-      {editing && (
-        <DoctorDialog
-          title="Edit doctor"
-          submitLabel="Save"
-          doctor={doctor}
-          save={(input) => updateDoctor(doctor.id, input)}
-          onSaved={(saved) => {
-            setDoctor(saved);
-            closeEdit();
-            toast.success(`The data of ${saved.name} were saved.`);
-          }}
-          onClose={closeEdit}
-        />
-      )}
     </section>
   );
 }

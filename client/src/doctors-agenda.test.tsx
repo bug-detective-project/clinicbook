@@ -15,10 +15,10 @@ describe('the doctors', () => {
     expect(screen.getByTestId('doctor-2')).toHaveTextContent('Pediatrics');
   });
 
-  it('register a new doctor with its hours', async () => {
+  it('register a new doctor with its hours, on a screen of its own', async () => {
     const api = mockApi();
     await renderApp('/doctors');
-    await userEvent.click(await screen.findByRole('button', { name: 'New doctor' }));
+    await userEvent.click(await screen.findByRole('link', { name: 'New doctor' }));
     const form = screen.getByRole('form', { name: 'New doctor' });
 
     await userEvent.type(within(form).getByLabelText('Name'), 'Dr. Ana Ribeiro');
@@ -26,14 +26,14 @@ describe('the doctors', () => {
     await userEvent.click(within(form).getByRole('button', { name: 'Add a period on Tuesday' }));
     await userEvent.click(within(form).getByRole('button', { name: 'Register' }));
 
-    expect(await screen.findByRole('status')).toHaveTextContent('Dr. Ana Ribeiro was registered.');
-    expect(screen.getByRole('link', { name: 'Dr. Ana Ribeiro' })).toBeInTheDocument();
+    // Saved, the screen opens the page of the new doctor.
+    expect(await screen.findByRole('heading', { level: 2, name: 'Dr. Ana Ribeiro' })).toBeInTheDocument();
+    expect(screen.getByRole('status')).toHaveTextContent('Dr. Ana Ribeiro was registered.');
     expect(api.calls('POST', '/api/doctors')[0].body).toEqual({
       name: 'Dr. Ana Ribeiro',
       specialty: 'Cardiology',
       hours: [{ weekday: 2, startsAt: '08:00', endsAt: '12:00' }],
     });
-    expect(screen.getByRole('button', { name: 'New doctor' })).toHaveFocus();
   });
 
   it('open the page of a doctor with its week of appointments', async () => {
@@ -51,10 +51,10 @@ describe('the doctors', () => {
     expect(screen.queryByTestId('day-2026-03-14')).not.toBeInTheDocument();
   });
 
-  it('edit the name, the specialty and the hours of a doctor', async () => {
+  it('edit the name, the specialty and the hours of a doctor, on a screen of its own', async () => {
     const api = mockApi();
     await renderApp('/doctors/2');
-    await userEvent.click(await screen.findByRole('button', { name: 'Edit' }));
+    await userEvent.click(await screen.findByRole('link', { name: 'Edit' }));
     const form = screen.getByRole('form', { name: 'Edit doctor' });
     expect(within(form).getByLabelText('Name')).toHaveValue('Dr. Marcos Oliveira');
 
@@ -66,7 +66,8 @@ describe('the doctors', () => {
     await userEvent.click(within(form).getByRole('button', { name: 'Save' }));
 
     expect(await screen.findByRole('status')).toHaveTextContent('The data of Dr. Marcos Oliveira were saved.');
-    expect(screen.getByText('Pediatrics and allergy')).toBeInTheDocument();
+    // Saved, the screen goes back to the page of the doctor, which loads it again.
+    expect(await screen.findByText('Pediatrics and allergy')).toBeInTheDocument();
     expect(screen.getByText(/Mon 09:00–13:00 · Wed 09:00–13:00 · Sat 08:00–11:00/)).toBeInTheDocument();
     expect(api.calls('PATCH', '/api/doctors/2')[0].body).toEqual({
       name: 'Dr. Marcos Oliveira',
@@ -82,7 +83,7 @@ describe('the doctors', () => {
   it('point out an appointment outside the hours of the doctor', async () => {
     mockApi();
     await renderApp('/doctors/1');
-    await userEvent.click(await screen.findByRole('button', { name: 'Edit' }));
+    await userEvent.click(await screen.findByRole('link', { name: 'Edit' }));
 
     await userEvent.selectOptions(screen.getByLabelText('Monday, period 1, starts at'), '09:00');
     await userEvent.click(screen.getByRole('button', { name: 'Save' }));

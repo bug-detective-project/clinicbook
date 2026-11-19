@@ -4,6 +4,7 @@ import { AgendaPage } from './pages/AgendaPage.tsx';
 import { AgendaMonthPage } from './pages/AgendaMonthPage.tsx';
 import { AgendaWeekPage } from './pages/AgendaWeekPage.tsx';
 import { BookingPage } from './pages/BookingPage.tsx';
+import { DoctorFormPage } from './pages/DoctorFormPage.tsx';
 import { DoctorPage } from './pages/DoctorPage.tsx';
 import { DoctorsPage } from './pages/DoctorsPage.tsx';
 import { NotFound } from './pages/NotFound.tsx';
@@ -27,7 +28,9 @@ export function App() {
             <Route path="week" element={<AgendaWeekPage />} />
             <Route path="month" element={<AgendaMonthPage />} />
             <Route path="doctors" element={<DoctorsPage />} />
+            <Route path="doctors/new" element={<DoctorFormPage />} />
             <Route path="doctors/:id" element={<DoctorPage />} />
+            <Route path="doctors/:id/edit" element={<DoctorFormPage />} />
             <Route path="reminders" element={<RemindersPage />} />
             <Route path="*" element={<NotFound />} />
           </Route>
