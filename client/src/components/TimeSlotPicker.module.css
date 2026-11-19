@@ -1,6 +1,6 @@
 .picker {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(76px, 1fr));
   gap: 8px;
 }
 
@@ -20,11 +20,21 @@
 
 .slot span {
   display: block;
-  padding: 6px 12px;
-  border: 1px solid var(--line);
+  padding: 8px 10px;
+  border: 1px solid var(--line-strong);
   border-radius: var(--radius);
   background: var(--surface);
+  font-weight: 600;
   font-variant-numeric: tabular-nums;
+  text-align: center;
+  transition:
+    background-color 0.15s,
+    border-color 0.15s;
+}
+
+.slot:hover span {
+  border-color: var(--brand);
+  background: var(--brand-soft);
 }
 
 .slot input:checked + span {
@@ -40,5 +50,8 @@
 
 .empty {
   margin: 0;
+  padding: 12px 14px;
+  border: 1px dashed var(--line-strong);
+  border-radius: var(--radius);
   color: var(--muted);
 }

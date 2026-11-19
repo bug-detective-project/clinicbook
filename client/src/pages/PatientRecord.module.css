@@ -1,19 +1,28 @@
+/* The two tabs of the record, as one control. */
 .tabs {
-  display: flex;
+  display: inline-flex;
   gap: 4px;
-  margin-bottom: 16px;
-  border-bottom: 1px solid var(--line);
+  margin-bottom: 20px;
+  padding: 4px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--surface);
 }
 
 .tabs a {
   padding: 8px 16px;
-  border-bottom: 3px solid transparent;
-  color: var(--ink);
+  border-radius: 9px;
+  color: var(--muted);
+  font-weight: 600;
   text-decoration: none;
 }
 
+.tabs a:hover {
+  background: var(--sunken);
+  color: var(--ink);
+}
+
 .tabs a[aria-current='page'] {
-  border-bottom-color: var(--brand);
-  color: var(--brand);
-  font-weight: 600;
+  background: var(--brand);
+  color: var(--brand-ink);
 }

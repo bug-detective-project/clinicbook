@@ -4,3 +4,8 @@
   align-items: center;
   gap: 16px;
 }
+
+.row > :first-child {
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}

@@ -4,3 +4,14 @@
   align-items: start;
   gap: 16px;
 }
+
+.row > :first-child {
+  font-weight: 700;
+}
+
+@media (max-width: 720px) {
+  .row {
+    grid-template-columns: 1fr;
+    gap: 4px;
+  }
+}

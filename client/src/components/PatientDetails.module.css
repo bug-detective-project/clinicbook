@@ -1,14 +1,24 @@
 .data {
   display: grid;
-  grid-template-columns: 120px 1fr;
-  gap: 8px 16px;
-  margin: 0 0 16px;
+  grid-template-columns: 140px 1fr;
+  gap: 12px 16px;
+  margin: 0 0 20px;
+  padding: 20px 22px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
 }
 
 .data dt {
+  font-size: 0.8125rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
   color: var(--muted);
 }
 
 .data dd {
   margin: 0;
+  font-weight: 600;
 }
