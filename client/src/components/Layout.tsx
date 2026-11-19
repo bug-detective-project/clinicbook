@@ -41,6 +41,13 @@ export function Layout() {
             </Icon>
             Patients
           </NavLink>
+          <NavLink to="/doctors">
+            <Icon>
+              <path d="M6 3v6a4 4 0 0 0 8 0V3M6 3H5m9 0h1M10 13v2a5 5 0 0 0 10 0v-2" />
+              <circle cx="20" cy="11" r="2" />
+            </Icon>
+            Doctors
+          </NavLink>
           <NavLink to="/reminders">
             <Icon>
               <path d="M6 16V11a6 6 0 1 1 12 0v5l1.500 2h-15L6 16Zm4 4.500a2 2 0 0 0 4 0" />

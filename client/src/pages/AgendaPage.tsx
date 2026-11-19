@@ -4,6 +4,7 @@ import { cancelAppointment, confirmAppointment, listToday } from '../api/appoint
 import { ApiError } from '../api/http.ts';
 import type { Appointment } from '../api/types.ts';
 import { StatusBadge } from '../components/StatusBadge.tsx';
+import { AgendaViews } from '../components/AgendaViews.tsx';
 import ui from '../components/ui.module.css';
 import { useToast } from '../useToast.ts';
 import { addDays, formatDay } from '../dates.ts';
@@ -71,6 +72,7 @@ export function AgendaPage() {
 
   return (
     <section>
+      <AgendaViews view="day" day={day} />
       <div className={ui.titleRow}>
         <h2>{formatDay(day)}</h2>
         <Link className={ui.primary} to={`/appointments/new?day=${day}`}>

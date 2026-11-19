@@ -1,7 +1,11 @@
 import { Route, Routes } from 'react-router';
 import { Layout } from './components/Layout.tsx';
 import { AgendaPage } from './pages/AgendaPage.tsx';
+import { AgendaMonthPage } from './pages/AgendaMonthPage.tsx';
+import { AgendaWeekPage } from './pages/AgendaWeekPage.tsx';
 import { BookingPage } from './pages/BookingPage.tsx';
+import { DoctorPage } from './pages/DoctorPage.tsx';
+import { DoctorsPage } from './pages/DoctorsPage.tsx';
 import { NotFound } from './pages/NotFound.tsx';
 import { PatientRecord } from './pages/PatientRecord.tsx';
 import { PatientsPage } from './pages/PatientsPage.tsx';
@@ -20,6 +24,10 @@ export function App() {
             <Route path="appointments/:id/reschedule" element={<BookingPage />} />
             <Route path="patients" element={<PatientsPage />} />
             <Route path="patients/:id/*" element={<PatientRecord />} />
+            <Route path="week" element={<AgendaWeekPage />} />
+            <Route path="month" element={<AgendaMonthPage />} />
+            <Route path="doctors" element={<DoctorsPage />} />
+            <Route path="doctors/:id" element={<DoctorPage />} />
             <Route path="reminders" element={<RemindersPage />} />
             <Route path="*" element={<NotFound />} />
           </Route>

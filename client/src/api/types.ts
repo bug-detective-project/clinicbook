@@ -18,6 +18,17 @@ export interface Doctor {
   specialty: string;
 }
 
+/** A period a doctor works on a day of the week (1 is Monday, 7 is Sunday). */
+export interface Hours {
+  weekday: number;
+  startsAt: string;
+  endsAt: string;
+}
+
+export interface DoctorWithHours extends Doctor {
+  hours: Hours[];
+}
+
 export interface Patient {
   id: number;
   name: string;

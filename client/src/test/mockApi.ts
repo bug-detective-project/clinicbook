@@ -81,6 +81,14 @@ function notFound(what: string): Response {
  */
 export function mockApi(options: MockApiOptions = {}) {
   const doctors = createTestDoctors();
+  /** The hours of each doctor: Dr. Prado every weekday, morning and afternoon; Dr. Oliveira on Monday, Wednesday and Friday mornings. */
+  let hours: Record<number, { weekday: number; startsAt: string; endsAt: string }[]> = {
+    1: [1, 2, 3, 4, 5].flatMap((weekday) => [
+      { weekday, startsAt: '08:00', endsAt: '12:00' },
+      { weekday, startsAt: '14:00', endsAt: '17:00' },
+    ]),
+    2: [1, 3, 5].map((weekday) => ({ weekday, startsAt: '09:00', endsAt: '13:00' })),
+  };
   let patients = options.patients ?? createTestPatients();
   const appointments = options.appointments ?? createTestAppointments();
   const reminders: Reminder[] = [];
@@ -113,6 +121,27 @@ export function mockApi(options: MockApiOptions = {}) {
         return json({ today: TODAY });
       case 'GET /api/doctors':
         return json(doctors);
+      case 'GET /api/doctors/:id': {
+        const doctor = doctors.find((item) => item.id === id);
+        return doctor ? json({ ...doctor, hours: hours[id] ?? [] }) : notFound('Doctor');
+      }
+      case 'PATCH /api/doctors/:id': {
+        const doctor = doctors.find((item) => item.id === id);
+        if (!doctor) {
+          return notFound('Doctor');
+        }
+        Object.assign(doctor, { name: String(data.name).trim(), specialty: String(data.specialty).trim() });
+        hours = { ...hours, [id]: data.hours as { weekday: number; startsAt: string; endsAt: string }[] };
+        return json({ ...doctor, hours: hours[id] });
+      }
+      case 'GET /api/schedule': {
+        const from = query.get('from') ?? TODAY;
+        const to = query.get('to') ?? TODAY;
+        const doctor = query.get('doctor');
+        return json(
+          appointments.filter((item) => item.day >= from && item.day <= to && (doctor === null || item.doctorId === Number(doctor))).sort(byDayAndTime),
+        );
+      }
       case 'GET /api/doctors/:id/slots':
         return json({ day: query.get('day'), slots: freeSlots(id, query.get('day') ?? TODAY) });
       case 'GET /api/appointments':
