@@ -79,8 +79,9 @@ const schema = `
     id INTEGER PRIMARY KEY,
     doctor_id INTEGER NOT NULL REFERENCES doctors(id),
     weekday INTEGER NOT NULL CHECK (weekday BETWEEN 1 AND 7),
-    starts_at TEXT NOT NULL,
-    ends_at TEXT NOT NULL
+    -- The clinic is open from 06:00 to 22:00: no period starts before or ends after.
+    starts_at TEXT NOT NULL CHECK (starts_at >= '06:00'),
+    ends_at TEXT NOT NULL CHECK (ends_at <= '22:00')
   );
 
   CREATE TABLE IF NOT EXISTS patients (

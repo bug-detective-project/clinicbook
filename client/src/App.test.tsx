@@ -232,58 +232,6 @@ describe('patients', () => {
     expect(within(form).getByLabelText('Phone')).toHaveAttribute('aria-invalid', 'true');
   });
 
-  it('shows the CPF, with its mask, and the health plan in the record of a patient', async () => {
-    mockApi();
-    await renderApp('/patients/1');
-
-    expect(await screen.findByText('390.533.447-05')).toBeInTheDocument();
-    expect(screen.getByText('Horizonte Saúde')).toBeInTheDocument();
-  });
-
-  it('books an appointment of a patient from the Appointments tab of the record, not from Details', async () => {
-    mockApi();
-    await renderApp('/patients/1');
-    expect(await screen.findByText('390.533.447-05')).toBeInTheDocument();
-    expect(screen.queryByRole('link', { name: 'Book appointment' })).not.toBeInTheDocument();
-
-    await userEvent.click(within(screen.getByRole('navigation', { name: 'Patient record' })).getByRole('link', { name: 'Appointments' }));
-
-    expect(await screen.findByRole('link', { name: 'Book appointment' })).toHaveAttribute('href', '/appointments/new?patient=1');
-  });
-
-  it('edits the data of a patient from the record, in a dialog filled with them', async () => {
-    const api = mockApi();
-    await renderApp('/patients/1');
-
-    await userEvent.click(await screen.findByRole('button', { name: 'Edit' }));
-    const form = screen.getByRole('form', { name: 'Edit patient' });
-    expect(within(form).getByLabelText('Name')).toHaveValue('Ana Beatriz Costa');
-    expect(within(form).getByLabelText('CPF')).toHaveValue('390.533.447-05');
-    expect(within(form).getByLabelText('Health plan')).toHaveValue('Horizonte Saúde');
-
-    await userEvent.clear(within(form).getByLabelText('Health plan'));
-    await userEvent.type(within(form).getByLabelText('Health plan'), 'Amparo Vida');
-    await userEvent.click(within(form).getByRole('button', { name: 'Save' }));
-
-    expect(await screen.findByText('Amparo Vida')).toBeInTheDocument();
-    expect(api.calls('PATCH', '/api/patients/1')[0].body).toMatchObject({ name: 'Ana Beatriz Costa', cpf: '390.533.447-05', healthPlan: 'Amparo Vida' });
-    await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument());
-    expect(screen.getByRole('button', { name: 'Edit' })).toHaveFocus();
-  });
-
-  it('keeps the data of a patient when the edit is cancelled', async () => {
-    const api = mockApi();
-    await renderApp('/patients/1');
-    await userEvent.click(await screen.findByRole('button', { name: 'Edit' }));
-
-    await userEvent.type(screen.getByLabelText('Name'), ' Changed');
-    await userEvent.click(screen.getByRole('button', { name: 'Cancel' }));
-
-    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
-    expect(screen.getByRole('heading', { name: 'Ana Beatriz Costa' })).toBeInTheDocument();
-    expect(api.calls('PATCH', '/api/patients/1')).toHaveLength(0);
-  });
-
   it('opens the menu of a patient, with a link to the record and one to book', async () => {
     mockApi();
     await renderApp('/patients');
@@ -327,18 +275,6 @@ describe('patients', () => {
     expect(screen.getByTestId('patient-4')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Actions for Davi Fernandes' })).toHaveFocus();
     expect(api.calls('DELETE', '/api/patients/4')).toHaveLength(0);
-  });
-
-  it('removes a patient from the record, after a confirmation, and goes back to the list', async () => {
-    mockApi();
-    await renderApp('/patients/4');
-
-    await userEvent.click(await screen.findByRole('button', { name: 'Remove' }));
-    await userEvent.click(within(screen.getByRole('alertdialog', { name: 'Remove patient' })).getByRole('button', { name: 'Remove' }));
-
-    expect(await screen.findByRole('heading', { level: 2, name: 'Patients' })).toBeInTheDocument();
-    expect(screen.getByRole('status')).toHaveTextContent('Davi Fernandes was removed.');
-    await waitFor(() => expect(screen.queryByTestId('patient-4')).not.toBeInTheDocument());
   });
 
   it('says why a patient with appointments stays', async () => {

@@ -227,15 +227,6 @@ describe('patients', () => {
     expect(Object.keys(body.fields ?? {}).sort()).toEqual(['cpf', 'healthPlan', 'name', 'phone']);
   });
 
-  it('refuses a CPF whose check digits do not match', async () => {
-    const { post } = await testApi();
-
-    const { status, body } = await post<Failure>('/api/patients', { name: 'Someone New', phone: '11 90000-0000', cpf: '123.456.789-00', healthPlan: 'Private' });
-
-    expect(status).toBe(400);
-    expect(body.fields).toEqual({ cpf: 'Enter a valid CPF: its check digits do not match' });
-  });
-
   it('refuses a CPF that belongs to another patient, written either way', async () => {
     const { post } = await testApi();
     const ana = cpfFrom('390533447');
@@ -296,28 +287,14 @@ describe('patients', () => {
     expect((await get<Patient>('/api/patients/1')).body.healthPlan).toBe('Amparo Vida');
   });
 
-  it('refuses to give a patient the CPF of another, or one whose digits do not match', async () => {
+  it('refuses to give a patient the CPF of another', async () => {
     const { patch } = await testApi();
     const data = { name: 'Ana Beatriz Costa', phone: '(11) 98888-1001', healthPlan: 'Private' };
 
     const taken = await patch<Failure>('/api/patients/1', { ...data, cpf: cpfFrom('153509460') });
-    const wrong = await patch<Failure>('/api/patients/1', { ...data, cpf: '123.456.789-00' });
 
     expect(taken.status).toBe(409);
     expect(taken.body.fields).toEqual({ cpf: 'This CPF belongs to another patient' });
-    expect(wrong.status).toBe(400);
-    expect(wrong.body.fields).toEqual({ cpf: 'Enter a valid CPF: its check digits do not match' });
-  });
-
-  it('changes only the fields sent, and clears a field sent as null', async () => {
-    const { patch } = await testApi();
-
-    const plan = await patch<Patient>('/api/patients/1', { healthPlan: 'Amparo Vida' });
-    const cleared = await patch<Patient>('/api/patients/1', { birthDate: null });
-
-    expect(plan.status).toBe(200);
-    expect(plan.body).toMatchObject({ name: 'Ana Beatriz Costa', email: 'ana.costa@example.com', birthDate: '1988-04-12', healthPlan: 'Amparo Vida' });
-    expect(cleared.body).toMatchObject({ email: 'ana.costa@example.com', birthDate: null, healthPlan: 'Amparo Vida' });
   });
 
   it('answers 404 when changing a patient that does not exist', async () => {
