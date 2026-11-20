@@ -17,7 +17,9 @@ test.describe('Ticket front-8: each toast keeps its own time', () => {
     await expect(page.getByText(confirmed(TODAY_APPOINTMENTS.davi))).toBeVisible();
     await page.clock.runFor(1500);
 
-    await expect(page.getByText(confirmed(TODAY_APPOINTMENTS.bruno))).toHaveCount(0);
+    // The clock keeps going at real speed between the steps: a short wait, or a toast whose time
+    // started over would also be gone by the end of the usual 5 seconds of an expect.
+    await expect(page.getByText(confirmed(TODAY_APPOINTMENTS.bruno))).toHaveCount(0, { timeout: 1000 });
     await expect(page.getByText(confirmed(TODAY_APPOINTMENTS.davi))).toBeVisible();
   });
 
