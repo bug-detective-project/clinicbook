@@ -1,0 +1,80 @@
+.wrapper {
+  position: relative;
+}
+
+/* A quiet round button: only the three dots, until it is pointed at or open. */
+.toggle {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  transition:
+    background-color 0.15s,
+    color 0.15s;
+}
+
+.toggle:hover,
+.toggle[aria-expanded='true'] {
+  background: var(--sunken);
+  color: var(--ink);
+}
+
+.toggle:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 2px;
+}
+
+.menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  z-index: 1;
+  min-width: 200px;
+  margin: 6px 0 0;
+  padding: 6px;
+  list-style: none;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--surface);
+  box-shadow:
+    0 2px 4px rgb(23 32 51 / 0.08),
+    0 18px 36px -14px rgb(23 32 51 / 0.34);
+}
+
+.menu a,
+.menu button {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  width: 100%;
+  padding: 9px 12px;
+  border: 0;
+  border-radius: 8px;
+  background: none;
+  color: var(--ink);
+  font-weight: 600;
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.menu a:hover,
+.menu button:hover {
+  background: var(--sunken);
+}
+
+.menu svg {
+  flex-shrink: 0;
+  color: var(--muted);
+}
+
+.menu .danger,
+.menu .danger svg {
+  color: var(--danger);
+}
