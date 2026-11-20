@@ -40,7 +40,9 @@
 
 .menu a,
 .menu button {
-  display: block;
+  display: flex;
+  gap: 10px;
+  align-items: center;
   width: 100%;
   padding: 9px 12px;
   border: 0;
@@ -56,4 +58,14 @@
 .menu a:hover,
 .menu button:hover {
   background: var(--sunken);
+}
+
+.menu svg {
+  flex-shrink: 0;
+  color: var(--muted);
+}
+
+.menu .danger,
+.menu .danger svg {
+  color: var(--danger);
 }

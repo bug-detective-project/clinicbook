@@ -1,7 +1,17 @@
 import { useEffect, useRef, useState } from 'react';
+import type { ReactNode } from 'react';
 import { Link } from 'react-router';
 import type { Patient } from '../api/types.ts';
 import styles from './PatientMenu.module.css';
+
+/** A line icon beside the label of an action; the label alone names it. */
+function Icon({ children }: { children: ReactNode }) {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      {children}
+    </svg>
+  );
+}
 
 export interface PatientMenuProps {
   patient: Patient;
@@ -56,11 +66,19 @@ export function PatientMenu({ patient, onRemove }: PatientMenuProps) {
         <ul role="menu" aria-label={`Actions for ${patient.name}`} className={styles.menu}>
           <li role="none">
             <Link role="menuitem" to={`/patients/${patient.id}`}>
+              <Icon>
+                <path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z" />
+                <path d="M14 3v5h5M9 13h6M9 17h4" />
+              </Icon>
               Open record
             </Link>
           </li>
           <li role="none">
             <Link role="menuitem" to={`/appointments/new?patient=${patient.id}`}>
+              <Icon>
+                <rect x="3" y="5" width="18" height="16" rx="2" />
+                <path d="M3 10h18M8 3v4M16 3v4M12 13v5M9.5 15.5h5" />
+              </Icon>
               Book appointment
             </Link>
           </li>
@@ -68,11 +86,15 @@ export function PatientMenu({ patient, onRemove }: PatientMenuProps) {
             <button
               type="button"
               role="menuitem"
+              className={styles.danger}
               onClick={() => {
                 setOpen(false);
                 onRemove(patient);
               }}
             >
+              <Icon>
+                <path d="M4 7h16M10 11v6M14 11v6M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12M9 7V4h6v3" />
+              </Icon>
               Remove patient
             </button>
           </li>
