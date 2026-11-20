@@ -38,6 +38,8 @@
   color: var(--ink);
   text-decoration: none;
   transition: border-color 0.15s;
+  /* The tag of the count follows the width of the day, not of the window. */
+  container-type: inline-size;
 }
 
 .cell:hover {
@@ -67,6 +69,15 @@
   font-size: 0.75rem;
   font-weight: 700;
   white-space: nowrap;
+  max-width: 100%;
+  overflow: hidden;
+}
+
+/* A day too narrow for "5 appts." shows the number only; the link still reads "5 appointments". */
+@container (max-width: 76px) {
+  .word {
+    display: none;
+  }
 }
 
 @media (max-width: 560px) {
@@ -82,10 +93,5 @@
   .count {
     padding: 1px 6px;
     font-size: 0.6875rem;
-  }
-
-  /* A phone has room for the number only; the link still reads "3 appointments". */
-  .word {
-    display: none;
   }
 }
