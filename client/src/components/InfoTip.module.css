@@ -1,0 +1,48 @@
+.root {
+  position: relative;
+  display: inline-flex;
+  vertical-align: middle;
+}
+
+.button {
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border: 1.5px solid var(--brand);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--brand);
+  font: inherit;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 0.8125rem;
+  font-style: italic;
+  font-weight: 700;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.button:hover,
+.button[aria-expanded='true'] {
+  background: var(--brand);
+  color: var(--brand-ink);
+}
+
+.panel {
+  position: fixed;
+  z-index: 40;
+  display: block;
+  padding: 14px 16px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--surface);
+  box-shadow:
+    0 4px 10px rgb(18 27 51 / 0.1),
+    0 20px 40px -18px rgb(18 27 51 / 0.45);
+  color: var(--ink);
+  font-size: 0.9375rem;
+  font-weight: 400;
+  letter-spacing: normal;
+  line-height: 1.5;
+  text-transform: none;
+}
