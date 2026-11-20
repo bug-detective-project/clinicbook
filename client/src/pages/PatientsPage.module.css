@@ -63,17 +63,6 @@
   outline: none;
 }
 
-.plan {
-  justify-self: start;
-  margin-bottom: 4px;
-  padding: 1px 8px;
-  border-radius: 999px;
-  background: var(--sunken);
-  color: var(--muted);
-  font-size: 0.75rem;
-  font-weight: 700;
-}
-
 /* The menu sits above the link of the card, so its button still opens the menu. */
 .menu {
   position: relative;

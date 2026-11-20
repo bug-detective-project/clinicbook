@@ -6,6 +6,7 @@ import type { Patient } from '../api/types.ts';
 import { PatientDialog } from '../components/PatientDialog.tsx';
 import { PatientMenu } from '../components/PatientMenu.tsx';
 import ui from '../components/ui.module.css';
+import { formatPhone } from '../masks.ts';
 import { useToast } from '../useToast.ts';
 import styles from './PatientsPage.module.css';
 
@@ -86,7 +87,7 @@ export function PatientsPage() {
                 <Link to={`/patients/${patient.id}`} className={styles.name}>
                   <strong>{patient.name}</strong>
                 </Link>
-                <span className={styles.plan}>{patient.healthPlan}</span>
+                <span className={ui.muted}>{formatPhone(patient.phone)}</span>
               </div>
               <div className={styles.menu}>
                 <PatientMenu patient={patient} onRemove={(removed) => void remove(removed)} />

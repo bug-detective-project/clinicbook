@@ -148,7 +148,7 @@ describe('patients', () => {
       'Camila Duarte',
       'Davi Fernandes',
     ]);
-    expect(within(rows[2]).getByText('Private')).toBeInTheDocument();
+    expect(within(rows[1]).getByText('(11) 97777-2002')).toBeInTheDocument();
   });
 
   it('registers a patient and puts it on the list', async () => {
