@@ -1,18 +1,117 @@
-import { NavLink, Outlet } from 'react-router';
+import { useEffect, useRef, useState } from 'react';
+import type { ReactNode } from 'react';
+import { NavLink, Outlet, useLocation } from 'react-router';
 import styles from './Layout.module.css';
 
+// Line icons on a 24×24 grid, in the color of the link they sit in.
+function Icon({ children }: { children: ReactNode }) {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      {children}
+    </svg>
+  );
+}
+
 export function Layout() {
+  // On a narrow window the screens hide behind a menu button; a wide one always shows them.
+  const [menuOpen, setMenuOpen] = useState(false);
+  const { pathname, search } = useLocation();
+  const headerRef = useRef<HTMLElement>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
+
+  // Going to another screen closes the menu.
+  const [address, setAddress] = useState(pathname + search);
+  if (address !== pathname + search) {
+    setAddress(pathname + search);
+    setMenuOpen(false);
+  }
+
+  // While the menu is open, a click outside the header and the Escape key close it.
+  useEffect(() => {
+    if (!menuOpen) {
+      return;
+    }
+    function onPointerDown(event: PointerEvent) {
+      if (!headerRef.current?.contains(event.target as Node)) {
+        setMenuOpen(false);
+      }
+    }
+    function onKeyDown(event: KeyboardEvent) {
+      if (event.key === 'Escape') {
+        setMenuOpen(false);
+        buttonRef.current?.focus();
+      }
+    }
+    document.addEventListener('pointerdown', onPointerDown);
+    document.addEventListener('keydown', onKeyDown);
+    return () => {
+      document.removeEventListener('pointerdown', onPointerDown);
+      document.removeEventListener('keydown', onKeyDown);
+    };
+  }, [menuOpen]);
+
   return (
     <div className={styles.page}>
-      <header className={styles.header}>
-        <h1 className={styles.name}>ClinicBook</h1>
-        <nav aria-label="Main" className={styles.nav}>
+      <header ref={headerRef} className={styles.header}>
+        <div className={styles.brand}>
+          <span aria-hidden="true" className={styles.mark}>
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round">
+              <path d="M12 5v14M5 12h14" />
+            </svg>
+          </span>
+          <div>
+            <h1 className={styles.name}>ClinicBook</h1>
+            <p className={styles.clinic}>Vila Clara Clinic</p>
+          </div>
+        </div>
+        <button
+          ref={buttonRef}
+          type="button"
+          className={styles.menuButton}
+          aria-label="Menu"
+          aria-expanded={menuOpen}
+          aria-controls="main-nav"
+          onClick={() => setMenuOpen((open) => !open)}
+        >
+          <svg aria-hidden="true" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+            {menuOpen ? <path d="M6 6l12 12M18 6L6 18" /> : <path d="M4 7h16M4 12h16M4 17h16" />}
+          </svg>
+        </button>
+        <nav id="main-nav" aria-label="Main" className={`${styles.nav} ${menuOpen ? styles.open : ''}`}>
           <NavLink to="/" end>
+            <Icon>
+              <rect x="3.5" y="5" width="17" height="15" rx="2.5" />
+              <path d="M3.5 10h17M8 3v4m8-4v4" />
+            </Icon>
             Agenda
           </NavLink>
-          <NavLink to="/patients">Patients</NavLink>
-          <NavLink to="/reminders">Reminders</NavLink>
+          <NavLink to="/patients">
+            <Icon>
+              <circle cx="9" cy="8" r="3.5" />
+              <path d="M2.5 20a6.5 6.5 0 0 1 13 0M16 4.6a3.5 3.5 0 0 1 0 6.8M17.500 14a6.500 6.500 0 0 1 4 6" />
+            </Icon>
+            Patients
+          </NavLink>
+          <NavLink to="/doctors">
+            <Icon>
+              <path d="M6 3v6a4 4 0 0 0 8 0V3M6 3H5m9 0h1M10 13v2a5 5 0 0 0 10 0v-2" />
+              <circle cx="20" cy="11" r="2" />
+            </Icon>
+            Doctors
+          </NavLink>
+          <NavLink to="/reminders">
+            <Icon>
+              <path d="M6 16V11a6 6 0 1 1 12 0v5l1.500 2h-15L6 16Zm4 4.500a2 2 0 0 0 4 0" />
+            </Icon>
+            Reminders
+          </NavLink>
         </nav>
+        <p className={styles.desk}>
+          <span aria-hidden="true" className={styles.avatar}>
+            FD
+          </span>
+          Front desk
+        </p>
       </header>
       <main className={styles.main}>
         <Outlet />

@@ -6,6 +6,9 @@ export interface NewPatient {
   phone: string;
   email: string | null;
   birthDate: string | null;
+  /** With or without the dots and the dash: the API keeps the digits. */
+  cpf: string;
+  healthPlan: string;
 }
 
 export function listPatients(): Promise<Patient[]> {
@@ -18,6 +21,11 @@ export function getPatient(id: number): Promise<Patient> {
 
 export function createPatient(patient: NewPatient): Promise<Patient> {
   return request('/api/patients', { method: 'POST', body: patient });
+}
+
+/** Changes every field of a patient; what the API refuses comes back as an ApiError with its fields. */
+export function updatePatient(id: number, patient: NewPatient): Promise<Patient> {
+  return request(`/api/patients/${id}`, { method: 'PATCH', body: patient });
 }
 
 export function removePatient(id: number): Promise<void> {

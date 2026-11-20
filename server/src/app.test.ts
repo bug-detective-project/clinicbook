@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { cpfFrom } from './cpf.ts';
 import type { Appointment, Doctor, Patient } from './repository.ts';
 import { testApi, TODAY, TOMORROW } from './test/api.ts';
 
@@ -179,40 +180,77 @@ describe('patients', () => {
       phone: '(11) 98888-1001',
       email: 'ana.costa@example.com',
       birthDate: '1988-04-12',
+      cpf: cpfFrom('390533447'),
+      healthPlan: 'Horizonte Saúde',
     });
   });
 
   it('registers a patient', async () => {
     const { get, post } = await testApi();
 
-    const created = await post<Patient>('/api/patients', { name: ' Íris Pacheco ', phone: '(11) 91111-9009', email: 'Iris@Example.com' });
+    const created = await post<Patient>('/api/patients', {
+      name: ' Íris Pacheco ',
+      phone: '(11) 91111-9009',
+      email: 'Iris@Example.com',
+      cpf: '123.456.789-09',
+      healthPlan: ' Amparo Vida ',
+    });
 
     expect(created.status).toBe(201);
-    expect(created.body).toMatchObject({ name: 'Íris Pacheco', phone: '(11) 91111-9009', email: 'iris@example.com', birthDate: null });
+    expect(created.body).toMatchObject({
+      name: 'Íris Pacheco',
+      phone: '(11) 91111-9009',
+      email: 'iris@example.com',
+      birthDate: null,
+      cpf: '12345678909',
+      healthPlan: 'Amparo Vida',
+    });
     expect((await get<Patient>(`/api/patients/${created.body.id}`)).body.name).toBe('Íris Pacheco');
   });
 
   it('accepts the phone formats the clinic uses', async () => {
     const { post } = await testApi();
 
-    for (const phone of ['11988887777', '(11) 98888-7777', '+55 11 98888-7777', '3555-4004']) {
-      expect((await post('/api/patients', { name: 'Someone New', phone })).status, phone).toBe(201);
+    const phones = ['11988887777', '(11) 98888-7777', '+55 11 98888-7777', '3555-4004'];
+    for (const [index, phone] of phones.entries()) {
+      const cpf = cpfFrom(`11122233${index}`);
+      expect((await post('/api/patients', { name: 'Someone New', phone, cpf, healthPlan: 'Private' })).status, phone).toBe(201);
     }
   });
 
-  it('refuses a patient without a name or a phone, naming the fields', async () => {
+  it('refuses a patient without a name, a phone, a CPF or a health plan, naming the fields', async () => {
     const { post } = await testApi();
 
     const { status, body } = await post<Failure>('/api/patients', { email: 'nobody@example.com' });
 
     expect(status).toBe(400);
-    expect(Object.keys(body.fields ?? {}).sort()).toEqual(['name', 'phone']);
+    expect(Object.keys(body.fields ?? {}).sort()).toEqual(['cpf', 'healthPlan', 'name', 'phone']);
+  });
+
+  it('refuses a CPF whose check digits do not match', async () => {
+    const { post } = await testApi();
+
+    const { status, body } = await post<Failure>('/api/patients', { name: 'Someone New', phone: '11 90000-0000', cpf: '123.456.789-00', healthPlan: 'Private' });
+
+    expect(status).toBe(400);
+    expect(body.fields).toEqual({ cpf: 'Enter a valid CPF: its check digits do not match' });
+  });
+
+  it('refuses a CPF that belongs to another patient, written either way', async () => {
+    const { post } = await testApi();
+    const ana = cpfFrom('390533447');
+    const written = `${ana.slice(0, 3)}.${ana.slice(3, 6)}.${ana.slice(6, 9)}-${ana.slice(9)}`;
+
+    const { status, body } = await post<Failure>('/api/patients', { name: 'Someone New', phone: '11 90000-0000', cpf: written, healthPlan: 'Private' });
+
+    expect(status).toBe(409);
+    expect(body.fields).toEqual({ cpf: 'This CPF belongs to another patient' });
   });
 
   it('refuses a phone that is too short and an e-mail that is not one', async () => {
     const { post } = await testApi();
 
-    const { status, body } = await post<Failure>('/api/patients', { name: 'Someone New', phone: '1234', email: 'not an e-mail' });
+    const { status, body } = await post<Failure>('/api/patients', { name: 'Someone New', phone: '1234', email: 'not an e-mail', cpf: '123.456.789-09', healthPlan: 'Private' });
 
     expect(status).toBe(400);
     expect(Object.keys(body.fields ?? {}).sort()).toEqual(['email', 'phone']);
@@ -232,9 +270,67 @@ describe('patients', () => {
     ]);
   });
 
+  it('changes the data of a patient', async () => {
+    const { get, patch } = await testApi();
+    const ana = cpfFrom('390533447');
+
+    const changed = await patch<Patient>('/api/patients/1', {
+      name: 'Ana Beatriz Costa Lima',
+      phone: '(11) 98888-2002',
+      email: 'Ana.Lima@Example.com',
+      birthDate: '1988-04-12',
+      cpf: ana,
+      healthPlan: ' Amparo Vida ',
+    });
+
+    expect(changed.status).toBe(200);
+    expect(changed.body).toEqual({
+      id: 1,
+      name: 'Ana Beatriz Costa Lima',
+      phone: '(11) 98888-2002',
+      email: 'ana.lima@example.com',
+      birthDate: '1988-04-12',
+      cpf: ana,
+      healthPlan: 'Amparo Vida',
+    });
+    expect((await get<Patient>('/api/patients/1')).body.healthPlan).toBe('Amparo Vida');
+  });
+
+  it('refuses to give a patient the CPF of another, or one whose digits do not match', async () => {
+    const { patch } = await testApi();
+    const data = { name: 'Ana Beatriz Costa', phone: '(11) 98888-1001', healthPlan: 'Private' };
+
+    const taken = await patch<Failure>('/api/patients/1', { ...data, cpf: cpfFrom('153509460') });
+    const wrong = await patch<Failure>('/api/patients/1', { ...data, cpf: '123.456.789-00' });
+
+    expect(taken.status).toBe(409);
+    expect(taken.body.fields).toEqual({ cpf: 'This CPF belongs to another patient' });
+    expect(wrong.status).toBe(400);
+    expect(wrong.body.fields).toEqual({ cpf: 'Enter a valid CPF: its check digits do not match' });
+  });
+
+  it('changes only the fields sent, and clears a field sent as null', async () => {
+    const { patch } = await testApi();
+
+    const plan = await patch<Patient>('/api/patients/1', { healthPlan: 'Amparo Vida' });
+    const cleared = await patch<Patient>('/api/patients/1', { birthDate: null });
+
+    expect(plan.status).toBe(200);
+    expect(plan.body).toMatchObject({ name: 'Ana Beatriz Costa', email: 'ana.costa@example.com', birthDate: '1988-04-12', healthPlan: 'Amparo Vida' });
+    expect(cleared.body).toMatchObject({ email: 'ana.costa@example.com', birthDate: null, healthPlan: 'Amparo Vida' });
+  });
+
+  it('answers 404 when changing a patient that does not exist', async () => {
+    const { patch } = await testApi();
+
+    const { status } = await patch('/api/patients/999', { name: 'Nobody', phone: '11 90000-0000', cpf: '123.456.789-09', healthPlan: 'Private' });
+
+    expect(status).toBe(404);
+  });
+
   it('removes a patient who has no appointments', async () => {
     const { get, post, delete: remove } = await testApi();
-    const created = await post<Patient>('/api/patients', { name: 'Passing By', phone: '11 90000-0000' });
+    const created = await post<Patient>('/api/patients', { name: 'Passing By', phone: '11 90000-0000', cpf: '123.456.789-09', healthPlan: 'Private' });
 
     expect((await remove(`/api/patients/${created.body.id}`)).status).toBe(204);
     expect((await get(`/api/patients/${created.body.id}`)).status).toBe(404);
@@ -273,6 +369,23 @@ describe('reminders', () => {
     );
   });
 
+  it('tells which appointments of tomorrow the next run will remind, until they are reminded', async () => {
+    const { get, post } = await testApi();
+    interface Due {
+      day: string;
+      due: { patientName: string; doctorName: string; time: string }[];
+    }
+
+    const before = (await get<Due>('/api/reminders')).body;
+    await post('/api/reminders/run');
+    const after = (await get<Due>('/api/reminders')).body;
+
+    expect(before.day).toBe(TOMORROW);
+    expect(before.due.map((item) => item.patientName).sort()).toEqual(['Bruno Carvalho', 'Giovana Martins', 'Heitor Nogueira']);
+    expect(before.due.find((item) => item.patientName === 'Giovana Martins')).toMatchObject({ doctorName: 'Dr. Helena Prado', time: '09:00' });
+    expect(after.due).toEqual([]);
+  });
+
   it('sends each reminder once', async () => {
     const { post } = await testApi();
 
@@ -285,6 +398,6 @@ describe('reminders', () => {
     const { get, post } = await testApi({ remindersEnabled: false });
 
     expect((await post('/api/reminders/run')).body).toEqual({ enabled: false, sent: 0 });
-    expect((await get<Outbox>('/api/reminders')).body).toEqual({ enabled: false, reminders: [] });
+    expect((await get<Outbox>('/api/reminders')).body).toEqual({ enabled: false, day: TOMORROW, due: [], reminders: [] });
   });
 });

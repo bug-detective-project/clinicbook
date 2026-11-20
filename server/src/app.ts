@@ -9,6 +9,7 @@ import { appointmentRoutes } from './routes/appointments.ts';
 import { doctorRoutes } from './routes/doctors.ts';
 import { patientRoutes } from './routes/patients.ts';
 import { reminderRoutes } from './routes/reminders.ts';
+import { scheduleRoutes } from './routes/schedule.ts';
 import { fieldsOf } from './schemas.ts';
 
 export interface AppOptions {
@@ -34,6 +35,7 @@ export function createApp(db: Db, settings: Settings, options: AppOptions = {}):
   doctorRoutes(app, context);
   patientRoutes(app, context);
   reminderRoutes(app, context);
+  scheduleRoutes(app, context);
 
   return app;
 }

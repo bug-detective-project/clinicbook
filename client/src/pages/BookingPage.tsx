@@ -6,9 +6,13 @@ import { listDoctors, listSlots } from '../api/doctors.ts';
 import { ApiError } from '../api/http.ts';
 import { listPatients } from '../api/patients.ts';
 import type { Appointment, Doctor, Patient } from '../api/types.ts';
+import { DatePicker } from '../components/DatePicker.tsx';
 import { TimeSlotPicker } from '../components/TimeSlotPicker.tsx';
 import ui from '../components/ui.module.css';
+import { formatShortDay } from '../dates.ts';
+import { useToast } from '../useToast.ts';
 import { useToday } from '../useToday.ts';
+import { Icon } from '../components/Icon.tsx';
 
 /**
  * The form that books an appointment and the one that reschedules it: the same fields, and when
@@ -17,6 +21,7 @@ import { useToday } from '../useToday.ts';
  */
 export function BookingPage() {
   const today = useToday();
+  const toast = useToast();
   const navigate = useNavigate();
   const { id } = useParams();
   const [params] = useSearchParams();
@@ -103,6 +108,7 @@ export function BookingPage() {
       } else {
         await bookAppointment({ patientId: Number(patientId), doctorId: Number(doctorId), day, time, reason });
       }
+      toast.success(rescheduling ? `The appointment was moved to ${formatShortDay(day)} at ${time}.` : `Appointment booked for ${formatShortDay(day)} at ${time}.`);
       await navigate(`/?day=${day}`);
     } catch (failure) {
       setError(failure instanceof ApiError ? failure.message : 'The appointment could not be saved.');
@@ -123,6 +129,7 @@ export function BookingPage() {
       <div className={ui.titleRow}>
         <h2>{title}</h2>
         <Link className={ui.button} to="/">
+          <Icon name="back" />
           Back to the agenda
         </Link>
       </div>
@@ -167,10 +174,7 @@ export function BookingPage() {
           </>
         )}
 
-        <label className={ui.field}>
-          <span>Day</span>
-          <input type="date" value={day} min={today} onChange={(event) => setDay(event.target.value)} />
-        </label>
+        <DatePicker label="Day" value={day} today={today} min={today} onChange={setDay} />
 
         <div className={ui.field}>
           <span className={ui.legend}>Time</span>
@@ -186,6 +190,7 @@ export function BookingPage() {
 
         <div>
           <button type="submit" className={ui.primary} disabled={saving}>
+            <Icon name="check" />
             {rescheduling ? 'Reschedule' : 'Book'}
           </button>
         </div>

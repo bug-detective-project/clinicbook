@@ -4,10 +4,14 @@ import { cancelAppointment, confirmAppointment, listToday } from '../api/appoint
 import { ApiError } from '../api/http.ts';
 import type { Appointment } from '../api/types.ts';
 import { StatusBadge } from '../components/StatusBadge.tsx';
+import { AgendaViews } from '../components/AgendaViews.tsx';
+import { PeriodNav } from '../components/PeriodNav.tsx';
 import ui from '../components/ui.module.css';
+import { useToast } from '../useToast.ts';
 import { addDays, formatDay } from '../dates.ts';
 import { useToday } from '../useToday.ts';
 import styles from './AgendaPage.module.css';
+import { Icon } from '../components/Icon.tsx';
 
 /** How often the agenda asks the server again, so two receptionists see each other's changes. */
 const REFRESH_MS = 15_000;
@@ -24,6 +28,7 @@ export function AgendaPage() {
   const [params] = useSearchParams();
   const day = params.get('day') ?? today;
   const [appointments, setAppointments] = useState<Appointment[] | null>(null);
+  const toast = useToast();
   const [error, setError] = useState('');
 
   useEffect(() => {
@@ -56,9 +61,9 @@ export function AgendaPage() {
     try {
       const updated = await action(id);
       setAppointments((list) => list?.map((item) => (item.id === updated.id ? updated : item)) ?? null);
-      setError('');
+      toast.success(`The appointment of ${updated.patientName} at ${updated.time} was ${updated.status}.`);
     } catch (failure) {
-      setError(failure instanceof ApiError ? failure.message : 'The change could not be saved.');
+      toast.error(failure instanceof ApiError ? failure.message : 'The change could not be saved.');
       // The screen may be showing an appointment as it was before someone else changed it.
       setAppointments(await listToday(day).catch(() => appointments));
     }
@@ -69,24 +74,24 @@ export function AgendaPage() {
 
   return (
     <section>
+      <AgendaViews view="day" day={day} />
       <div className={ui.titleRow}>
         <h2>{formatDay(day)}</h2>
         <Link className={ui.primary} to={`/appointments/new?day=${day}`}>
+          <Icon name="calendarPlus" />
           Book appointment
         </Link>
       </div>
 
-      <nav aria-label="Days" className={styles.days}>
-        <Link className={ui.button} to={`/?day=${addDays(day, -1)}`}>
-          Previous day
-        </Link>
-        <Link className={ui.button} to="/">
-          Today
-        </Link>
-        <Link className={ui.button} to={`/?day=${addDays(day, 1)}`}>
-          Next day
-        </Link>
-      </nav>
+      <div className={styles.days}>
+        <PeriodNav
+          label="Days"
+          previous={{ label: 'Previous day', to: `/?day=${addDays(day, -1)}` }}
+          current={{ label: 'Today', to: '/' }}
+          next={{ label: 'Next day', to: `/?day=${addDays(day, 1)}` }}
+          showingCurrent={day === today}
+        />
+      </div>
 
       {error !== '' && (
         <p role="alert" className={ui.alert}>
@@ -121,6 +126,7 @@ export function AgendaPage() {
                       aria-label={`Confirm ${appointment.patientName} at ${appointment.time}`}
                       onClick={() => void change(confirmAppointment, appointment.id)}
                     >
+                      <Icon name="check" />
                       Confirm
                     </button>
                   )}
@@ -131,6 +137,7 @@ export function AgendaPage() {
                         aria-label={`Reschedule ${appointment.patientName} at ${appointment.time}`}
                         to={`/appointments/${appointment.id}/reschedule`}
                       >
+                        <Icon name="clock" />
                         Reschedule
                       </Link>
                       <button
@@ -139,6 +146,7 @@ export function AgendaPage() {
                         aria-label={`Cancel ${appointment.patientName} at ${appointment.time}`}
                         onClick={() => void change(cancelAppointment, appointment.id)}
                       >
+                        <Icon name="close" />
                         Cancel
                       </button>
                     </>

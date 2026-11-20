@@ -7,6 +7,7 @@ import { PatientAppointments } from '../components/PatientAppointments.tsx';
 import { PatientDetails } from '../components/PatientDetails.tsx';
 import ui from '../components/ui.module.css';
 import styles from './PatientRecord.module.css';
+import { Icon } from '../components/Icon.tsx';
 
 /**
  * The record of one patient, at /patients/:id, with one tab per address:
@@ -56,6 +57,7 @@ export function PatientRecord() {
       <div className={ui.titleRow}>
         <h2>{patient.name}</h2>
         <Link className={ui.button} to="/patients">
+          <Icon name="back" />
           Back to the patients
         </Link>
       </div>
@@ -68,7 +70,7 @@ export function PatientRecord() {
       </nav>
 
       <Routes>
-        <Route index element={<PatientDetails patient={patient} />} />
+        <Route index element={<PatientDetails patient={patient} onChange={setPatient} />} />
         <Route path="appointments" element={<PatientAppointments patient={patient} />} />
       </Routes>
     </section>
