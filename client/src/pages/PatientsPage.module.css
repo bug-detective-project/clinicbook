@@ -79,3 +79,8 @@
   position: relative;
   z-index: 1;
 }
+
+/* The open menu goes over the cards below it, buttons included. */
+.menu:has([aria-expanded='true']) {
+  z-index: 2;
+}
