@@ -1,0 +1,75 @@
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
+  gap: 14px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.card {
+  position: relative;
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  cursor: pointer;
+  transition:
+    border-color 0.15s,
+    box-shadow 0.15s;
+}
+
+.card:hover,
+.card:focus-within {
+  border-color: var(--brand);
+  box-shadow:
+    0 0 0 3px var(--brand-soft),
+    var(--shadow);
+}
+
+.avatar {
+  display: grid;
+  flex-shrink: 0;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  border-radius: 999px;
+  background: var(--brand-soft);
+  color: var(--brand-strong);
+  font-weight: 800;
+}
+
+.body {
+  display: grid;
+  flex: 1;
+  gap: 3px;
+  min-width: 0;
+}
+
+.name {
+  color: var(--ink);
+  font-size: 1.0625rem;
+  text-decoration: none;
+}
+
+/* The link of the name covers the whole card, so a click anywhere on it opens the record. */
+.name::after {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  content: '';
+}
+
+.name:focus-visible {
+  outline: none;
+}
+
+/* The menu sits above the link of the card, so its button still opens the menu. */
+.menu {
+  position: relative;
+  z-index: 1;
+}
+
+/* The open menu goes over the cards below it, buttons included. */
+.menu:has([aria-expanded='true']) {
+  z-index: 2;
+}
