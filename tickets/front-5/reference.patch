@@ -1,9 +1,9 @@
 diff --git a/client/src/components/PatientMenu.close.test.tsx b/client/src/components/PatientMenu.close.test.tsx
 new file mode 100644
-index 0000000..678e2af
+index 0000000..47483e9
 --- /dev/null
 +++ b/client/src/components/PatientMenu.close.test.tsx
-@@ -0,0 +1,72 @@
+@@ -0,0 +1,73 @@
 +import { screen } from '@testing-library/react';
 +import userEvent from '@testing-library/user-event';
 +import { describe, expect, it } from 'vitest';
@@ -68,16 +68,17 @@ index 0000000..678e2af
 +  it('does nothing on Escape while every menu is closed', async () => {
 +    mockApi();
 +    await renderApp('/patients');
-+    const field = await screen.findByLabelText('Name');
-+    await userEvent.click(field);
++    const toggle = await screen.findByRole('button', { name: 'Actions for Bruno Carvalho' });
++    toggle.focus();
 +
 +    await userEvent.keyboard('{Escape}');
 +
-+    expect(field).toHaveFocus();
++    expect(toggle).toHaveFocus();
++    expect(screen.queryByRole('menu')).not.toBeInTheDocument();
 +  });
 +});
 diff --git a/client/src/components/PatientMenu.tsx b/client/src/components/PatientMenu.tsx
-index 8ee1928..dbfefbb 100644
+index 49acc4f..281c62a 100644
 --- a/client/src/components/PatientMenu.tsx
 +++ b/client/src/components/PatientMenu.tsx
 @@ -1,4 +1,4 @@
@@ -85,8 +86,8 @@ index 8ee1928..dbfefbb 100644
 +import { useEffect, useRef, useState } from 'react';
  import { Link } from 'react-router';
  import type { Patient } from '../api/types.ts';
- import styles from './PatientMenu.module.css';
-@@ -11,10 +11,38 @@ export interface PatientMenuProps {
+ import { Icon } from './Icon.tsx';
+@@ -12,10 +12,38 @@ export interface PatientMenuProps {
  /** The "..." button of a patient and the menu of actions it opens. */
  export function PatientMenu({ patient, onRemove }: PatientMenuProps) {
    const [open, setOpen] = useState(false);

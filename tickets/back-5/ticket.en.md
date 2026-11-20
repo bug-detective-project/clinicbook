@@ -23,7 +23,7 @@ Every appointment takes a slot of 30 minutes. A doctor has working hours for eac
 ## What is already there
 
 - The client calls `GET /api/doctors/:id/slots?day=YYYY-MM-DD` (`listSlots` in `client/src/api/doctors.ts`) and expects `{ "day": "...", "slots": ["08:00", "08:30", ...] }`.
-- `server/src/routes/doctors.ts` has the other route of the doctors. The routes receive `db` and `today()`, the day the server calls today.
+- `server/src/routes/doctors.ts` has the other routes of the doctors (the list, one doctor, registering, changing and removing one). The routes receive `db` and `today()`, the day the server calls today.
 - `server/src/repository.ts` has `findDoctor(db, id)`, `workingPeriods(db, doctorId, weekday)` (the periods of a day of the week, the earliest first, each with `startsAt` and `endsAt` as `HH:MM`) and `bookedTimes(db, doctorId, day)` (the times of the appointments of that day that are not cancelled).
 - `server/src/dates.ts` has `isDay`, `weekdayOf` (1 is Monday), `minutesOf` (`"08:30"` is 510) and `timeOf` (510 is `"08:30"`). `server/src/schedule.ts` has `SLOT_MINUTES` and `isWorkingTime`, the rule a booking uses to accept a time.
 - `server/src/schemas.ts` has `requiredDayQuery`, the schema of a query that must bring a `day`. The errors of `server/src/errors.ts` (`NotFoundError`, `InvalidError`) become the right answers by themselves.

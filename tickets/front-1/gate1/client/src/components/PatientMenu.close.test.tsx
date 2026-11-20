@@ -62,11 +62,12 @@ describe('closing the menu of a patient', () => {
   it('does nothing on Escape while every menu is closed', async () => {
     mockApi();
     await renderApp('/patients');
-    const field = await screen.findByLabelText('Name');
-    await userEvent.click(field);
+    const toggle = await screen.findByRole('button', { name: 'Actions for Bruno Carvalho' });
+    toggle.focus();
 
     await userEvent.keyboard('{Escape}');
 
-    expect(field).toHaveFocus();
+    expect(toggle).toHaveFocus();
+    expect(screen.queryByRole('menu')).not.toBeInTheDocument();
   });
 });

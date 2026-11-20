@@ -1,0 +1,13 @@
+diff --git a/server/src/repository.ts b/server/src/repository.ts
+index 486b646..c124ef5 100644
+--- a/server/src/repository.ts
++++ b/server/src/repository.ts
+@@ -193,7 +193,7 @@ export function listAppointmentsOfDay(db: Db, day: string): Promise<Appointment[
+ 
+ /** The appointments from `from` to `to` (of one doctor, or of all), the earliest first. */
+ export function listAppointmentsBetween(db: Db, from: string, to: string, doctorId?: number): Promise<Appointment[]> {
+-  let query = appointments(db).where('appointments.day', '>=', from).where('appointments.day', '<=', to);
++  let query = appointments(db).where('appointments.day', '>=', from).where('appointments.day', '<', to);
+   if (doctorId !== undefined) {
+     query = query.where('appointments.doctorId', '=', doctorId);
+   }

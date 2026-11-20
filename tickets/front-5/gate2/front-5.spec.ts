@@ -59,6 +59,7 @@ test.describe('Ticket front-5: the menu of a patient closes like a menu', () => 
     await openPatients(page);
     await menuButton(page, davi).click();
     await menuOf(page, davi).getByRole('menuitem', { name: 'Remove patient' }).click();
+    await page.getByRole('alertdialog', { name: 'Remove patient' }).getByRole('button', { name: 'Remove' }).click();
     // Davi has appointments, so he stays; the menu closes anyway.
     await expect(page.getByRole('alert')).toContainText(davi.name);
     await expect(menuOf(page, davi)).toHaveCount(0);
@@ -67,12 +68,16 @@ test.describe('Ticket front-5: the menu of a patient closes like a menu', () => 
   test('Escape with every menu closed changes nothing', async ({ page }) => {
     await page.keyboard.press('Escape');
     await expect(menuOf(page, bruno)).toHaveCount(0);
-    const name = page.getByLabel('Name');
-    await name.fill('Someone');
+    const patients = page.getByRole('list', { name: 'Patients' }).getByRole('listitem');
+    const before = await patients.count();
+    const first = menuButton(page, ana);
+    await first.focus();
 
     await page.keyboard.press('Escape');
 
-    await expect(name).toBeFocused();
-    await expect(name).toHaveValue('Someone');
+    await expect(first).toBeFocused();
+    await expect(first).toHaveAttribute('aria-expanded', 'false');
+    await expect(patients).toHaveCount(before);
+    await expect(page.getByRole('alert')).toHaveCount(0);
   });
 });

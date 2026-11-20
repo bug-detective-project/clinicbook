@@ -1,0 +1,7 @@
+{
+  "hints": [
+    "A change of a doctor is three writes: the doctor row, the old periods removed and the new ones inserted (`updateDoctor` in `server/src/repository.ts`). Which of them runs before the one the database refuses, and what stays when the last one fails?",
+    "The `CHECK` of `working_hours` refuses the insert of a period from 05:00. By then, the update of the doctor and the delete of the periods are already written. Each write is a statement of its own, so the failure of the third one undoes nothing.",
+    "Group the three writes in one transaction, so they are all kept or none is: `await db.transaction().execute(async (trx) => { ... })`, with every write inside using `trx` instead of `db`. `createDoctor`, right above, already does it this way."
+  ]
+}

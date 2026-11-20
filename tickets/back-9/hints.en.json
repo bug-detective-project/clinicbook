@@ -1,0 +1,7 @@
+{
+  "hints": [
+    "The rule is `hoursProblem` in `server/src/routes/doctors.ts`, which both `POST` and `PATCH` of a doctor call. Read how it decides that two periods overlap: which periods does it compare with which?",
+    "It compares each period only with the one right before it in the list, as it came in the request. That is enough when the list is sorted by day and start, and misses two overlapping periods that are not next to each other.",
+    "Sort a copy of the list first, by weekday and then by start time (`[...hours].sort((a, b) => a.weekday - b.weekday || a.startsAt.localeCompare(b.startsAt))`), and compare neighbours in the sorted list. In a sorted list, a period overlaps the one before it on the same day when it starts before that one ends."
+  ]
+}

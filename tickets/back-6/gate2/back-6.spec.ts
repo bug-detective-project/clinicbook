@@ -88,7 +88,9 @@ test.describe('Ticket back-6: rescheduling an appointment', () => {
     await page.getByRole('link', { name: `Reschedule ${fabio.patient.name} at ${fabio.time}` }).click();
     await expect(page.getByRole('heading', { level: 2, name: 'Reschedule appointment' })).toBeVisible();
 
-    await page.getByLabel('Day').fill('2026-03-11');
+    // The day is picked in the calendar of the form.
+    await page.getByRole('button', { name: /^Day, / }).click();
+    await page.getByRole('button', { name: 'Wednesday, March 11, 2026' }).click();
     await page.getByRole('radiogroup', { name: 'Time' }).getByRole('radio', { name: '15:30' }).check();
     await page.getByRole('button', { name: 'Reschedule' }).click();
 

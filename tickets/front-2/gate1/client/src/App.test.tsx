@@ -130,7 +130,9 @@ describe('booking an appointment', () => {
 
     expect(await screen.findByRole('heading', { level: 2, name: 'Monday, March 9' })).toBeInTheDocument();
     expect(api.calls('PATCH', '/api/appointments/3')[0].body).toEqual({ day: '2026-03-09', time: '11:00' });
-    expect(await within(row(3)).findByText('11:00')).toBeInTheDocument();
+    // The list of the agenda loads after its title.
+    expect(await within(await screen.findByTestId('appointment-3')).findByText('11:00')).toBeInTheDocument();
+    expect(screen.getByRole('status')).toHaveTextContent('The appointment was moved to Mar 9, 2026 at 11:00.');
   });
 });
 
@@ -146,16 +148,22 @@ describe('patients', () => {
       'Camila Duarte',
       'Davi Fernandes',
     ]);
-    expect(within(rows[2]).getByText('No e-mail')).toBeInTheDocument();
+    expect(within(rows[1]).getByText('(11) 97777-2002')).toBeInTheDocument();
   });
 
   it('registers a patient and puts it on the list', async () => {
     const api = mockApi();
     await renderApp('/patients');
-    const form = await screen.findByRole('form', { name: 'New patient' });
+    await userEvent.click(await screen.findByRole('button', { name: 'New patient' }));
+    const form = screen.getByRole('form', { name: 'New patient' });
 
     await userEvent.type(within(form).getByLabelText('Name'), 'Bianca Rocha');
-    await userEvent.type(within(form).getByLabelText('Phone'), '(11) 91111-9009');
+    // The CPF and the phone take digits only, and show them with their mask.
+    await userEvent.type(within(form).getByLabelText('CPF'), '12345678909');
+    expect(within(form).getByLabelText('CPF')).toHaveValue('123.456.789-09');
+    await userEvent.type(within(form).getByLabelText('Phone'), '11911119009');
+    expect(within(form).getByLabelText('Phone')).toHaveValue('(11) 91111-9009');
+    await userEvent.type(within(form).getByLabelText('Health plan'), 'Amparo Vida');
     await userEvent.click(within(form).getByRole('button', { name: 'Register' }));
 
     const list = screen.getByRole('list', { name: 'Patients' });
@@ -165,8 +173,43 @@ describe('patients', () => {
       phone: '(11) 91111-9009',
       email: null,
       birthDate: null,
+      cpf: '123.456.789-09',
+      healthPlan: 'Amparo Vida',
     });
-    expect(within(form).getByLabelText('Name')).toHaveValue('');
+    // The dialog closes, and the focus goes back to the button that opened it.
+    await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument());
+    expect(screen.getByRole('button', { name: 'New patient' })).toHaveFocus();
+  });
+
+  it('opens the form of a new patient in a dialog, with the focus on its first field', async () => {
+    mockApi();
+    await renderApp('/patients');
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+
+    await userEvent.click(await screen.findByRole('button', { name: 'New patient' }));
+
+    const dialog = screen.getByRole('dialog', { name: 'New patient' });
+    expect(dialog).toHaveAttribute('aria-modal', 'true');
+    expect(within(dialog).getByLabelText('Name')).toHaveFocus();
+  });
+
+  it.each([
+    ['Escape', () => userEvent.keyboard('{Escape}')],
+    ['Cancel', () => userEvent.click(screen.getByRole('button', { name: 'Cancel' }))],
+    ['the close button', () => userEvent.click(screen.getByRole('button', { name: 'Close' }))],
+  ])('closes the dialog with %s, registers nobody and starts empty the next time', async (_name, close) => {
+    const api = mockApi();
+    await renderApp('/patients');
+    await userEvent.click(await screen.findByRole('button', { name: 'New patient' }));
+    await userEvent.type(screen.getByLabelText('Name'), 'Half Typed');
+
+    await close();
+
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+    expect(api.calls('POST', '/api/patients')).toEqual([]);
+    expect(screen.getByRole('button', { name: 'New patient' })).toHaveFocus();
+    await userEvent.click(screen.getByRole('button', { name: 'New patient' }));
+    expect(screen.getByLabelText('Name')).toHaveValue('');
   });
 
   it('shows next to each field what the server refused', async () => {
@@ -177,7 +220,8 @@ describe('patients', () => {
           : undefined,
     });
     await renderApp('/patients');
-    const form = await screen.findByRole('form', { name: 'New patient' });
+    await userEvent.click(await screen.findByRole('button', { name: 'New patient' }));
+    const form = screen.getByRole('form', { name: 'New patient' });
 
     await userEvent.type(within(form).getByLabelText('Name'), 'Bianca Rocha');
     await userEvent.type(within(form).getByLabelText('Phone'), '12');
@@ -211,9 +255,26 @@ describe('patients', () => {
 
     await userEvent.click(await screen.findByRole('button', { name: 'Actions for Davi Fernandes' }));
     await userEvent.click(screen.getByRole('menuitem', { name: 'Remove patient' }));
+    const confirm = screen.getByRole('alertdialog', { name: 'Remove patient' });
+    expect(confirm).toHaveTextContent('Remove Davi Fernandes from the patients of the clinic?');
+    await userEvent.click(within(confirm).getByRole('button', { name: 'Remove' }));
 
     await waitFor(() => expect(screen.queryByTestId('patient-4')).not.toBeInTheDocument());
     expect(screen.getByTestId('patient-1')).toBeInTheDocument();
+  });
+
+  it('keeps the patient when the removal is cancelled', async () => {
+    const api = mockApi();
+    await renderApp('/patients');
+
+    await userEvent.click(await screen.findByRole('button', { name: 'Actions for Davi Fernandes' }));
+    await userEvent.click(screen.getByRole('menuitem', { name: 'Remove patient' }));
+    await userEvent.click(within(screen.getByRole('alertdialog')).getByRole('button', { name: 'Cancel' }));
+
+    expect(screen.queryByRole('alertdialog')).not.toBeInTheDocument();
+    expect(screen.getByTestId('patient-4')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Actions for Davi Fernandes' })).toHaveFocus();
+    expect(api.calls('DELETE', '/api/patients/4')).toHaveLength(0);
   });
 
   it('says why a patient with appointments stays', async () => {
@@ -222,6 +283,7 @@ describe('patients', () => {
 
     await userEvent.click(await screen.findByRole('button', { name: 'Actions for Ana Beatriz Costa' }));
     await userEvent.click(screen.getByRole('menuitem', { name: 'Remove patient' }));
+    await userEvent.click(within(screen.getByRole('alertdialog')).getByRole('button', { name: 'Remove' }));
 
     expect(await screen.findByRole('alert')).toHaveTextContent('Ana Beatriz Costa: This record is in use and cannot be removed');
     expect(screen.getByTestId('patient-1')).toBeInTheDocument();
@@ -237,9 +299,39 @@ describe('reminders', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Send the reminders of tomorrow' }));
 
     expect(await screen.findByRole('status')).toHaveTextContent('1 reminder sent.');
-    const sent = within(screen.getByRole('list', { name: 'Sent reminders' })).getAllByRole('listitem');
+    const sent = within(await screen.findByRole('list', { name: 'Sent reminders' })).getAllByRole('listitem');
     expect(sent).toHaveLength(1);
     expect(sent[0]).toHaveTextContent('Camila Duarte');
+    expect(sent[0]).toHaveTextContent(/Sent Mar \d+, 2026/);
+  });
+
+  it('shows which appointments of tomorrow will get a reminder, until it is sent', async () => {
+    mockApi();
+    await renderApp('/reminders');
+
+    expect(await screen.findByRole('heading', { name: 'Due tomorrow, Tuesday, March 10' })).toBeInTheDocument();
+    const due = within(screen.getByRole('list', { name: 'Due reminders' })).getAllByRole('listitem');
+    // The cancelled appointment of tomorrow gets no reminder.
+    expect(due).toHaveLength(1);
+    expect(due[0]).toHaveTextContent('Camila Duarte');
+    expect(due[0]).toHaveTextContent('(11) 96666-3003');
+
+    await userEvent.click(screen.getByRole('button', { name: 'Send the reminders of tomorrow' }));
+
+    expect(await screen.findByText('No appointment of tomorrow is waiting for a reminder.')).toBeInTheDocument();
+  });
+
+  it('explains the screen behind its i button', async () => {
+    mockApi();
+    await renderApp('/reminders');
+    const info = await screen.findByRole('button', { name: 'About reminders' });
+
+    await userEvent.click(info);
+    expect(screen.getByRole('note')).toHaveTextContent('The day before an appointment, the patient gets a text message');
+    expect(info).toHaveAttribute('aria-expanded', 'true');
+
+    await userEvent.keyboard('{Escape}');
+    expect(screen.queryByRole('note')).not.toBeInTheDocument();
   });
 
   it('says that the reminders are off, and offers nothing to send', async () => {
@@ -257,5 +349,26 @@ describe('addresses', () => {
     await renderApp('/nowhere');
 
     expect(await screen.findByRole('heading', { level: 2, name: 'Page not found' })).toBeInTheDocument();
+  });
+});
+
+describe('the menu button', () => {
+  it('opens the screens, and closes when one is chosen or on Escape', async () => {
+    mockApi();
+    await renderApp();
+    const button = await screen.findByRole('button', { name: 'Menu' });
+    expect(button).toHaveAttribute('aria-expanded', 'false');
+
+    await userEvent.click(button);
+    expect(button).toHaveAttribute('aria-expanded', 'true');
+    await userEvent.click(within(screen.getByRole('navigation', { name: 'Main' })).getByRole('link', { name: 'Patients' }));
+
+    expect(await screen.findByRole('heading', { level: 2, name: 'Patients' })).toBeInTheDocument();
+    expect(button).toHaveAttribute('aria-expanded', 'false');
+
+    await userEvent.click(button);
+    await userEvent.keyboard('{Escape}');
+    expect(button).toHaveAttribute('aria-expanded', 'false');
+    expect(button).toHaveFocus();
   });
 });

@@ -1,0 +1,13 @@
+diff --git a/client/src/components/WeekGrid.tsx b/client/src/components/WeekGrid.tsx
+index f349e02..5ae4a9c 100644
+--- a/client/src/components/WeekGrid.tsx
++++ b/client/src/components/WeekGrid.tsx
+@@ -18,7 +18,7 @@ interface WeekGridProps {
+ 
+ /** True when `time` falls inside one of the periods of the day. */
+ function insideHours(hours: Hours[], weekday: number, time: string): boolean {
+-  return hours.some((period) => period.weekday === weekday && time >= period.startsAt && time < period.endsAt);
++  return hours.some((period) => period.weekday === weekday && time > period.startsAt && time <= period.endsAt);
+ }
+ 
+ /**

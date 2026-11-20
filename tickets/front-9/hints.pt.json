@@ -1,0 +1,7 @@
+{
+  "hints": [
+    "O formulário é o `client/src/components/PatientDialog.tsx`, aberto da ficha pelo `client/src/components/PatientDetails.tsx` com o `patient` que a ficha mostra. Veja como o diálogo monta os primeiros valores dos campos a partir desse paciente (`formOf`).",
+    "O `formOf` usa `Object.assign(patient, { … })`. O `Object.assign` escreve no primeiro argumento: ele muda o objeto do paciente da ficha (o `email` vira `''`, o `cpf` ganha a máscara) e devolve esse mesmo objeto como formulário.",
+    "Monte um objeto novo em vez de mudar o paciente: `return { name: patient.name, phone: maskPhone(patient.phone), email: patient.email ?? '', birthDate: patient.birthDate ?? '', cpf: maskCpf(patient.cpf), healthPlan: patient.healthPlan }`. O formulário recebe os textos, e o paciente da ficha nunca é tocado."
+  ]
+}

@@ -2,6 +2,7 @@ import { expect, test } from '@playwright/test';
 
 interface Outbox {
   enabled: boolean;
+  due: unknown[];
   reminders: unknown[];
 }
 
@@ -29,7 +30,7 @@ test.describe('Ticket back-3: REMINDERS_ENABLED=false turns the reminders off', 
     }
 
     const outbox = (await (await request.get('/api/reminders')).json()) as Outbox;
-    expect(outbox).toEqual({ enabled: false, reminders: [] });
+    expect(outbox).toMatchObject({ enabled: false, due: [], reminders: [] });
   });
 
   test('the Reminders screen says that they are off, and has nothing to send', async ({ page }) => {

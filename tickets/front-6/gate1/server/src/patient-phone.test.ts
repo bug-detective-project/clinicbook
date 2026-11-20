@@ -2,6 +2,9 @@ import { describe, expect, it } from 'vitest';
 import type { Patient } from './repository.ts';
 import { testApi } from './test/api.ts';
 
+/** Valid CPFs that no sample patient has. */
+const NEW_CPFS = ['52998224725', '11144477735', '98765432100', '12345678909', '31415926590'];
+
 interface Failure {
   error: string;
   fields?: Record<string, string>;
@@ -18,7 +21,7 @@ describe('the phone of a patient', () => {
   ])('refuses a phone with %s', async (_what, phone) => {
     const { get, post } = await testApi();
 
-    const { status, body } = await post<Failure>('/api/patients', { name: 'Someone New', phone });
+    const { status, body } = await post<Failure>('/api/patients', { name: 'Someone New', cpf: NEW_CPFS[0], phone, healthPlan: 'Private' });
 
     expect(status).toBe(400);
     expect(body.fields).toEqual({ phone: 'Use only digits, spaces, dashes and parentheses (8 to 20 characters)' });
@@ -28,14 +31,15 @@ describe('the phone of a patient', () => {
   it('still accepts the formats the clinic uses', async () => {
     const { post } = await testApi();
 
-    for (const phone of ['11988887777', '(11) 98888-7777', '+55 11 98888-7777', '3555-4004']) {
-      expect((await post('/api/patients', { name: 'Someone New', phone })).status, phone).toBe(201);
+    const phones = ['11988887777', '(11) 98888-7777', '+55 11 98888-7777', '3555-4004'];
+    for (const [index, phone] of phones.entries()) {
+      expect((await post('/api/patients', { name: 'Someone New', cpf: NEW_CPFS[index], phone, healthPlan: 'Private' })).status, phone).toBe(201);
     }
   });
 
   it('never stops the reminders of the other patients', async () => {
     const { post } = await testApi();
-    const refused = await post('/api/patients', { name: 'Vera Xavier', phone: '11 9888-77AB' });
+    const refused = await post('/api/patients', { name: 'Vera Xavier', cpf: NEW_CPFS[4], phone: '11 9888-77AB', healthPlan: 'Private' });
     if (refused.status === 201) {
       // Only when the phone was accepted: an appointment tomorrow, so that she is due a reminder.
       await post('/api/appointments', { patientId: (refused.body as Patient).id, doctorId: 1, day: '2026-03-10', time: '10:00' });

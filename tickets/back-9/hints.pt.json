@@ -1,0 +1,7 @@
+{
+  "hints": [
+    "A regra é o `hoursProblem` em `server/src/routes/doctors.ts`, que o `POST` e o `PATCH` de um médico chamam. Leia como ela decide que dois períodos se sobrepõem: quais períodos ela compara com quais?",
+    "Ela compara cada período só com o que vem logo antes dele na lista, como chegou na requisição. Isso basta quando a lista está ordenada por dia e início, e deixa passar dois períodos sobrepostos que não estão lado a lado.",
+    "Ordene antes uma cópia da lista, por dia da semana e depois por início (`[...hours].sort((a, b) => a.weekday - b.weekday || a.startsAt.localeCompare(b.startsAt))`), e compare os vizinhos na lista ordenada. Numa lista ordenada, um período se sobrepõe ao anterior do mesmo dia quando começa antes de o anterior terminar."
+  ]
+}

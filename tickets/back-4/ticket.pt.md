@@ -39,6 +39,7 @@ Termine o `handleError`, nesta ordem, depois dos dois casos que ele já tem:
 | --- | --- | --- |
 | Um `QueryError` cujo `code` é `SQLITE_CONSTRAINT_UNIQUE` | 409 | `{ "error": "This record already exists" }` |
 | Um `QueryError` cujo `code` é `SQLITE_CONSTRAINT_FOREIGNKEY` | 409 | `{ "error": "This record is in use and cannot be removed" }` |
+| Um `QueryError` cujo `code` é `SQLITE_CONSTRAINT_CHECK` | 400 | `{ "error": "Some values are outside what the clinic allows" }` |
 | Um erro com `statusCode` de 400 a 499 | aquele status | `{ "error": <a mensagem do erro> }`, como hoje |
 | Qualquer outra coisa | 500 | `{ "error": "Internal server error" }` |
 

@@ -1,0 +1,7 @@
+{
+  "hints": [
+    "The check belongs where the CPF is already read: `inputOf` in `server/src/routes/patients.ts`, which both `POST` and `PATCH` use. Today it refuses only when `cpfDigits` gives `null`. Write a function next to `cpfDigits` in `server/src/cpf.ts` that says whether 11 digits are a real CPF, and call it there.",
+    "`cpfFrom` in `server/src/cpf.ts` already works out a check digit from the digits before it: the private `checkDigit`. A CPF is real when `checkDigit` of its first nine digits is its 10th digit and `checkDigit` of its first ten is its 11th.",
+    "Something like `isValidCpf(digits)`: false when the 11 digits are all the same (`/^(\\d)\\1{10}$/`), otherwise the two comparisons above. In `inputOf`, refuse with `throw new InvalidError('Some fields are not valid', { cpf: 'Enter a valid CPF: its check digits do not match' })` when `cpfDigits` gives `null` or the function says false. Keep the 409 check of a CPF in use after it."
+  ]
+}

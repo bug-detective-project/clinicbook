@@ -1,0 +1,7 @@
+{
+  "hints": [
+    "A conferência fica onde o CPF já é lido: `inputOf` em `server/src/routes/patients.ts`, que o `POST` e o `PATCH` usam. Hoje ela só recusa quando o `cpfDigits` dá `null`. Escreva uma função ao lado de `cpfDigits` em `server/src/cpf.ts` que diga se 11 dígitos são um CPF de verdade, e chame-a ali.",
+    "O `cpfFrom` em `server/src/cpf.ts` já calcula um dígito verificador a partir dos dígitos antes dele: a função privada `checkDigit`. Um CPF é de verdade quando o `checkDigit` dos nove primeiros dígitos é o 10º dígito e o `checkDigit` dos dez primeiros é o 11º.",
+    "Algo como `isValidCpf(digits)`: falso quando os 11 dígitos são todos iguais (`/^(\\d)\\1{10}$/`), senão as duas comparações acima. Em `inputOf`, recuse com `throw new InvalidError('Some fields are not valid', { cpf: 'Enter a valid CPF: its check digits do not match' })` quando o `cpfDigits` der `null` ou a função disser falso. Mantenha depois dela a conferência do 409 de CPF em uso."
+  ]
+}

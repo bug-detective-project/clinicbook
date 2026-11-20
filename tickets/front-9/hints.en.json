@@ -1,0 +1,7 @@
+{
+  "hints": [
+    "The form is `client/src/components/PatientDialog.tsx`, opened from the record by `client/src/components/PatientDetails.tsx` with the `patient` the record shows. Look at how the dialog builds the first values of its fields from that patient (`formOf`).",
+    "`formOf` uses `Object.assign(patient, { … })`. `Object.assign` writes into its first argument: it changes the patient object of the record (its `email` becomes `''`, its `cpf` gets the mask) and gives that same object back as the form.",
+    "Build a new object instead of changing the patient: `return { name: patient.name, phone: maskPhone(patient.phone), email: patient.email ?? '', birthDate: patient.birthDate ?? '', cpf: maskCpf(patient.cpf), healthPlan: patient.healthPlan }`. The form gets its texts, and the patient of the record is never touched."
+  ]
+}

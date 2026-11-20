@@ -1,5 +1,5 @@
 diff --git a/server/src/app.ts b/server/src/app.ts
-index 1d3622d..98da320 100644
+index 436e3e9..cfea598 100644
 --- a/server/src/app.ts
 +++ b/server/src/app.ts
 @@ -4,7 +4,7 @@ import type { Settings } from './config.ts';
@@ -11,7 +11,7 @@ index 1d3622d..98da320 100644
  import { appointmentRoutes } from './routes/appointments.ts';
  import { doctorRoutes } from './routes/doctors.ts';
  import { patientRoutes } from './routes/patients.ts';
-@@ -53,8 +53,12 @@ async function allowedHost(request: FastifyRequest, reply: FastifyReply): Promis
+@@ -55,8 +55,12 @@ async function allowedHost(request: FastifyRequest, reply: FastifyReply): Promis
    }
  }
  
@@ -26,19 +26,22 @@ index 1d3622d..98da320 100644
    // A request that does not fit the schema of its route.
    if ('validation' in error && error.validation) {
      return reply.status(400).send({ error: 'Some fields are not valid', fields: fieldsOf(error.validation) });
-@@ -63,7 +67,17 @@ function handleError(error: FastifyError | Error, _request: FastifyRequest, repl
+@@ -65,7 +69,20 @@ function handleError(error: FastifyError | Error, _request: FastifyRequest, repl
    if (error instanceof HttpError) {
      return reply.status(error.status).send({ error: error.message, fields: error.fields });
    }
 -  // Anything else: the status the error brings, or 500, with its message.
 -  const status = 'statusCode' in error && typeof error.statusCode === 'number' ? error.statusCode : 500;
 -  return reply.status(status).send({ error: error.message });
-+  // The database refused the query to protect the data: the two cases a user can cause.
++  // The database refused the query to protect the data: the cases a user can cause.
 +  if (error instanceof QueryError && error.code === 'SQLITE_CONSTRAINT_UNIQUE') {
 +    return reply.status(409).send({ error: 'This record already exists' });
 +  }
 +  if (error instanceof QueryError && error.code === 'SQLITE_CONSTRAINT_FOREIGNKEY') {
 +    return reply.status(409).send({ error: 'This record is in use and cannot be removed' });
++  }
++  if (error instanceof QueryError && error.code === 'SQLITE_CONSTRAINT_CHECK') {
++    return reply.status(400).send({ error: 'Some values are outside what the clinic allows' });
 +  }
 +  // A request Fastify itself refused, such as a body that is not JSON.
 +  if ('statusCode' in error && typeof error.statusCode === 'number' && error.statusCode >= 400 && error.statusCode < 500) {
@@ -49,10 +52,10 @@ index 1d3622d..98da320 100644
  }
 diff --git a/server/src/error-answers.test.ts b/server/src/error-answers.test.ts
 new file mode 100644
-index 0000000..b5f5d12
+index 0000000..cc979e1
 --- /dev/null
 +++ b/server/src/error-answers.test.ts
-@@ -0,0 +1,88 @@
+@@ -0,0 +1,90 @@
 +import { describe, expect, it } from 'vitest';
 +import { testApi } from './test/api.ts';
 +
@@ -69,7 +72,9 @@ index 0000000..b5f5d12
 +
 +    const { status, body } = await post<Failure>('/api/patients', {
 +      name: 'Another Ana',
++      cpf: '52998224725',
 +      phone: '(11) 90000-1111',
++      healthPlan: 'Private',
 +      email: 'ana.costa@example.com',
 +    });
 +
@@ -80,7 +85,7 @@ index 0000000..b5f5d12
 +  it('treats the e-mail as the same whatever its capital letters', async () => {
 +    const { post } = await testApi();
 +
-+    const { status } = await post('/api/patients', { name: 'Another Ana', phone: '(11) 90000-1111', email: 'Ana.Costa@Example.com' });
++    const { status } = await post('/api/patients', { name: 'Another Ana', cpf: '52998224725', phone: '(11) 90000-1111', healthPlan: 'Private', email: 'Ana.Costa@Example.com' });
 +
 +    expect(status).toBe(409);
 +  });
@@ -98,7 +103,7 @@ index 0000000..b5f5d12
 +  it('never shows the query', async () => {
 +    const { post, delete: remove } = await testApi();
 +
-+    const duplicate = await post<Failure>('/api/patients', { name: 'Another Ana', phone: '(11) 90000-1111', email: 'ana.costa@example.com' });
++    const duplicate = await post<Failure>('/api/patients', { name: 'Another Ana', cpf: '52998224725', phone: '(11) 90000-1111', healthPlan: 'Private', email: 'ana.costa@example.com' });
 +    const inUse = await remove<Failure>('/api/patients/1');
 +
 +    expect(duplicate.body.error).not.toMatch(SQL);

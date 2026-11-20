@@ -14,7 +14,9 @@ describe('what the user reads when the database refuses a request', () => {
 
     const { status, body } = await post<Failure>('/api/patients', {
       name: 'Another Ana',
+      cpf: '52998224725',
       phone: '(11) 90000-1111',
+      healthPlan: 'Private',
       email: 'ana.costa@example.com',
     });
 
@@ -25,7 +27,7 @@ describe('what the user reads when the database refuses a request', () => {
   it('treats the e-mail as the same whatever its capital letters', async () => {
     const { post } = await testApi();
 
-    const { status } = await post('/api/patients', { name: 'Another Ana', phone: '(11) 90000-1111', email: 'Ana.Costa@Example.com' });
+    const { status } = await post('/api/patients', { name: 'Another Ana', cpf: '52998224725', phone: '(11) 90000-1111', healthPlan: 'Private', email: 'Ana.Costa@Example.com' });
 
     expect(status).toBe(409);
   });
@@ -43,7 +45,7 @@ describe('what the user reads when the database refuses a request', () => {
   it('never shows the query', async () => {
     const { post, delete: remove } = await testApi();
 
-    const duplicate = await post<Failure>('/api/patients', { name: 'Another Ana', phone: '(11) 90000-1111', email: 'ana.costa@example.com' });
+    const duplicate = await post<Failure>('/api/patients', { name: 'Another Ana', cpf: '52998224725', phone: '(11) 90000-1111', healthPlan: 'Private', email: 'ana.costa@example.com' });
     const inUse = await remove<Failure>('/api/patients/1');
 
     expect(duplicate.body.error).not.toMatch(SQL);

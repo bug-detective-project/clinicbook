@@ -1,0 +1,7 @@
+{
+  "hints": [
+    "A semana e o mês começam a grade na segunda-feira de um dia: o `mondayOf` em `client/src/calendar.ts`. Teste com uma quarta e com um domingo, e compare os resultados com um calendário.",
+    "O `mondayOf` subtrai `getUTCDay()` do dia, mais um. O `getUTCDay()` conta a semana a partir do domingo: domingo é 0, segunda é 1, sábado é 6. Para um domingo ele soma um dia e cai na segunda seguinte.",
+    "A semana da clínica vai de segunda a domingo, e o `client/src/calendar.ts` já tem uma função para essa numeração: `weekdayOf`, em que segunda é 1 e domingo é 7. Com ela, a segunda de um dia é `addDays(day, 1 - weekdayOf(day))`, e para um domingo isso volta seis dias."
+  ]
+}

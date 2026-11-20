@@ -1,0 +1,15 @@
+diff --git a/server/src/routes/patients.ts b/server/src/routes/patients.ts
+index e00bd98..77ac891 100644
+--- a/server/src/routes/patients.ts
++++ b/server/src/routes/patients.ts
+@@ -65,8 +65,8 @@ export function patientRoutes(app: FastifyInstance, { db }: Context): void {
+     const merged: PatientBody = {
+       name: body.name ?? patient.name,
+       phone: body.phone ?? patient.phone,
+-      email: 'email' in body ? body.email : patient.email,
+-      birthDate: 'birthDate' in body ? body.birthDate : patient.birthDate,
++      email: body.email ?? null,
++      birthDate: body.birthDate ?? null,
+       cpf: body.cpf ?? patient.cpf,
+       healthPlan: body.healthPlan ?? patient.healthPlan,
+     };

@@ -1,12 +1,12 @@
 diff --git a/client/src/components/TimeSlotPicker.module.css b/client/src/components/TimeSlotPicker.module.css
 new file mode 100644
-index 0000000..83154c0
+index 0000000..c8134c1
 --- /dev/null
 +++ b/client/src/components/TimeSlotPicker.module.css
-@@ -0,0 +1,44 @@
+@@ -0,0 +1,57 @@
 +.picker {
-+  display: flex;
-+  flex-wrap: wrap;
++  display: grid;
++  grid-template-columns: repeat(auto-fill, minmax(76px, 1fr));
 +  gap: 8px;
 +}
 +
@@ -26,11 +26,21 @@ index 0000000..83154c0
 +
 +.slot span {
 +  display: block;
-+  padding: 6px 12px;
-+  border: 1px solid var(--line);
++  padding: 8px 10px;
++  border: 1px solid var(--line-strong);
 +  border-radius: var(--radius);
 +  background: var(--surface);
++  font-weight: 600;
 +  font-variant-numeric: tabular-nums;
++  text-align: center;
++  transition:
++    background-color 0.15s,
++    border-color 0.15s;
++}
++
++.slot:hover span {
++  border-color: var(--brand);
++  background: var(--brand-soft);
 +}
 +
 +.slot input:checked + span {
@@ -46,6 +56,9 @@ index 0000000..83154c0
 +
 +.empty {
 +  margin: 0;
++  padding: 12px 14px;
++  border: 1px dashed var(--line-strong);
++  border-radius: var(--radius);
 +  color: var(--muted);
 +}
 diff --git a/client/src/components/TimeSlotPicker.test.tsx b/client/src/components/TimeSlotPicker.test.tsx
@@ -160,10 +173,10 @@ index 0000000..72f5736
 +  );
 +}
 diff --git a/client/src/pages/BookingPage.tsx b/client/src/pages/BookingPage.tsx
-index af63a3d..b59548f 100644
+index 3e507bb..5b300c0 100644
 --- a/client/src/pages/BookingPage.tsx
 +++ b/client/src/pages/BookingPage.tsx
-@@ -2,10 +2,11 @@ import { useEffect, useState } from 'react';
+@@ -2,11 +2,12 @@ import { useEffect, useState } from 'react';
  import type { FormEvent } from 'react';
  import { Link, useNavigate, useParams, useSearchParams } from 'react-router';
  import { bookAppointment, getAppointment, rescheduleAppointment } from '../api/appointments.ts';
@@ -172,11 +185,12 @@ index af63a3d..b59548f 100644
  import { ApiError } from '../api/http.ts';
  import { listPatients } from '../api/patients.ts';
  import type { Appointment, Doctor, Patient } from '../api/types.ts';
+ import { DatePicker } from '../components/DatePicker.tsx';
 +import { TimeSlotPicker } from '../components/TimeSlotPicker.tsx';
  import ui from '../components/ui.module.css';
- import { useToday } from '../useToday.ts';
- 
-@@ -29,6 +30,7 @@ export function BookingPage() {
+ import { formatShortDay } from '../dates.ts';
+ import { useToast } from '../useToast.ts';
+@@ -34,6 +35,7 @@ export function BookingPage() {
    const [day, setDay] = useState(params.get('day') ?? today);
    const [time, setTime] = useState(params.get('time') ?? '');
    const [reason, setReason] = useState('');
@@ -184,7 +198,7 @@ index af63a3d..b59548f 100644
    const [error, setError] = useState('');
    const [saving, setSaving] = useState(false);
  
-@@ -58,6 +60,32 @@ export function BookingPage() {
+@@ -63,6 +65,32 @@ export function BookingPage() {
      };
    }, [id, rescheduling, today]);
  
@@ -217,7 +231,7 @@ index af63a3d..b59548f 100644
    async function submit(event: FormEvent) {
      event.preventDefault();
      if (saving) {
-@@ -84,6 +112,12 @@ export function BookingPage() {
+@@ -90,6 +118,12 @@ export function BookingPage() {
  
    const title = rescheduling ? 'Reschedule appointment' : 'Book appointment';
  
@@ -230,9 +244,9 @@ index af63a3d..b59548f 100644
    return (
      <section>
        <div className={ui.titleRow}>
-@@ -138,11 +172,10 @@ export function BookingPage() {
-           <input type="date" value={day} min={today} onChange={(event) => setDay(event.target.value)} />
-         </label>
+@@ -142,11 +176,10 @@ export function BookingPage() {
+ 
+         <DatePicker label="Day" value={day} today={today} min={today} onChange={setDay} />
  
 -        {/* Temporary: a plain text field, until the form offers the free times of the doctor. */}
 -        <label className={ui.field}>

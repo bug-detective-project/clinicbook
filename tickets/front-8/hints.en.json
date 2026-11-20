@@ -1,0 +1,7 @@
+{
+  "hints": [
+    "The messages are the toasts of `client/src/ToastContext.tsx`. Each one (`ToastItem`) starts its timer in an effect. Read what that effect depends on, and ask when each of those values changes.",
+    "The effect depends on `dismiss`, which the provider creates in its body: a new function at every render of the provider. The provider renders again whenever the list of toasts changes, when one comes and when one goes. A new `dismiss` means the effect runs again, and its cleanup clears the old timer.",
+    "Give `dismiss` the same identity across renders: `useCallback((id: number) => setToasts((list) => list.filter((toast) => toast.id !== id)), [])`. It only uses the setter, which React keeps stable, so it needs no dependency. The effect then runs once per toast, as `show` already does."
+  ]
+}

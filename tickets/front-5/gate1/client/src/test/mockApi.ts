@@ -14,10 +14,10 @@ export function createTestDoctors(): Doctor[] {
 
 export function createTestPatients(): Patient[] {
   return [
-    { id: 1, name: 'Ana Beatriz Costa', phone: '(11) 98888-1001', email: 'ana.costa@example.com', birthDate: '1988-04-12' },
-    { id: 2, name: 'Bruno Carvalho', phone: '11 97777-2002', email: 'bruno.carvalho@example.com', birthDate: '1975-11-03' },
-    { id: 3, name: 'Camila Duarte', phone: '+55 11 96666-3003', email: null, birthDate: null },
-    { id: 4, name: 'Davi Fernandes', phone: '(11) 3555-4004', email: 'familia.fernandes@example.com', birthDate: '2019-02-14' },
+    { id: 1, name: 'Ana Beatriz Costa', phone: '(11) 98888-1001', email: 'ana.costa@example.com', birthDate: '1988-04-12', cpf: '39053344705', healthPlan: 'Horizonte Saúde' },
+    { id: 2, name: 'Bruno Carvalho', phone: '11 97777-2002', email: 'bruno.carvalho@example.com', birthDate: '1975-11-03', cpf: '15350946056', healthPlan: 'Amparo Vida' },
+    { id: 3, name: 'Camila Duarte', phone: '+55 11 96666-3003', email: null, birthDate: null, cpf: '71349801623', healthPlan: 'Private' },
+    { id: 4, name: 'Davi Fernandes', phone: '(11) 3555-4004', email: 'familia.fernandes@example.com', birthDate: '2019-02-14', cpf: '42611723800', healthPlan: 'Horizonte Saúde' },
   ];
 }
 
@@ -81,6 +81,14 @@ function notFound(what: string): Response {
  */
 export function mockApi(options: MockApiOptions = {}) {
   const doctors = createTestDoctors();
+  /** The hours of each doctor: Dr. Prado every weekday, morning and afternoon; Dr. Oliveira on Monday, Wednesday and Friday mornings. */
+  let hours: Record<number, { weekday: number; startsAt: string; endsAt: string }[]> = {
+    1: [1, 2, 3, 4, 5].flatMap((weekday) => [
+      { weekday, startsAt: '08:00', endsAt: '12:00' },
+      { weekday, startsAt: '14:00', endsAt: '17:00' },
+    ]),
+    2: [1, 3, 5].map((weekday) => ({ weekday, startsAt: '09:00', endsAt: '13:00' })),
+  };
   let patients = options.patients ?? createTestPatients();
   const appointments = options.appointments ?? createTestAppointments();
   const reminders: Reminder[] = [];
@@ -97,6 +105,10 @@ export function mockApi(options: MockApiOptions = {}) {
     return WORKING_TIMES.filter((time) => !taken.includes(time));
   }
 
+  /** The appointments of tomorrow that the next run of the reminders sends to. */
+  const dueTomorrow = () =>
+    appointments.filter((item) => item.day === TOMORROW && item.status !== 'cancelled' && !reminders.some((sent) => sent.appointmentId === item.id));
+
   function handle({ method, path, query, body }: MockRequest): Response {
     const data = (body ?? {}) as Record<string, unknown>;
     const route = `${method} ${path.replace(/\/\d+(?=\/|$)/, '/:id')}`;
@@ -109,6 +121,44 @@ export function mockApi(options: MockApiOptions = {}) {
         return json({ today: TODAY });
       case 'GET /api/doctors':
         return json(doctors);
+      case 'POST /api/doctors': {
+        const created = { id: Math.max(0, ...doctors.map((item) => item.id)) + 1, name: String(data.name).trim(), specialty: String(data.specialty).trim() };
+        doctors.push(created);
+        hours = { ...hours, [created.id]: data.hours as { weekday: number; startsAt: string; endsAt: string }[] };
+        return json({ ...created, hours: hours[created.id] }, 201);
+      }
+      case 'GET /api/doctors/:id': {
+        const doctor = doctors.find((item) => item.id === id);
+        return doctor ? json({ ...doctor, hours: hours[id] ?? [] }) : notFound('Doctor');
+      }
+      case 'PATCH /api/doctors/:id': {
+        const doctor = doctors.find((item) => item.id === id);
+        if (!doctor) {
+          return notFound('Doctor');
+        }
+        Object.assign(doctor, { name: String(data.name).trim(), specialty: String(data.specialty).trim() });
+        hours = { ...hours, [id]: data.hours as { weekday: number; startsAt: string; endsAt: string }[] };
+        return json({ ...doctor, hours: hours[id] });
+      }
+      case 'DELETE /api/doctors/:id': {
+        const index = doctors.findIndex((item) => item.id === id);
+        if (index === -1) {
+          return notFound('Doctor');
+        }
+        if (appointments.some((item) => item.doctorId === id)) {
+          return json({ error: 'This record is in use and cannot be removed' }, 409);
+        }
+        doctors.splice(index, 1);
+        return new Response(null, { status: 204 });
+      }
+      case 'GET /api/schedule': {
+        const from = query.get('from') ?? TODAY;
+        const to = query.get('to') ?? TODAY;
+        const doctor = query.get('doctor');
+        return json(
+          appointments.filter((item) => item.day >= from && item.day <= to && (doctor === null || item.doctorId === Number(doctor))).sort(byDayAndTime),
+        );
+      }
       case 'GET /api/doctors/:id/slots':
         return json({ day: query.get('day'), slots: freeSlots(id, query.get('day') ?? TODAY) });
       case 'GET /api/appointments':
@@ -152,12 +202,27 @@ export function mockApi(options: MockApiOptions = {}) {
           phone: String(data.phone).trim(),
           email: typeof data.email === 'string' ? data.email : null,
           birthDate: typeof data.birthDate === 'string' ? data.birthDate : null,
+          cpf: String(data.cpf ?? '').replace(/\D/g, ''),
+          healthPlan: String(data.healthPlan ?? '').trim(),
         };
         patients.push(created);
         return json(created, 201);
       }
       case 'GET /api/patients/:id':
         return patient ? json(patient) : notFound('Patient');
+      case 'PATCH /api/patients/:id':
+        if (!patient) {
+          return notFound('Patient');
+        }
+        Object.assign(patient, {
+          name: String(data.name).trim(),
+          phone: String(data.phone).trim(),
+          email: typeof data.email === 'string' ? data.email : null,
+          birthDate: typeof data.birthDate === 'string' ? data.birthDate : null,
+          cpf: String(data.cpf ?? '').replace(/\D/g, ''),
+          healthPlan: String(data.healthPlan ?? '').trim(),
+        });
+        return json(patient);
       case 'GET /api/patients/:id/appointments':
         return patient ? json(appointments.filter((item) => item.patientId === id).sort((a, b) => byDayAndTime(b, a))) : notFound('Patient');
       case 'DELETE /api/patients/:id':
@@ -169,15 +234,24 @@ export function mockApi(options: MockApiOptions = {}) {
         }
         patients = patients.filter((item) => item.id !== id);
         return new Response(null, { status: 204 });
-      case 'GET /api/reminders':
-        return json({ enabled: options.remindersEnabled ?? true, reminders: [...reminders].reverse() });
+      case 'GET /api/reminders': {
+        const enabled = options.remindersEnabled ?? true;
+        const due = enabled
+          ? dueTomorrow().map((item) => ({
+              appointmentId: item.id,
+              time: item.time,
+              patientName: item.patientName,
+              phone: patients.find((one) => one.id === item.patientId)?.phone ?? '',
+              doctorName: item.doctorName,
+            }))
+          : [];
+        return json({ enabled, day: TOMORROW, due, reminders: [...reminders].reverse() });
+      }
       case 'POST /api/reminders/run': {
         if (!(options.remindersEnabled ?? true)) {
           return json({ enabled: false, sent: 0 });
         }
-        const due = appointments.filter(
-          (item) => item.day === TOMORROW && item.status !== 'cancelled' && !reminders.some((sent) => sent.appointmentId === item.id),
-        );
+        const due = dueTomorrow();
         for (const item of due) {
           reminders.push({
             id: reminders.length + 1,

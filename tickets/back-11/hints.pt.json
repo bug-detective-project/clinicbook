@@ -1,0 +1,7 @@
+{
+  "hints": [
+    "A rota é `PATCH /api/patients/:id` em `server/src/routes/patients.ts`. Ela monta um paciente inteiro (`merged`) a partir do corpo e do paciente que carregou, e salva isso. Leia como cada campo de `merged` é escolhido.",
+    "Para o nome, o telefone, o CPF e o plano ela usa o corpo quando o campo está lá, e o paciente quando não está (`body.name ?? patient.name`). Para o e-mail e a data de nascimento ela escreve `body.email ?? null`: um campo que não está no corpo vira `null`, igual a um campo mandado como `null`.",
+    "Um PATCH tem três casos para um campo opcional: ausente (manter), `null` (apagar) e um valor (mudar). O `??` não distingue ausente de `null`; o operador `in` distingue: `email: 'email' in body ? body.email : patient.email`, e o mesmo para `birthDate`."
+  ]
+}

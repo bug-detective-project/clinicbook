@@ -1,0 +1,13 @@
+diff --git a/client/src/calendar.ts b/client/src/calendar.ts
+index e24a5e2..4cd3ed9 100644
+--- a/client/src/calendar.ts
++++ b/client/src/calendar.ts
+@@ -18,7 +18,7 @@ export function weekdayOf(day: string): number {
+ }
+ 
+ export function mondayOf(day: string): string {
+-  return addDays(day, 1 - weekdayOf(day));
++  return addDays(day, 1 - utc(day).getUTCDay());
+ }
+ 
+ /** The first day of the month of `day`, moved by `months` months. */

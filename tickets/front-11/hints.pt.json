@@ -1,0 +1,7 @@
+{
+  "hints": [
+    "O aviso vem de `client/src/components/WeekGrid.tsx`, que pergunta `insideHours(hours, weekday, time)` para cada consulta. Leia a condição que ela usa para decidir que um horário está dentro de um período.",
+    "Um período é um intervalo semiaberto: uma consulta de 30 minutos pode começar em `startsAt` e tem de começar antes de `endsAt`. A condição está escrita ao contrário: `time > startsAt` deixa de fora o primeiro horário, e `time <= endsAt` inclui o fim.",
+    "Escreva o intervalo como a clínica quer dizer: `time >= period.startsAt && time < period.endsAt`. Os horários são textos `HH:MM`, que se comparam na ordem do relógio."
+  ]
+}

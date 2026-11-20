@@ -1,0 +1,22 @@
+diff --git a/client/src/components/PatientDialog.tsx b/client/src/components/PatientDialog.tsx
+index 7e2f515..b739dee 100644
+--- a/client/src/components/PatientDialog.tsx
++++ b/client/src/components/PatientDialog.tsx
+@@ -17,14 +17,13 @@ function formOf(patient: Patient | undefined): typeof EMPTY_FORM {
+   if (patient === undefined) {
+     return EMPTY_FORM;
+   }
+-  return {
+-    name: patient.name,
++  // The fields show texts: an e-mail or a birth date the patient does not have is an empty text.
++  return Object.assign(patient, {
+     phone: maskPhone(patient.phone),
+     email: patient.email ?? '',
+     birthDate: patient.birthDate ?? '',
+     cpf: maskCpf(patient.cpf),
+-    healthPlan: patient.healthPlan,
+-  };
++  });
+ }
+ 
+ interface PatientDialogProps {

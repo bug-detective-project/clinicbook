@@ -4,7 +4,8 @@ import { listPatients, menuButton, menuOf, openPatients, PATIENTS } from '../../
 /** Words of a query: none of them belongs in what a user reads. */
 const SQL = /insert into|delete from|select |update |constraint|query:|"patients"|sqlite/i;
 
-const DUPLICATE = { name: 'Another Ana', phone: '(11) 90000-1111', email: 'ana.costa@example.com' };
+/** A new patient with the e-mail of Ana: its CPF is valid and nobody has it, so only the e-mail is taken. */
+const DUPLICATE = { name: 'Another Ana', cpf: '52998224725', phone: '(11) 90000-1111', healthPlan: 'Private', email: 'ana.costa@example.com' };
 
 test.describe('Ticket back-4: an error of the database reaches the user as a plain message', () => {
   test('registering an e-mail twice answers 409 and says that the record already exists', async ({ request }) => {
@@ -58,17 +59,20 @@ test.describe('Ticket back-4: an error of the database reaches the user as a pla
     expect(rule.status(), 'a booking in the past').toBe(400);
     expect(((await rule.json()) as { error: string }).error).toBe('An appointment cannot be booked in the past');
 
-    const created = await request.post('/api/patients', { data: { name: 'Passing By', phone: '11 90000-0000' } });
+    const created = await request.post('/api/patients', { data: { name: 'Passing By', cpf: '11144477735', phone: '11 90000-0000', healthPlan: 'Private' } });
     expect(created.status(), 'a new patient').toBe(201);
     expect((await request.delete(`/api/patients/${((await created.json()) as { id: number }).id}`)).status()).toBe(204);
   });
 
   test('the form of a new patient shows the plain message', async ({ page }) => {
     await openPatients(page);
+    await page.getByRole('button', { name: 'New patient' }).click();
     const form = page.getByRole('form', { name: 'New patient' });
 
     await form.getByLabel('Name').fill(DUPLICATE.name);
+    await form.getByLabel('CPF').fill(DUPLICATE.cpf);
     await form.getByLabel('Phone').fill(DUPLICATE.phone);
+    await form.getByLabel('Health plan').fill(DUPLICATE.healthPlan);
     await form.getByLabel('E-mail (optional)').fill(DUPLICATE.email);
     await form.getByRole('button', { name: 'Register' }).click();
 
@@ -81,6 +85,7 @@ test.describe('Ticket back-4: an error of the database reaches the user as a pla
 
     await menuButton(page, PATIENTS.heitor).click();
     await menuOf(page, PATIENTS.heitor).getByRole('menuitem', { name: 'Remove patient' }).click();
+    await page.getByRole('alertdialog', { name: 'Remove patient' }).getByRole('button', { name: 'Remove' }).click();
 
     await expect(page.getByRole('alert')).toHaveText(`${PATIENTS.heitor.name}: This record is in use and cannot be removed`);
     await expect(page.getByRole('main')).not.toContainText(SQL);

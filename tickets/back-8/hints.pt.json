@@ -1,0 +1,7 @@
+{
+  "hints": [
+    "Uma mudança de um médico são três gravações: a linha do médico, os períodos antigos apagados e os novos inseridos (`updateDoctor` em `server/src/repository.ts`). Quais delas rodam antes da que o banco recusa, e o que fica quando a última falha?",
+    "O `CHECK` de `working_hours` recusa a inserção de um período a partir das 05:00. Nessa hora, a atualização do médico e a remoção dos períodos já foram gravadas. Cada gravação é um comando separado, então a falha da terceira não desfaz nada.",
+    "Junte as três gravações numa transação, para que todas fiquem ou nenhuma: `await db.transaction().execute(async (trx) => { ... })`, com cada gravação lá dentro usando `trx` em vez de `db`. O `createDoctor`, logo acima, já faz assim."
+  ]
+}

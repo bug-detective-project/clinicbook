@@ -71,6 +71,22 @@
         "subject": "Novo ticket: CB-107",
         "body": "Todo link para a ficha de um paciente termina em \"Page not found\". As duas partes da ficha estão escritas; a página que as reúne, com uma aba para cada, é você quem constrói.\n\nA Dra. Helena quer um link que possa mandar a uma colega para cada aba. Guarde essa frase enquanto decide como as abas funcionam.\n\nRafaela"
       },
+      "front-8": {
+        "subject": "Novo ticket: CB-108",
+        "body": "A agenda da Renata fica coberta de mensagens verdes toda manhã: elas só somem quando ela para de trabalhar um pouco.\n\nConfirme duas consultas com alguns segundos de diferença e olhe a primeira mensagem.\n\nRafaela"
+      },
+      "front-9": {
+        "subject": "Novo ticket: CB-109",
+        "body": "As recepcionistas acham que estamos perdendo e-mails: uma ficha muda quando o formulário de edição é fechado sem salvar.\n\nAparece num paciente sem e-mail. Recarregue a página depois: os dados estão certos, a tela não.\n\nRafaela"
+      },
+      "front-10": {
+        "subject": "Novo ticket: CB-110",
+        "body": "A Dra. Prado planeja a semana no domingo à noite, e a agenda insiste em mostrar a semana errada para ela.\n\nTeste a semana de uma quarta e de um domingo, lado a lado.\n\nRafaela"
+      },
+      "front-11": {
+        "subject": "Novo ticket: CB-111",
+        "body": "A Dra. Prado mudou os horários e a página agora avisa sobre as consultas erradas: a primeira do dia, e não a do novo fim.\n\nO ticket tem os passos. Olhe as duas bordas de um período.\n\nRafaela"
+      },
       "back-1": {
         "subject": "Novo ticket: CB-201",
         "body": "Uma consulta cancelada foi confirmada da outra mesa alguns segundos depois, e dois pacientes apareceram para o mesmo horário.\n\nA clínica tem uma regra clara sobre isso, e tenho quase certeza de que o servidor conhece a regra. Descubra por que ninguém perguntou a ela.\n\nRafaela"
@@ -94,6 +110,30 @@
       "back-6": {
         "subject": "Novo ticket: CB-206",
         "body": "A remarcação foi começada e nunca terminada: a tela está pronta, e o servidor responde \"not available yet\". A recepção cancela e marca de novo à mão, e às vezes esquece a segunda metade.\n\nAntes de escrever qualquer coisa, leia o que já existe, nas três camadas do servidor. A maior parte do seu trabalho é ligar peças que existem.\n\nRafaela"
+      },
+      "back-7": {
+        "subject": "Novo ticket: CB-207",
+        "body": "Os planos estão devolvendo cobranças por causa de CPFs que não podem existir. O Otávio escreveu no ticket como funcionam os dígitos verificadores.\n\nA conta é metade do trabalho; achar o único lugar por onde todo paciente passa é a outra metade.\n\nRafaela"
+      },
+      "back-8": {
+        "subject": "Novo ticket: CB-208",
+        "body": "A Dra. Tanabe perdeu a semana inteira por causa de uma mudança que o servidor recusou. A Renata teve de dizer a três pacientes que não tínhamos horário para eles.\n\nO ticket tem a requisição exata que faz isso. Veja o que o servidor grava antes de dizer não.\n\nRafaela"
+      },
+      "back-9": {
+        "subject": "Novo ticket: CB-209",
+        "body": "A Dra. Prado ficou com dois períodos um em cima do outro na terça passada, e o servidor aceitou. O Otávio diz que só acontece quando os períodos chegam fora de ordem.\n\nTente a requisição do ticket com os períodos ordenados, e depois como está.\n\nRafaela"
+      },
+      "back-10": {
+        "subject": "Novo ticket: CB-210",
+        "body": "A primeira paciente de domingo do Dr. Oliveira está na agenda daquele dia e some da semana. A Dra. Prado achou mais: o último dia de qualquer período não aparece.\n\nComece pelos dois `curl` do ticket; eles deveriam dar as mesmas consultas.\n\nRafaela"
+      },
+      "back-11": {
+        "subject": "Novo ticket: CB-211",
+        "body": "O script dos planos da TI está apagando e-mails e datas de nascimento. Ele só manda o plano novo, que é exatamente o que deveria mandar.\n\nCompare como a rota trata um campo que falta e um campo mandado como `null`.\n\nRafaela"
+      },
+      "back-12": {
+        "subject": "Novo ticket: CB-212",
+        "body": "Um clique errado na tela de edição e o Dr. Oliveira sumiu, com todas as consultas da semana dele. Dois pacientes vieram para consultas que não tínhamos mais.\n\nO banco estava tentando impedir. Veja o que o código faz para passar por ele.\n\nRafaela"
       }
     },
     "completion": {

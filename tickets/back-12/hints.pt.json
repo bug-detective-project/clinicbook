@@ -1,0 +1,7 @@
+{
+  "hints": [
+    "A rota `DELETE /api/doctors/:id` (`server/src/routes/doctors.ts`) chama o `deleteDoctor` em `server/src/repository.ts`. Leia o que essa função apaga, em que ordem, e por que o comentário diz que ela faz isso.",
+    "`appointments.doctor_id` aponta para o médico, e o banco está configurado para recusar apagar uma linha para a qual outras apontam (`foreign_keys = ON`). O `deleteDoctor` contorna isso apagando antes as consultas do médico. O banco estava garantindo a regra da clínica, e a função tirou o que ela protegia.",
+    "Apague só os horários e o médico, na transação. Para um médico com consultas, o banco recusa apagar o médico, a transação é desfeita (os horários voltam), e o tratador de erros já transforma essa recusa num 409 com \"This record is in use and cannot be removed\", como faz para pacientes."
+  ]
+}

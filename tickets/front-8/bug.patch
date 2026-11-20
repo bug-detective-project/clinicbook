@@ -1,0 +1,13 @@
+diff --git a/client/src/ToastContext.tsx b/client/src/ToastContext.tsx
+index 1f2d26b..0828bc6 100644
+--- a/client/src/ToastContext.tsx
++++ b/client/src/ToastContext.tsx
+@@ -20,7 +20,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
+   const [toasts, setToasts] = useState<Toast[]>([]);
+   const nextIdRef = useRef(1);
+ 
+-  const dismiss = useCallback((id: number) => setToasts((list) => list.filter((toast) => toast.id !== id)), []);
++  const dismiss = (id: number) => setToasts((list) => list.filter((toast) => toast.id !== id));
+   const show = useCallback((tone: Tone, message: string) => {
+     const id = nextIdRef.current++;
+     setToasts((list) => [...list, { id, tone, message }]);

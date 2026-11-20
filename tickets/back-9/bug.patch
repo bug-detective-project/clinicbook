@@ -1,0 +1,20 @@
+diff --git a/server/src/routes/doctors.ts b/server/src/routes/doctors.ts
+index 271eaeb..50e0333 100644
+--- a/server/src/routes/doctors.ts
++++ b/server/src/routes/doctors.ts
+@@ -16,11 +16,10 @@ function hoursProblem(hours: Hours[]): string | null {
+       return `${WEEKDAYS[period.weekday - 1]}: a period must end after it starts`;
+     }
+   }
+-  const sorted = [...hours].sort((a, b) => a.weekday - b.weekday || a.startsAt.localeCompare(b.startsAt));
+-  for (let index = 1; index < sorted.length; index += 1) {
+-    const before = sorted[index - 1]!;
+-    const period = sorted[index]!;
+-    if (period.weekday === before.weekday && period.startsAt < before.endsAt) {
++  for (let index = 1; index < hours.length; index += 1) {
++    const before = hours[index - 1]!;
++    const period = hours[index]!;
++    if (period.weekday === before.weekday && period.startsAt < before.endsAt && before.startsAt < period.endsAt) {
+       return `${WEEKDAYS[period.weekday - 1]}: two periods overlap`;
+     }
+   }

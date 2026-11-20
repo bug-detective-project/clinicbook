@@ -1,0 +1,68 @@
+diff --git a/client/src/components/WeekGrid.edges.test.tsx b/client/src/components/WeekGrid.edges.test.tsx
+new file mode 100644
+index 0000000..742d4bf
+--- /dev/null
++++ b/client/src/components/WeekGrid.edges.test.tsx
+@@ -0,0 +1,49 @@
++import { render, screen } from '@testing-library/react';
++import { MemoryRouter } from 'react-router';
++import { describe, expect, it } from 'vitest';
++import type { Appointment, Hours } from '../api/types.ts';
++import { WeekGrid } from './WeekGrid.tsx';
++
++// Monday 2026-03-09: the doctor works from 08:00 to 12:00 and from 14:00 to 17:00.
++const HOURS: Hours[] = [
++  { weekday: 1, startsAt: '08:00', endsAt: '12:00' },
++  { weekday: 1, startsAt: '14:00', endsAt: '17:00' },
++];
++
++function appointmentAt(id: number, time: string): Appointment {
++  return { id, patientId: id, patientName: `Patient ${id}`, doctorId: 1, doctorName: 'Dr. Helena Prado', day: '2026-03-09', time, status: 'scheduled', reason: '' };
++}
++
++function renderWeek(times: string[]) {
++  render(
++    <MemoryRouter>
++      <WeekGrid days={['2026-03-09']} appointments={times.map((time, index) => appointmentAt(index + 1, time))} today="2026-03-09" hours={HOURS} />
++    </MemoryRouter>,
++  );
++}
++
++const outside = (id: number) => screen.getByTestId(`week-appointment-${id}`).textContent?.includes('Outside the working hours');
++
++describe('the working hours on the week of a doctor', () => {
++  it('count the first slot of a period as inside', () => {
++    renderWeek(['08:00', '14:00']);
++
++    expect(outside(1)).toBe(false);
++    expect(outside(2)).toBe(false);
++  });
++
++  it('count the time a period ends as outside', () => {
++    renderWeek(['12:00', '17:00']);
++
++    expect(outside(1)).toBe(true);
++    expect(outside(2)).toBe(true);
++  });
++
++  it('count the slots in the middle as inside, and the gap between periods as outside', () => {
++    renderWeek(['11:30', '13:00', '16:30']);
++
++    expect(outside(1)).toBe(false);
++    expect(outside(2)).toBe(true);
++    expect(outside(3)).toBe(false);
++  });
++});
+diff --git a/client/src/components/WeekGrid.tsx b/client/src/components/WeekGrid.tsx
+index 5ae4a9c..f349e02 100644
+--- a/client/src/components/WeekGrid.tsx
++++ b/client/src/components/WeekGrid.tsx
+@@ -18,7 +18,7 @@ interface WeekGridProps {
+ 
+ /** True when `time` falls inside one of the periods of the day. */
+ function insideHours(hours: Hours[], weekday: number, time: string): boolean {
+-  return hours.some((period) => period.weekday === weekday && time > period.startsAt && time <= period.endsAt);
++  return hours.some((period) => period.weekday === weekday && time >= period.startsAt && time < period.endsAt);
+ }
+ 
+ /**

@@ -1,0 +1,7 @@
+{
+  "hints": [
+    "The route is `PATCH /api/patients/:id` in `server/src/routes/patients.ts`. It builds a whole patient (`merged`) from the body and the patient it loaded, and saves that. Read how each field of `merged` is chosen.",
+    "For the name, the phone, the CPF and the plan it uses the body when the field is there, and the patient otherwise (`body.name ?? patient.name`). For the e-mail and the birth date it writes `body.email ?? null`: a field that is not in the body becomes `null`, the same as a field sent as `null`.",
+    "A PATCH has three cases for an optional field: absent (keep it), `null` (clear it) and a value (change it). `??` cannot tell absent from `null`; the operator `in` can: `email: 'email' in body ? body.email : patient.email`, and the same for `birthDate`."
+  ]
+}

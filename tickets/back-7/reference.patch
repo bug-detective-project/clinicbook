@@ -1,0 +1,99 @@
+diff --git a/server/src/cpf-check-digits.test.ts b/server/src/cpf-check-digits.test.ts
+new file mode 100644
+index 0000000..3a04969
+--- /dev/null
++++ b/server/src/cpf-check-digits.test.ts
+@@ -0,0 +1,45 @@
++import { describe, expect, it } from 'vitest';
++import { testApi } from './test/api.ts';
++
++interface Failure {
++  error: string;
++  fields?: Record<string, string>;
++}
++
++const patient = { name: 'Someone New', phone: '11 90000-0000', healthPlan: 'Private' };
++
++describe('the check digits of a CPF', () => {
++  it.each([
++    ['the first check digit is wrong', '123.456.789-19'],
++    ['the second check digit is wrong', '123.456.789-00'],
++    ['both check digits are wrong', '52998224700'],
++    ['all the digits are the same', '111.111.111-11'],
++    ['all the digits are zero', '00000000000'],
++  ])('refuses a new patient when %s', async (_what, cpf) => {
++    const { get, post } = await testApi();
++
++    const { status, body } = await post<Failure>('/api/patients', { ...patient, cpf });
++
++    expect(status).toBe(400);
++    expect(Object.keys(body.fields ?? {})).toEqual(['cpf']);
++    expect((await get<unknown[]>('/api/patients')).body).toHaveLength(8);
++  });
++
++  it('accepts a real CPF, with or without the dots and the dash', async () => {
++    const { post } = await testApi();
++
++    expect((await post('/api/patients', { ...patient, cpf: '529.982.247-25' })).status).toBe(201);
++    expect((await post('/api/patients', { ...patient, cpf: '11144477735' })).status).toBe(201);
++  });
++
++  it('refuses to change a patient to a CPF whose check digits do not match', async () => {
++    const { get, patch } = await testApi();
++    const before = (await get<{ cpf: string }>('/api/patients/1')).body;
++
++    const { status, body } = await patch<Failure>('/api/patients/1', { cpf: '529.982.247-26' });
++
++    expect(status).toBe(400);
++    expect(Object.keys(body.fields ?? {})).toEqual(['cpf']);
++    expect((await get<{ cpf: string }>('/api/patients/1')).body.cpf).toBe(before.cpf);
++  });
++});
+diff --git a/server/src/cpf.ts b/server/src/cpf.ts
+index 8d5bbe3..7df9c68 100644
+--- a/server/src/cpf.ts
++++ b/server/src/cpf.ts
+@@ -15,6 +15,14 @@ function checkDigit(digits: string): number {
+   return rest === 10 ? 0 : rest;
+ }
+ 
++/** True for the 11 digits of a real CPF: both check digits match, and the digits are not all the same. */
++export function isValidCpf(digits: string): boolean {
++  if (!/^\d{11}$/.test(digits) || /^(\d)\1{10}$/.test(digits)) {
++    return false;
++  }
++  return checkDigit(digits.slice(0, 9)) === Number(digits[9]) && checkDigit(digits.slice(0, 10)) === Number(digits[10]);
++}
++
+ /** A valid CPF from its first nine digits: the two check digits are worked out and added. */
+ export function cpfFrom(nine: string): string {
+   const ten = `${nine}${checkDigit(nine)}`;
+diff --git a/server/src/routes/patients.ts b/server/src/routes/patients.ts
+index d26296b..e00bd98 100644
+--- a/server/src/routes/patients.ts
++++ b/server/src/routes/patients.ts
+@@ -1,7 +1,7 @@
+ import type { FastifyInstance } from 'fastify';
+ import type { Context } from '../context.ts';
+ import type { Db } from '../db.ts';
+-import { cpfDigits } from '../cpf.ts';
++import { cpfDigits, isValidCpf } from '../cpf.ts';
+ import { HttpError, InvalidError, NotFoundError } from '../errors.ts';
+ import { cpfInUse, createPatient, deletePatient, findPatient, listAppointmentsOfPatient, listPatients, updatePatient } from '../repository.ts';
+ import type { Patient, PatientInput } from '../repository.ts';
+@@ -22,12 +22,12 @@ interface PatientBody {
+ 
+ /**
+  * What the database keeps from a body the schema accepted: trimmed texts, the e-mail in lower case,
+- * and the 11 digits of a CPF that no other patient (than `id`) has.
++ * and the 11 digits of a CPF whose check digits match and that no other patient (than `id`) has.
+  */
+ async function inputOf(db: Db, body: PatientBody, id?: number): Promise<PatientInput> {
+   const cpf = cpfDigits(body.cpf);
+-  if (cpf === null) {
+-    throw new InvalidError('Some fields are not valid', { cpf: 'Enter the 11 digits of the CPF' });
++  if (cpf === null || !isValidCpf(cpf)) {
++    throw new InvalidError('Some fields are not valid', { cpf: 'Enter a valid CPF: its check digits do not match' });
+   }
+   if (await cpfInUse(db, cpf, id)) {
+     throw new HttpError(409, 'This CPF belongs to another patient', { cpf: 'This CPF belongs to another patient' });

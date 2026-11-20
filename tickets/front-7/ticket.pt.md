@@ -22,7 +22,7 @@ Quero abrir um paciente e ver os dados dele, e passar para as consultas dele, pa
 
 ## O que já existe
 
-- O `PatientDetails` (`client/src/components/PatientDetails.tsx`) mostra o telefone, o e-mail e a data de nascimento de um paciente. O `PatientAppointments` (`client/src/components/PatientAppointments.tsx`) carrega e lista as consultas de um paciente. Os dois recebem uma prop, `patient`.
+- O `PatientDetails` (`client/src/components/PatientDetails.tsx`) mostra o CPF, o plano de saúde, o telefone, o e-mail e a data de nascimento de um paciente, e tem **Edit** e **Remove**. Ele recebe o `patient` e o `onChange`, que chama com o paciente como foi salvo depois de uma edição. O `PatientAppointments` (`client/src/components/PatientAppointments.tsx`) carrega e lista as consultas de um paciente, com **Book appointment**. Ele recebe o `patient`.
 - `getPatient(id)` em `client/src/api/patients.ts` devolve um paciente, e falha com um `ApiError` de `status` 404 quando o paciente não existe.
 - As rotas do app estão em `client/src/App.tsx`. Os links para `/patients/<id>` já existem na agenda e no menu de cada paciente, e em nenhum outro lugar.
 - `client/src/components/Layout.tsx` mostra como a navegação principal marca a página atual: o `NavLink` do React Router põe `aria-current="page"` no link do endereço atual.

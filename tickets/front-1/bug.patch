@@ -1,8 +1,8 @@
 diff --git a/client/src/pages/BookingPage.tsx b/client/src/pages/BookingPage.tsx
-index b59548f..714aa42 100644
+index 5b300c0..78faf44 100644
 --- a/client/src/pages/BookingPage.tsx
 +++ b/client/src/pages/BookingPage.tsx
-@@ -32,7 +32,6 @@ export function BookingPage() {
+@@ -37,7 +37,6 @@ export function BookingPage() {
    const [reason, setReason] = useState('');
    const [slots, setSlots] = useState<string[] | null>(null);
    const [error, setError] = useState('');
@@ -10,7 +10,7 @@ index b59548f..714aa42 100644
  
    useEffect(() => {
      let current = true;
-@@ -88,14 +87,10 @@ export function BookingPage() {
+@@ -93,14 +92,10 @@ export function BookingPage() {
  
    async function submit(event: FormEvent) {
      event.preventDefault();
@@ -25,7 +25,7 @@ index b59548f..714aa42 100644
      setError('');
      try {
        if (rescheduling) {
-@@ -106,7 +101,6 @@ export function BookingPage() {
+@@ -112,7 +107,6 @@ export function BookingPage() {
        await navigate(`/?day=${day}`);
      } catch (failure) {
        setError(failure instanceof ApiError ? failure.message : 'The appointment could not be saved.');
@@ -33,12 +33,12 @@ index b59548f..714aa42 100644
      }
    }
  
-@@ -185,7 +179,7 @@ export function BookingPage() {
+@@ -189,7 +183,7 @@ export function BookingPage() {
          )}
  
          <div>
 -          <button type="submit" className={ui.primary} disabled={saving}>
 +          <button type="submit" className={ui.primary}>
+             <Icon name="check" />
              {rescheduling ? 'Reschedule' : 'Book'}
            </button>
-         </div>

@@ -18,12 +18,15 @@
      if (error instanceof HttpError) {
        return reply.status(error.status).send({ error: error.message, fields: error.fields });
      }
-     // The database refused the query to protect the data: the two cases a user can cause.
+     // The database refused the query to protect the data: the cases a user can cause.
      if (error instanceof QueryError && error.code === 'SQLITE_CONSTRAINT_UNIQUE') {
        return reply.status(409).send({ error: 'This record already exists' });
      }
      if (error instanceof QueryError && error.code === 'SQLITE_CONSTRAINT_FOREIGNKEY') {
        return reply.status(409).send({ error: 'This record is in use and cannot be removed' });
+     }
+     if (error instanceof QueryError && error.code === 'SQLITE_CONSTRAINT_CHECK') {
+       return reply.status(400).send({ error: 'Some values are outside what the clinic allows' });
      }
      // A request Fastify itself refused, such as a body that is not JSON.
      if ('statusCode' in error && typeof error.statusCode === 'number' && error.statusCode >= 400 && error.statusCode < 500) {
