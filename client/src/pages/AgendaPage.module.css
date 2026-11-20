@@ -1,0 +1,97 @@
+.days {
+  margin-bottom: 20px;
+}
+
+.total {
+  display: inline-block;
+  margin: 0 0 14px 12px;
+  padding: 5px 12px;
+  border-radius: 999px;
+  background: var(--brand-soft);
+  color: var(--brand-strong);
+  font-size: 0.875rem;
+  font-weight: 700;
+  vertical-align: middle;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 72px 1fr auto auto;
+  align-items: center;
+  gap: 18px;
+  border-left: 4px solid var(--brand);
+  transition: box-shadow 0.15s;
+}
+
+.row:hover {
+  box-shadow:
+    0 1px 2px rgb(23 32 51 / 0.08),
+    0 14px 28px -16px rgb(23 32 51 / 0.36);
+}
+
+/* The edge of a row says the state of the appointment before the badge is read. */
+.row:has([data-status='confirmed']) {
+  border-left-color: var(--ok);
+}
+
+.row:has([data-status='cancelled']) {
+  border-left-color: var(--line-strong);
+  background: var(--page);
+  box-shadow: none;
+}
+
+.row:has([data-status='cancelled']) .time,
+.row:has([data-status='cancelled']) .who a {
+  color: var(--muted);
+}
+
+.time {
+  font-size: 1.25rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  font-variant-numeric: tabular-nums;
+}
+
+.who {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.who a {
+  color: var(--ink);
+  font-size: 1.0625rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.who a:hover {
+  color: var(--brand);
+  text-decoration: underline;
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
+  min-width: 250px;
+  justify-content: flex-end;
+}
+
+@media (max-width: 720px) {
+  .row {
+    grid-template-columns: 64px 1fr;
+  }
+
+  /* The badge gets a line of its own, as wide as its text: a 64px column would squeeze it. */
+  .row > [data-status] {
+    grid-column: 1 / -1;
+    justify-self: start;
+  }
+
+  .actions {
+    grid-column: 1 / -1;
+    min-width: 0;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+  }
+}
