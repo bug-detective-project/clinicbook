@@ -12,6 +12,7 @@ import { useToday } from '../useToday.ts';
 import { DoctorFilter } from './AgendaWeekPage.tsx';
 import weekStyles from './AgendaWeekPage.module.css';
 import styles from './AgendaMonthPage.module.css';
+import { Icon } from '../components/Icon.tsx';
 
 const WEEKDAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
@@ -54,6 +55,7 @@ export function AgendaMonthPage() {
       <div className={ui.titleRow}>
         <h2>{monthName(first)}</h2>
         <Link className={ui.primary} to={`/appointments/new?day=${day < today ? today : day}`}>
+          <Icon name="calendarPlus" />
           Book appointment
         </Link>
       </div>

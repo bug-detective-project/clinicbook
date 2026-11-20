@@ -8,6 +8,7 @@ import { useToday } from '../useToday.ts';
 import { DatePicker } from './DatePicker.tsx';
 import styles from './PatientDialog.module.css';
 import ui from './ui.module.css';
+import { Icon } from './Icon.tsx';
 
 const EMPTY_FORM = { name: '', phone: '', email: '', birthDate: '', cpf: '', healthPlan: '' };
 
@@ -161,9 +162,11 @@ export function PatientDialog({ title, submitLabel, patient, save, onSaved, onCl
           </div>
           <div className={styles.dialogActions}>
             <button type="button" className={ui.button} onClick={onClose}>
+              <Icon name="close" />
               Cancel
             </button>
             <button type="submit" className={ui.primary}>
+              <Icon name="check" />
               {submitLabel}
             </button>
           </div>

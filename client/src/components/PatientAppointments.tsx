@@ -37,6 +37,7 @@ export function PatientAppointments({ patient }: { patient: Patient }) {
     <>
       <div className={styles.toolbar}>
         <Link className={ui.primary} to={`/appointments/new?patient=${patient.id}`}>
+          <Icon name="calendarPlus" />
           Book appointment
         </Link>
       </div>

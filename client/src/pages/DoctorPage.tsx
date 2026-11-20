@@ -10,6 +10,7 @@ import { addDays, daysFrom, hoursSummary, mondayOf, weekName } from '../calendar
 import { useToday } from '../useToday.ts';
 import weekStyles from './AgendaWeekPage.module.css';
 import styles from './DoctorPage.module.css';
+import { Icon } from '../components/Icon.tsx';
 
 /** A doctor: its specialty and hours (Edit opens their screen), and its week of appointments. */
 export function DoctorPage() {
@@ -47,6 +48,7 @@ export function DoctorPage() {
       <section>
         <h2>Doctor not found</h2>
         <Link className={ui.button} to="/doctors">
+          <Icon name="back" />
           Back to the doctors
         </Link>
       </section>
@@ -69,9 +71,11 @@ export function DoctorPage() {
         </div>
         <div className={styles.actions}>
           <Link className={ui.button} to="/doctors">
+            <Icon name="back" />
             Back to the doctors
           </Link>
           <Link className={ui.primary} to={`/doctors/${doctor.id}/edit`}>
+            <Icon name="edit" />
             Edit
           </Link>
         </div>

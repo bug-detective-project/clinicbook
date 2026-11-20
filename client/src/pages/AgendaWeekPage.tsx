@@ -11,6 +11,7 @@ import { WeekGrid } from '../components/WeekGrid.tsx';
 import { addDays, daysFrom, mondayOf, weekName } from '../calendar.ts';
 import { useToday } from '../useToday.ts';
 import styles from './AgendaWeekPage.module.css';
+import { Icon } from '../components/Icon.tsx';
 
 /** The week of the agenda: the appointments of every doctor (or of one) from Monday to Saturday, and Sunday when it has any. */
 export function AgendaWeekPage() {
@@ -47,6 +48,7 @@ export function AgendaWeekPage() {
       <div className={ui.titleRow}>
         <h2>{weekName(monday, sunday)}</h2>
         <Link className={ui.primary} to={`/appointments/new?day=${day < today ? today : day}`}>
+          <Icon name="calendarPlus" />
           Book appointment
         </Link>
       </div>

@@ -5,6 +5,7 @@ import type { DoctorWithHours, Hours } from '../api/types.ts';
 import { WEEKDAY_NAMES } from '../calendar.ts';
 import styles from './DoctorForm.module.css';
 import ui from './ui.module.css';
+import { Icon } from './Icon.tsx';
 
 /** The times a period can start or end at: every half hour from 06:00 to 22:00. */
 const TIMES = Array.from({ length: 33 }, (_, index) => `${String(6 + Math.floor(index / 2)).padStart(2, '0')}:${index % 2 === 0 ? '00' : '30'}`);
@@ -158,9 +159,11 @@ export function DoctorForm({ title, submitLabel, doctor, save, onSaved, onCancel
         </fieldset>
         <div className={styles.actions}>
           <button type="button" className={ui.button} onClick={onCancel}>
+            <Icon name="close" />
             Cancel
           </button>
           <button type="submit" className={ui.primary}>
+            <Icon name="check" />
             {submitLabel}
           </button>
         </div>

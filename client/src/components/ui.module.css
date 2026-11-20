@@ -23,6 +23,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  gap: 7px;
   padding: 7px 14px;
   border: 1px solid var(--line-strong);
   border-radius: var(--radius);
@@ -37,6 +38,13 @@
   transition:
     background-color 0.15s,
     border-color 0.15s;
+}
+
+/* An icon before the label keeps its size, in the color of the label. */
+.button svg,
+.primary svg,
+.danger svg {
+  flex-shrink: 0;
 }
 
 .button:hover {

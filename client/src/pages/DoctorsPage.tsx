@@ -4,6 +4,7 @@ import { listDoctors } from '../api/doctors.ts';
 import type { Doctor } from '../api/types.ts';
 import ui from '../components/ui.module.css';
 import styles from './DoctorsPage.module.css';
+import { Icon } from '../components/Icon.tsx';
 
 /** The doctors of the clinic, each with its specialty; a click anywhere on a card opens the doctor. */
 export function DoctorsPage() {
@@ -25,6 +26,7 @@ export function DoctorsPage() {
       <div className={ui.titleRow}>
         <h2>Doctors</h2>
         <Link className={ui.primary} to="/doctors/new">
+          <Icon name="plus" />
           New doctor
         </Link>
       </div>

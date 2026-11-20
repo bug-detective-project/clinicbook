@@ -5,6 +5,7 @@ import type { DoctorWithHours } from '../api/types.ts';
 import { DoctorForm } from '../components/DoctorForm.tsx';
 import ui from '../components/ui.module.css';
 import { useToast } from '../useToast.ts';
+import { Icon } from '../components/Icon.tsx';
 
 /** The screen of a new doctor (/doctors/new) or of the changes to one (/doctors/:id/edit). */
 export function DoctorFormPage() {
@@ -33,6 +34,7 @@ export function DoctorFormPage() {
       <section>
         <h2>Doctor not found</h2>
         <Link className={ui.button} to="/doctors">
+          <Icon name="back" />
           Back to the doctors
         </Link>
       </section>
@@ -53,6 +55,7 @@ export function DoctorFormPage() {
           {doctor !== null && <p className={ui.muted}>{doctor.name}</p>}
         </div>
         <Link className={ui.button} to={back}>
+          <Icon name="back" />
           {id === undefined ? 'Back to the doctors' : 'Back to the doctor'}
         </Link>
       </div>

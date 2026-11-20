@@ -12,6 +12,7 @@ import ui from '../components/ui.module.css';
 import { formatShortDay } from '../dates.ts';
 import { useToast } from '../useToast.ts';
 import { useToday } from '../useToday.ts';
+import { Icon } from '../components/Icon.tsx';
 
 /**
  * The form that books an appointment and the one that reschedules it: the same fields, and when
@@ -128,6 +129,7 @@ export function BookingPage() {
       <div className={ui.titleRow}>
         <h2>{title}</h2>
         <Link className={ui.button} to="/">
+          <Icon name="back" />
           Back to the agenda
         </Link>
       </div>
@@ -188,6 +190,7 @@ export function BookingPage() {
 
         <div>
           <button type="submit" className={ui.primary} disabled={saving}>
+            <Icon name="check" />
             {rescheduling ? 'Reschedule' : 'Book'}
           </button>
         </div>

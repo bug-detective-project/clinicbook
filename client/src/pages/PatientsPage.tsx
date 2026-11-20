@@ -9,6 +9,7 @@ import ui from '../components/ui.module.css';
 import { formatPhone } from '../masks.ts';
 import { useToast } from '../useToast.ts';
 import styles from './PatientsPage.module.css';
+import { Icon } from '../components/Icon.tsx';
 
 export function PatientsPage() {
   const [patients, setPatients] = useState<Patient[] | null>(null);
@@ -58,6 +59,7 @@ export function PatientsPage() {
       <div className={ui.titleRow}>
         <h2>Patients</h2>
         <button ref={openerRef} type="button" className={ui.primary} aria-haspopup="dialog" onClick={() => setRegistering(true)}>
+          <Icon name="plus" />
           New patient
         </button>
       </div>

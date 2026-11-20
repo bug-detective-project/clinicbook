@@ -11,6 +11,7 @@ import { useToast } from '../useToast.ts';
 import { addDays, formatDay } from '../dates.ts';
 import { useToday } from '../useToday.ts';
 import styles from './AgendaPage.module.css';
+import { Icon } from '../components/Icon.tsx';
 
 /** How often the agenda asks the server again, so two receptionists see each other's changes. */
 const REFRESH_MS = 15_000;
@@ -77,6 +78,7 @@ export function AgendaPage() {
       <div className={ui.titleRow}>
         <h2>{formatDay(day)}</h2>
         <Link className={ui.primary} to={`/appointments/new?day=${day}`}>
+          <Icon name="calendarPlus" />
           Book appointment
         </Link>
       </div>
@@ -124,6 +126,7 @@ export function AgendaPage() {
                       aria-label={`Confirm ${appointment.patientName} at ${appointment.time}`}
                       onClick={() => void change(confirmAppointment, appointment.id)}
                     >
+                      <Icon name="check" />
                       Confirm
                     </button>
                   )}
@@ -134,6 +137,7 @@ export function AgendaPage() {
                         aria-label={`Reschedule ${appointment.patientName} at ${appointment.time}`}
                         to={`/appointments/${appointment.id}/reschedule`}
                       >
+                        <Icon name="clock" />
                         Reschedule
                       </Link>
                       <button
@@ -142,6 +146,7 @@ export function AgendaPage() {
                         aria-label={`Cancel ${appointment.patientName} at ${appointment.time}`}
                         onClick={() => void change(cancelAppointment, appointment.id)}
                       >
+                        <Icon name="close" />
                         Cancel
                       </button>
                     </>

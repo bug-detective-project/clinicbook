@@ -8,6 +8,7 @@ import { formatDay } from '../dates.ts';
 import { formatPhone } from '../masks.ts';
 import { useToast } from '../useToast.ts';
 import styles from './RemindersPage.module.css';
+import { Icon } from '../components/Icon.tsx';
 
 /** When a reminder went out, in the clinic's own clock: "Mar 9, 2026, 6:02 PM". */
 const SENT = new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit' });
@@ -58,6 +59,7 @@ export function RemindersPage() {
         </div>
         {outbox?.enabled && (
           <button type="button" className={ui.primary} onClick={() => void send()}>
+            <Icon name="send" />
             Send the reminders of tomorrow
           </button>
         )}

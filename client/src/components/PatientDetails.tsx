@@ -7,6 +7,7 @@ import { formatPhone, maskCpf } from '../masks.ts';
 import { useToast } from '../useToast.ts';
 import { PatientDialog } from './PatientDialog.tsx';
 import styles from './PatientDetails.module.css';
+import { Icon } from './Icon.tsx';
 
 /** The registration data of a patient, the first tab of the patient record, with Edit to change it. */
 export function PatientDetails({ patient, onChange }: { patient: Patient; onChange: (patient: Patient) => void }) {
@@ -35,6 +36,7 @@ export function PatientDetails({ patient, onChange }: { patient: Patient; onChan
       </dl>
       <div className={styles.actions}>
         <button ref={editRef} type="button" className={ui.button} aria-haspopup="dialog" onClick={() => setEditing(true)}>
+          <Icon name="edit" />
           Edit
         </button>
       </div>
