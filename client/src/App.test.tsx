@@ -307,9 +307,38 @@ describe('patients', () => {
 
     await userEvent.click(await screen.findByRole('button', { name: 'Actions for Davi Fernandes' }));
     await userEvent.click(screen.getByRole('menuitem', { name: 'Remove patient' }));
+    const confirm = screen.getByRole('alertdialog', { name: 'Remove patient' });
+    expect(confirm).toHaveTextContent('Remove Davi Fernandes from the patients of the clinic?');
+    await userEvent.click(within(confirm).getByRole('button', { name: 'Remove' }));
 
     await waitFor(() => expect(screen.queryByTestId('patient-4')).not.toBeInTheDocument());
     expect(screen.getByTestId('patient-1')).toBeInTheDocument();
+  });
+
+  it('keeps the patient when the removal is cancelled', async () => {
+    const api = mockApi();
+    await renderApp('/patients');
+
+    await userEvent.click(await screen.findByRole('button', { name: 'Actions for Davi Fernandes' }));
+    await userEvent.click(screen.getByRole('menuitem', { name: 'Remove patient' }));
+    await userEvent.click(within(screen.getByRole('alertdialog')).getByRole('button', { name: 'Cancel' }));
+
+    expect(screen.queryByRole('alertdialog')).not.toBeInTheDocument();
+    expect(screen.getByTestId('patient-4')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Actions for Davi Fernandes' })).toHaveFocus();
+    expect(api.calls('DELETE', '/api/patients/4')).toHaveLength(0);
+  });
+
+  it('removes a patient from the record, after a confirmation, and goes back to the list', async () => {
+    mockApi();
+    await renderApp('/patients/4');
+
+    await userEvent.click(await screen.findByRole('button', { name: 'Remove' }));
+    await userEvent.click(within(screen.getByRole('alertdialog', { name: 'Remove patient' })).getByRole('button', { name: 'Remove' }));
+
+    expect(await screen.findByRole('heading', { level: 2, name: 'Patients' })).toBeInTheDocument();
+    expect(screen.getByRole('status')).toHaveTextContent('Davi Fernandes was removed.');
+    await waitFor(() => expect(screen.queryByTestId('patient-4')).not.toBeInTheDocument());
   });
 
   it('says why a patient with appointments stays', async () => {
@@ -318,6 +347,7 @@ describe('patients', () => {
 
     await userEvent.click(await screen.findByRole('button', { name: 'Actions for Ana Beatriz Costa' }));
     await userEvent.click(screen.getByRole('menuitem', { name: 'Remove patient' }));
+    await userEvent.click(within(screen.getByRole('alertdialog')).getByRole('button', { name: 'Remove' }));
 
     expect(await screen.findByRole('alert')).toHaveTextContent('Ana Beatriz Costa: This record is in use and cannot be removed');
     expect(screen.getByTestId('patient-1')).toBeInTheDocument();

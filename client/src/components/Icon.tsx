@@ -36,6 +36,7 @@ const ICONS = {
   plus: <path d="M12 5v14M5 12h14" />,
   send: <path d="M21 3 10 14M21 3l-7 18-4-7-7-4 18-7z" />,
   shield: <path d="M12 3l7.500 3v5.500c0 4.500-3.200 8.300-7.500 9.500-4.300-1.200-7.500-5-7.500-9.500V6zm0 6v6m-3-3h6" />,
+  trash: <path d="M4 7h16M10 11v6M14 11v6M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12M9 7V4h6v3" />,
 } satisfies Record<string, ReactNode>;
 
 export type IconName = keyof typeof ICONS;

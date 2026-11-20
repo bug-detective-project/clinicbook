@@ -3,6 +3,7 @@ import { Link } from 'react-router';
 import { ApiError } from '../api/http.ts';
 import { createPatient, listPatients, removePatient } from '../api/patients.ts';
 import type { Patient } from '../api/types.ts';
+import { ConfirmDialog } from '../components/ConfirmDialog.tsx';
 import { PatientDialog } from '../components/PatientDialog.tsx';
 import { PatientMenu } from '../components/PatientMenu.tsx';
 import ui from '../components/ui.module.css';
@@ -19,6 +20,8 @@ export function PatientsPage() {
   // The form of a new patient opens in a dialog over the list.
   const [registering, setRegistering] = useState(false);
   const openerRef = useRef<HTMLButtonElement>(null);
+  // The patient whose removal waits for a confirmation.
+  const [removing, setRemoving] = useState<Patient | null>(null);
 
   /** Closes the dialog and gives the focus back to the button that opened it. */
   function closeDialog() {
@@ -92,11 +95,29 @@ export function PatientsPage() {
                 <span className={ui.muted}>{formatPhone(patient.phone)}</span>
               </div>
               <div className={styles.menu}>
-                <PatientMenu patient={patient} onRemove={(removed) => void remove(removed)} />
+                <PatientMenu patient={patient} onRemove={setRemoving} />
               </div>
             </li>
           ))}
         </ul>
+      )}
+
+      {removing !== null && (
+        <ConfirmDialog
+          title="Remove patient"
+          confirmLabel="Remove"
+          onConfirm={() => {
+            setRemoving(null);
+            void remove(removing);
+          }}
+          onCancel={() => {
+            setRemoving(null);
+            // The focus goes back to the "..." button of the patient.
+            document.querySelector<HTMLButtonElement>(`[data-testid="patient-${removing.id}"] button[aria-haspopup="menu"]`)?.focus();
+          }}
+        >
+          Remove <strong>{removing.name}</strong> from the patients of the clinic? This cannot be undone.
+        </ConfirmDialog>
       )}
 
       {registering && (
