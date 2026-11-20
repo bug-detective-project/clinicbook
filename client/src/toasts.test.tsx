@@ -42,10 +42,12 @@ describe('the toasts', () => {
 
     await userEvent.click(await screen.findByRole('button', { name: 'Actions for Davi Fernandes' }));
     await userEvent.click(screen.getByRole('menuitem', { name: 'Remove patient' }));
+    await userEvent.click(within(screen.getByRole('alertdialog')).getByRole('button', { name: 'Remove' }));
     expect(await screen.findByRole('status')).toHaveTextContent('Davi Fernandes was removed.');
 
     await userEvent.click(screen.getByRole('button', { name: 'Actions for Bruno Carvalho' }));
     await userEvent.click(screen.getByRole('menuitem', { name: 'Remove patient' }));
+    await userEvent.click(within(screen.getByRole('alertdialog')).getByRole('button', { name: 'Remove' }));
     expect(await screen.findByRole('alert')).toHaveTextContent('Bruno Carvalho: This record is in use and cannot be removed');
   });
 
