@@ -65,7 +65,8 @@ Run from the repository root:
   (`working_hours`: one row per period of a day of the week). `GET /api/doctors/:id/slots` gives the
   free ones, and the booking form offers only those. The periods of one day may not overlap
   (`server/src/routes/doctors.ts`), and saving a doctor writes the doctor and the hours in one
-  transaction.
+  transaction. The clinic is open from 06:00 to 22:00: the table refuses a period outside that
+  (a `CHECK`), the answer is 400 and nothing of the doctor changes.
 - **The agenda has three views**: the day (`/`), the week (`/week`) and the month (`/month`), the
   last two from `GET /api/schedule`, for every doctor or one.
 - **A patient has a CPF and a health plan.** The CPF is stored as its 11 digits, is unique and must

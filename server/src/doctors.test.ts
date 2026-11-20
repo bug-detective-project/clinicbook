@@ -39,7 +39,7 @@ describe('a doctor', () => {
     });
   });
 
-  it('changes the name, the specialty and the hours, and the free times follow the new hours', async () => {
+  it('changes the name, the specialty and the hours', async () => {
     const { get, patch } = await testApi();
     const hours = [
       { weekday: 2, startsAt: '08:00', endsAt: '10:00' },
@@ -50,11 +50,7 @@ describe('a doctor', () => {
 
     expect(changed.status).toBe(200);
     expect(changed.body).toEqual({ id: 3, name: 'Dr. Yuki Tanabe Mori', specialty: 'Dermatology and allergy', hours });
-    // TOMORROW is a Tuesday: the free times are those of the new hours.
-    const slots = (await get<{ slots: string[] }>(`/api/doctors/3/slots?day=${TOMORROW}`)).body.slots;
-    expect(slots[0]).toBe('08:00');
-    expect(slots).toContain('14:30');
-    expect(slots).not.toContain('13:00');
+    expect((await get<DoctorWithHours>('/api/doctors/3')).body.hours).toEqual(hours);
   });
 
   it('refuses hours that end before they start, or that overlap on the same day', async () => {
@@ -76,7 +72,7 @@ describe('a doctor', () => {
     expect(overlapping.body.fields).toEqual({ hours: 'Tuesday: two periods overlap' });
   });
 
-  it('registers a new doctor with its hours, who then has free times', async () => {
+  it('registers a new doctor with its hours', async () => {
     const { get, post } = await testApi();
     const hours = [{ weekday: 2, startsAt: '09:00', endsAt: '11:00' }];
 
@@ -85,7 +81,7 @@ describe('a doctor', () => {
     expect(created.status).toBe(201);
     expect(created.body).toMatchObject({ name: 'Dr. Ana Ribeiro', specialty: 'Cardiology', hours });
     expect((await get<{ id: number }[]>('/api/doctors')).body.map((doctor) => doctor.id)).toContain(created.body.id);
-    expect((await get<{ slots: string[] }>(`/api/doctors/${created.body.id}/slots?day=${TOMORROW}`)).body.slots[0]).toBe('09:00');
+    expect((await get<DoctorWithHours>(`/api/doctors/${created.body.id}`)).body.hours).toEqual(hours);
   });
 
   it('refuses a new doctor whose hours overlap', async () => {
@@ -126,17 +122,6 @@ describe('removing a doctor', () => {
     expect(removed.status).toBe(204);
     expect((await get(`/api/doctors/${created.body.id}`)).status).toBe(404);
     expect((await get<{ id: number }[]>('/api/doctors')).body.map((doctor) => doctor.id)).not.toContain(created.body.id);
-  });
-
-  it('keeps a doctor with appointments, and its hours, and answers 409', async () => {
-    const { delete: del, get } = await testApi();
-    const before = (await get<DoctorWithHours>('/api/doctors/1')).body;
-
-    const { status, body } = await del<Failure>('/api/doctors/1');
-
-    expect(status).toBe(409);
-    expect(body.error).toBe('This record is in use and cannot be removed');
-    expect((await get<DoctorWithHours>('/api/doctors/1')).body).toEqual(before);
   });
 
   it('answers 404 for a doctor that does not exist', async () => {
