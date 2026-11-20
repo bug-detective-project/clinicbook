@@ -33,6 +33,8 @@ interface DoctorFormProps {
   save: (doctor: { name: string; specialty: string; hours: Hours[] }) => Promise<DoctorWithHours>;
   onSaved: (doctor: DoctorWithHours) => void;
   onCancel: () => void;
+  /** Given when the doctor exists: the form then has a button to remove it. */
+  onRemove?: () => void;
 }
 
 /**
@@ -40,7 +42,7 @@ interface DoctorFormProps {
  * has no period (a day off), or one or more. It starts on the name; what the API refuses shows next
  * to its field.
  */
-export function DoctorForm({ title, submitLabel, doctor, save, onSaved, onCancel }: DoctorFormProps) {
+export function DoctorForm({ title, submitLabel, doctor, save, onSaved, onCancel, onRemove }: DoctorFormProps) {
   const [name, setName] = useState(doctor?.name ?? '');
   const [specialty, setSpecialty] = useState(doctor?.specialty ?? '');
   const [week, setWeek] = useState(() => weekOf(doctor?.hours ?? []));
@@ -158,6 +160,12 @@ export function DoctorForm({ title, submitLabel, doctor, save, onSaved, onCancel
           )}
         </fieldset>
         <div className={styles.actions}>
+          {onRemove !== undefined && (
+            <button type="button" className={`${ui.danger} ${styles.removeDoctor}`} aria-haspopup="dialog" onClick={onRemove}>
+              <Icon name="trash" />
+              Remove doctor
+            </button>
+          )}
           <button type="button" className={ui.button} onClick={onCancel}>
             <Icon name="close" />
             Cancel

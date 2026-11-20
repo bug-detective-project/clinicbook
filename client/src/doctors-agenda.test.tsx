@@ -80,6 +80,40 @@ describe('the doctors', () => {
     });
   });
 
+  it('remove a doctor without appointments from its edit screen, after a confirmation', async () => {
+    const api = mockApi({ appointments: [] });
+    await renderApp('/doctors/2/edit');
+
+    await userEvent.click(await screen.findByRole('button', { name: 'Remove doctor' }));
+    const confirm = screen.getByRole('alertdialog', { name: 'Remove doctor' });
+    expect(confirm).toHaveTextContent('Remove Dr. Marcos Oliveira and the working hours from the clinic?');
+    await userEvent.click(within(confirm).getByRole('button', { name: 'Remove' }));
+
+    expect(await screen.findByRole('heading', { level: 2, name: 'Doctors' })).toBeInTheDocument();
+    expect(screen.getByRole('status')).toHaveTextContent('Dr. Marcos Oliveira was removed.');
+    expect(screen.queryByTestId('doctor-2')).not.toBeInTheDocument();
+    expect(api.calls('DELETE', '/api/doctors/2')).toHaveLength(1);
+  });
+
+  it('say why a doctor with appointments stays, and keep the edit screen', async () => {
+    mockApi();
+    await renderApp('/doctors/1/edit');
+
+    await userEvent.click(await screen.findByRole('button', { name: 'Remove doctor' }));
+    await userEvent.click(within(screen.getByRole('alertdialog')).getByRole('button', { name: 'Remove' }));
+
+    expect(await screen.findByRole('alert')).toHaveTextContent('Dr. Helena Prado: This record is in use and cannot be removed');
+    expect(screen.getByRole('form', { name: 'Edit doctor' })).toBeInTheDocument();
+  });
+
+  it('offer no removal to a doctor being registered', async () => {
+    mockApi();
+    await renderApp('/doctors/new');
+
+    expect(await screen.findByRole('form', { name: 'New doctor' })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Remove doctor' })).not.toBeInTheDocument();
+  });
+
   it('point out an appointment outside the hours of the doctor', async () => {
     mockApi();
     await renderApp('/doctors/1');

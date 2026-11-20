@@ -110,6 +110,7 @@ setting, start the app with it from the terminal: `REMINDERS_ENABLED=false npm r
 | POST   | `/api/doctors`                    | Registers (`name`, `specialty`, `hours`: `{ weekday, startsAt, endsAt }[]`). 201.                                                                  |
 | GET    | `/api/doctors/:id`                | One doctor with its `hours`, Monday (`weekday` 1) to Sunday (7).                                                                                   |
 | PATCH  | `/api/doctors/:id`                | Changes the name, the specialty and the hours. 400 names the fields.                                                                               |
+| DELETE | `/api/doctors/:id`                | Removes a doctor without appointments, with its hours. 409 when the doctor has any.                                                                |
 | GET    | `/api/doctors/:id/slots?day=`     | `{ day, slots }`: the free times of the doctor on that day, as `HH:MM`.                                                                            |
 | GET    | `/api/appointments?day=`          | The appointments of a day (today without `day`), the earliest first.                                                                               |
 | POST   | `/api/appointments`               | Books (`patientId`, `doctorId`, `day`, `time`, optional `reason`). 400 when not allowed.                                                           |

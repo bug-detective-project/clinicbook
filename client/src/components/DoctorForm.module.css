@@ -4,9 +4,15 @@
 
 .actions {
   display: flex;
+  flex-wrap: wrap;
   justify-content: flex-end;
   gap: 8px;
   margin-top: 4px;
+}
+
+/* Remove doctor stands apart from Cancel and Save, on the other side. */
+.removeDoctor {
+  margin-right: auto;
 }
 
 .hours {
@@ -93,5 +99,14 @@
   .periods {
     grid-column: 1 / -1;
     grid-row: 2;
+  }
+}
+
+/* On a phone, Remove doctor takes a line of its own and Cancel and Save stay together. */
+@media (max-width: 480px) {
+  .removeDoctor {
+    flex-basis: 100%;
+    justify-content: flex-start;
+    margin-right: 0;
   }
 }

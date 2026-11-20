@@ -24,3 +24,8 @@ export function updateDoctor(id: number, doctor: { name: string; specialty: stri
 export function createDoctor(doctor: { name: string; specialty: string; hours: Hours[] }): Promise<DoctorWithHours> {
   return request('/api/doctors', { method: 'POST', body: doctor });
 }
+
+/** Removes a doctor without appointments, with its hours. */
+export function removeDoctor(id: number): Promise<void> {
+  return request(`/api/doctors/${id}`, { method: 'DELETE' });
+}

@@ -140,6 +140,17 @@ export function mockApi(options: MockApiOptions = {}) {
         hours = { ...hours, [id]: data.hours as { weekday: number; startsAt: string; endsAt: string }[] };
         return json({ ...doctor, hours: hours[id] });
       }
+      case 'DELETE /api/doctors/:id': {
+        const index = doctors.findIndex((item) => item.id === id);
+        if (index === -1) {
+          return notFound('Doctor');
+        }
+        if (appointments.some((item) => item.doctorId === id)) {
+          return json({ error: 'This record is in use and cannot be removed' }, 409);
+        }
+        doctors.splice(index, 1);
+        return new Response(null, { status: 204 });
+      }
       case 'GET /api/schedule': {
         const from = query.get('from') ?? TODAY;
         const to = query.get('to') ?? TODAY;

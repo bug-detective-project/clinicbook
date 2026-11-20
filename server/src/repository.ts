@@ -111,6 +111,17 @@ export async function updateDoctor(db: Db, id: number, doctor: { name: string; s
   return (await findDoctorWithHours(db, id))!;
 }
 
+/**
+ * Removes a doctor and its hours, together. A doctor with appointments stays: the database refuses
+ * to delete a row that others point to, and the hours come back with it.
+ */
+export async function deleteDoctor(db: Db, id: number): Promise<void> {
+  await db.transaction().execute(async (trx) => {
+    await rows(trx.deleteFrom('workingHours').where('doctorId', '=', id));
+    await rows(trx.deleteFrom('doctors').where('id', '=', id));
+  });
+}
+
 export function workingPeriods(db: Db, doctorId: number, weekday: number): Promise<Period[]> {
   return rows(
     db

@@ -116,6 +116,36 @@ describe('a doctor', () => {
   });
 });
 
+describe('removing a doctor', () => {
+  it('removes a doctor without appointments, with its hours', async () => {
+    const { delete: del, get, post } = await testApi();
+    const created = await post<DoctorWithHours>('/api/doctors', { name: 'Dr. Ana Ribeiro', specialty: 'Cardiology', hours: [{ weekday: 2, startsAt: '09:00', endsAt: '11:00' }] });
+
+    const removed = await del(`/api/doctors/${created.body.id}`);
+
+    expect(removed.status).toBe(204);
+    expect((await get(`/api/doctors/${created.body.id}`)).status).toBe(404);
+    expect((await get<{ id: number }[]>('/api/doctors')).body.map((doctor) => doctor.id)).not.toContain(created.body.id);
+  });
+
+  it('keeps a doctor with appointments, and its hours, and answers 409', async () => {
+    const { delete: del, get } = await testApi();
+    const before = (await get<DoctorWithHours>('/api/doctors/1')).body;
+
+    const { status, body } = await del<Failure>('/api/doctors/1');
+
+    expect(status).toBe(409);
+    expect(body.error).toBe('This record is in use and cannot be removed');
+    expect((await get<DoctorWithHours>('/api/doctors/1')).body).toEqual(before);
+  });
+
+  it('answers 404 for a doctor that does not exist', async () => {
+    const { delete: del } = await testApi();
+
+    expect((await del('/api/doctors/999')).status).toBe(404);
+  });
+});
+
 describe('the schedule', () => {
   it('lists the appointments between two days, the earliest first', async () => {
     const { get } = await testApi();
