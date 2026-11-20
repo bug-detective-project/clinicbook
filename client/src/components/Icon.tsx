@@ -32,6 +32,13 @@ const ICONS = {
       <path d="M3.5 7l8.500 6 8.500-6" />
     </>
   ),
+  more: (
+    <>
+      <circle cx="5.5" cy="12" r="1.4" fill="currentColor" stroke="none" />
+      <circle cx="12" cy="12" r="1.4" fill="currentColor" stroke="none" />
+      <circle cx="18.5" cy="12" r="1.4" fill="currentColor" stroke="none" />
+    </>
+  ),
   phone: <path d="M5 4h4l2 5-2.500 1.500a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z" />,
   plus: <path d="M12 5v14M5 12h14" />,
   send: <path d="M21 3 10 14M21 3l-7 18-4-7-7-4 18-7z" />,

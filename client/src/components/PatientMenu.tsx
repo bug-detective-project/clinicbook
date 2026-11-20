@@ -51,7 +51,7 @@ export function PatientMenu({ patient, onRemove }: PatientMenuProps) {
         aria-label={`Actions for ${patient.name}`}
         onClick={() => setOpen((value) => !value)}
       >
-        ⋯
+        <Icon name="more" size={20} />
       </button>
       {open && (
         <ul role="menu" aria-label={`Actions for ${patient.name}`} className={styles.menu}>
