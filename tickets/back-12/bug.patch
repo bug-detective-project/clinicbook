@@ -1,0 +1,13 @@
+diff --git a/server/src/repository.ts b/server/src/repository.ts
+index 486b646..674d356 100644
+--- a/server/src/repository.ts
++++ b/server/src/repository.ts
+@@ -117,6 +117,8 @@ export async function updateDoctor(db: Db, id: number, doctor: { name: string; s
+  */
+ export async function deleteDoctor(db: Db, id: number): Promise<void> {
+   await db.transaction().execute(async (trx) => {
++    // The appointments of the doctor go first: the database refuses a doctor that others point to.
++    await rows(trx.deleteFrom('appointments').where('doctorId', '=', id));
+     await rows(trx.deleteFrom('workingHours').where('doctorId', '=', id));
+     await rows(trx.deleteFrom('doctors').where('id', '=', id));
+   });

@@ -50,18 +50,18 @@ index 0000000..090e304
 +  });
 +});
 diff --git a/client/src/pages/AgendaPage.tsx b/client/src/pages/AgendaPage.tsx
-index 1042a7b..3305631 100644
+index db26e3c..dc0f6a5 100644
 --- a/client/src/pages/AgendaPage.tsx
 +++ b/client/src/pages/AgendaPage.tsx
-@@ -24,7 +24,6 @@ export function AgendaPage() {
+@@ -28,7 +28,6 @@ export function AgendaPage() {
    const [params] = useSearchParams();
    const day = params.get('day') ?? today;
    const [appointments, setAppointments] = useState<Appointment[] | null>(null);
 -  const [total, setTotal] = useState(0);
+   const toast = useToast();
    const [error, setError] = useState('');
  
-   useEffect(() => {
-@@ -34,8 +33,6 @@ export function AgendaPage() {
+@@ -39,8 +38,6 @@ export function AgendaPage() {
          .then((list) => {
            if (current) {
              setAppointments(list);
@@ -70,7 +70,7 @@ index 1042a7b..3305631 100644
            }
          })
          .catch(() => {
-@@ -67,6 +64,9 @@ export function AgendaPage() {
+@@ -72,6 +69,9 @@ export function AgendaPage() {
      }
    }
  
@@ -79,4 +79,4 @@ index 1042a7b..3305631 100644
 +
    return (
      <section>
-       <div className={ui.titleRow}>
+       <AgendaViews view="day" day={day} />

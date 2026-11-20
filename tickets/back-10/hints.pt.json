@@ -1,0 +1,7 @@
+{
+  "hints": [
+    "A semana e o mês vêm de `GET /api/schedule?from&to` (`server/src/routes/schedule.ts`), e a rota passa `from` e `to` para `listAppointmentsBetween` em `server/src/repository.ts`. Leia a condição dessa consulta sobre `appointments.day`.",
+    "Os dias são textos `YYYY-MM-DD`, e a consulta guarda os dias `>= from` e `< to`. Um período de 9 a 15 guarda de 9 a 14. A rota e o esquema dela dizem que os dois dias estão incluídos.",
+    "O dia em `to` faz parte do período: a condição é `where('appointments.day', '<=', to)`. Dias escritos como `YYYY-MM-DD` se comparam como texto na ordem do calendário, então nada mais muda."
+  ]
+}

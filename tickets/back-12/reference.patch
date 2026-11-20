@@ -1,0 +1,45 @@
+diff --git a/server/src/doctor-with-appointments.test.ts b/server/src/doctor-with-appointments.test.ts
+new file mode 100644
+index 0000000..47beb87
+--- /dev/null
++++ b/server/src/doctor-with-appointments.test.ts
+@@ -0,0 +1,26 @@
++import { describe, expect, it } from 'vitest';
++import type { Appointment } from './repository.ts';
++import { testApi, TODAY } from './test/api.ts';
++
++describe('removing a doctor who has appointments', () => {
++  it('is refused, and the doctor, the hours and the appointments stay', async () => {
++    const { delete: remove, get } = await testApi();
++    const doctor = (await get('/api/doctors/1')).body;
++    const appointments = (await get<Appointment[]>(`/api/appointments?day=${TODAY}`)).body.filter((item) => item.doctorId === 1);
++    expect(appointments.length).toBeGreaterThan(0);
++
++    const { status } = await remove('/api/doctors/1');
++
++    expect(status).toBeGreaterThanOrEqual(400);
++    expect((await get('/api/doctors/1')).body).toEqual(doctor);
++    expect((await get<Appointment[]>(`/api/appointments?day=${TODAY}`)).body.filter((item) => item.doctorId === 1)).toEqual(appointments);
++  });
++
++  it('keeps the doctor on the list', async () => {
++    const { delete: remove, get } = await testApi();
++
++    await remove('/api/doctors/2');
++
++    expect((await get<{ id: number }[]>('/api/doctors')).body.map((doctor) => doctor.id)).toContain(2);
++  });
++});
+diff --git a/server/src/repository.ts b/server/src/repository.ts
+index 674d356..486b646 100644
+--- a/server/src/repository.ts
++++ b/server/src/repository.ts
+@@ -117,8 +117,6 @@ export async function updateDoctor(db: Db, id: number, doctor: { name: string; s
+  */
+ export async function deleteDoctor(db: Db, id: number): Promise<void> {
+   await db.transaction().execute(async (trx) => {
+-    // The appointments of the doctor go first: the database refuses a doctor that others point to.
+-    await rows(trx.deleteFrom('appointments').where('doctorId', '=', id));
+     await rows(trx.deleteFrom('workingHours').where('doctorId', '=', id));
+     await rows(trx.deleteFrom('doctors').where('id', '=', id));
+   });

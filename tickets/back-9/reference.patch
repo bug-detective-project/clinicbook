@@ -1,0 +1,93 @@
+diff --git a/server/src/hours-out-of-order.test.ts b/server/src/hours-out-of-order.test.ts
+new file mode 100644
+index 0000000..09ec0fb
+--- /dev/null
++++ b/server/src/hours-out-of-order.test.ts
+@@ -0,0 +1,67 @@
++import { describe, expect, it } from 'vitest';
++import { testApi } from './test/api.ts';
++
++interface Hours {
++  weekday: number;
++  startsAt: string;
++  endsAt: string;
++}
++
++const doctor = { name: 'Dr. Yuki Tanabe', specialty: 'Dermatology' };
++
++describe('periods that overlap, in any order', () => {
++  it.each<[string, Hours[]]>([
++    [
++      'when a period between them does not overlap either',
++      [
++        { weekday: 2, startsAt: '11:00', endsAt: '15:00' },
++        { weekday: 2, startsAt: '16:00', endsAt: '18:00' },
++        { weekday: 2, startsAt: '08:00', endsAt: '12:00' },
++      ],
++    ],
++    [
++      'when a period of another day sits between them',
++      [
++        { weekday: 2, startsAt: '08:00', endsAt: '12:00' },
++        { weekday: 4, startsAt: '08:00', endsAt: '12:00' },
++        { weekday: 2, startsAt: '10:00', endsAt: '11:00' },
++      ],
++    ],
++  ])('are refused %s, and the doctor keeps the hours it had', async (_when, hours) => {
++    const { get, patch } = await testApi();
++    const before = (await get<{ hours: Hours[] }>('/api/doctors/3')).body.hours;
++
++    const { status } = await patch('/api/doctors/3', { ...doctor, hours });
++
++    expect(status).toBe(400);
++    expect((await get<{ hours: Hours[] }>('/api/doctors/3')).body.hours).toEqual(before);
++  });
++
++  it('are refused for a new doctor too, who is not registered', async () => {
++    const { get, post } = await testApi();
++    const count = (await get<unknown[]>('/api/doctors')).body.length;
++
++    const { status } = await post('/api/doctors', {
++      name: 'Dr. Ana Ribeiro',
++      specialty: 'Cardiology',
++      hours: [
++        { weekday: 1, startsAt: '13:00', endsAt: '17:00' },
++        { weekday: 1, startsAt: '18:00', endsAt: '20:00' },
++        { weekday: 1, startsAt: '08:00', endsAt: '14:00' },
++      ],
++    });
++
++    expect(status).toBe(400);
++    expect((await get<unknown[]>('/api/doctors')).body).toHaveLength(count);
++  });
++
++  it('do not stop periods that only come out of order', async () => {
++    const { patch } = await testApi();
++    const hours = [
++      { weekday: 2, startsAt: '14:00', endsAt: '18:00' },
++      { weekday: 2, startsAt: '08:00', endsAt: '12:00' },
++    ];
++
++    expect((await patch('/api/doctors/3', { ...doctor, hours })).status).toBe(200);
++  });
++});
+diff --git a/server/src/routes/doctors.ts b/server/src/routes/doctors.ts
+index 50e0333..271eaeb 100644
+--- a/server/src/routes/doctors.ts
++++ b/server/src/routes/doctors.ts
+@@ -16,10 +16,11 @@ function hoursProblem(hours: Hours[]): string | null {
+       return `${WEEKDAYS[period.weekday - 1]}: a period must end after it starts`;
+     }
+   }
+-  for (let index = 1; index < hours.length; index += 1) {
+-    const before = hours[index - 1]!;
+-    const period = hours[index]!;
+-    if (period.weekday === before.weekday && period.startsAt < before.endsAt && before.startsAt < period.endsAt) {
++  const sorted = [...hours].sort((a, b) => a.weekday - b.weekday || a.startsAt.localeCompare(b.startsAt));
++  for (let index = 1; index < sorted.length; index += 1) {
++    const before = sorted[index - 1]!;
++    const period = sorted[index]!;
++    if (period.weekday === before.weekday && period.startsAt < before.endsAt) {
+       return `${WEEKDAYS[period.weekday - 1]}: two periods overlap`;
+     }
+   }

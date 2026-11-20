@@ -32,7 +32,7 @@ curl -i -X POST http://localhost:3001/api/patients \
   -d '{"name":"Vera Xavier","phone":"11 9888-77AB"}'
 ```
 
-Or in the screen: **Patients**, **New patient**, with the same phone.
+The phone field of the screen now takes digits only, so the screen can no longer send such a phone. The API still takes phones from the clinic's other systems, like the import of the old patient list that brought this one in.
 
 ## Expected result
 

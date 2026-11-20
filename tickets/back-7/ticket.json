@@ -1,0 +1,13 @@
+{
+  "type": "build",
+  "skills": {
+    "en": [
+      "Input validation",
+      "Everyday data structures and algorithms"
+    ],
+    "pt": [
+      "Validação de entrada",
+      "Estruturas de dados e algoritmos do dia a dia"
+    ]
+  }
+}

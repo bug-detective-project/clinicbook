@@ -28,7 +28,7 @@ describe('the REMINDERS_ENABLED option', () => {
     const outbox = await app.inject({ method: 'GET', url: '/api/reminders', headers });
 
     expect(run.json()).toEqual({ enabled: false, sent: 0 });
-    expect(outbox.json()).toEqual({ enabled: false, reminders: [] });
+    expect(outbox.json()).toMatchObject({ enabled: false, due: [], reminders: [] });
   });
 });
 

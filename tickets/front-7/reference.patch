@@ -1,55 +1,64 @@
 diff --git a/client/src/App.tsx b/client/src/App.tsx
-index d819488..ff04b51 100644
+index 1ebbab7..3d9b9cb 100644
 --- a/client/src/App.tsx
 +++ b/client/src/App.tsx
-@@ -3,6 +3,7 @@ import { Layout } from './components/Layout.tsx';
- import { AgendaPage } from './pages/AgendaPage.tsx';
- import { BookingPage } from './pages/BookingPage.tsx';
+@@ -8,6 +8,7 @@ import { DoctorFormPage } from './pages/DoctorFormPage.tsx';
+ import { DoctorPage } from './pages/DoctorPage.tsx';
+ import { DoctorsPage } from './pages/DoctorsPage.tsx';
  import { NotFound } from './pages/NotFound.tsx';
 +import { PatientRecord } from './pages/PatientRecord.tsx';
  import { PatientsPage } from './pages/PatientsPage.tsx';
  import { RemindersPage } from './pages/RemindersPage.tsx';
  import { TodayProvider } from './TodayContext.tsx';
-@@ -16,6 +17,7 @@ export function App() {
-           <Route path="appointments/new" element={<BookingPage />} />
-           <Route path="appointments/:id/reschedule" element={<BookingPage />} />
-           <Route path="patients" element={<PatientsPage />} />
-+          <Route path="patients/:id/*" element={<PatientRecord />} />
-           <Route path="reminders" element={<RemindersPage />} />
-           <Route path="*" element={<NotFound />} />
-         </Route>
+@@ -23,6 +24,7 @@ export function App() {
+             <Route path="appointments/new" element={<BookingPage />} />
+             <Route path="appointments/:id/reschedule" element={<BookingPage />} />
+             <Route path="patients" element={<PatientsPage />} />
++            <Route path="patients/:id/*" element={<PatientRecord />} />
+             <Route path="week" element={<AgendaWeekPage />} />
+             <Route path="month" element={<AgendaMonthPage />} />
+             <Route path="doctors" element={<DoctorsPage />} />
 diff --git a/client/src/pages/PatientRecord.module.css b/client/src/pages/PatientRecord.module.css
 new file mode 100644
-index 0000000..b913e0e
+index 0000000..ca543d8
 --- /dev/null
 +++ b/client/src/pages/PatientRecord.module.css
-@@ -0,0 +1,19 @@
+@@ -0,0 +1,28 @@
++/* The two tabs of the record, as one control. */
 +.tabs {
-+  display: flex;
++  display: inline-flex;
 +  gap: 4px;
-+  margin-bottom: 16px;
-+  border-bottom: 1px solid var(--line);
++  margin-bottom: 20px;
++  padding: 4px;
++  border: 1px solid var(--line);
++  border-radius: 12px;
++  background: var(--surface);
 +}
 +
 +.tabs a {
 +  padding: 8px 16px;
-+  border-bottom: 3px solid transparent;
-+  color: var(--ink);
++  border-radius: 9px;
++  color: var(--muted);
++  font-weight: 600;
 +  text-decoration: none;
 +}
 +
++.tabs a:hover {
++  background: var(--sunken);
++  color: var(--ink);
++}
++
 +.tabs a[aria-current='page'] {
-+  border-bottom-color: var(--brand);
-+  color: var(--brand);
-+  font-weight: 600;
++  background: var(--brand);
++  color: var(--brand-ink);
 +}
 diff --git a/client/src/pages/PatientRecord.test.tsx b/client/src/pages/PatientRecord.test.tsx
 new file mode 100644
-index 0000000..f057927
+index 0000000..a304037
 --- /dev/null
 +++ b/client/src/pages/PatientRecord.test.tsx
-@@ -0,0 +1,89 @@
-+import { screen, within } from '@testing-library/react';
+@@ -0,0 +1,165 @@
++import { screen, waitFor, within } from '@testing-library/react';
 +import userEvent from '@testing-library/user-event';
 +import { describe, expect, it } from 'vitest';
 +import { mockApi } from '../test/mockApi.ts';
@@ -138,12 +147,88 @@ index 0000000..f057927
 +    expect(screen.getByText('No e-mail')).toBeInTheDocument();
 +  });
 +});
++
++describe('what the record of a patient does', () => {
++  it('shows the CPF, with its mask, and the health plan in the record of a patient', async () => {
++    mockApi();
++    await renderApp('/patients/1');
++
++    expect(await screen.findByText('390.533.447-05')).toBeInTheDocument();
++    expect(screen.getByText('Horizonte Saúde')).toBeInTheDocument();
++  });
++
++  it('books an appointment of a patient from the Appointments tab of the record, not from Details', async () => {
++    mockApi();
++    await renderApp('/patients/1');
++    expect(await screen.findByText('390.533.447-05')).toBeInTheDocument();
++    expect(screen.queryByRole('link', { name: 'Book appointment' })).not.toBeInTheDocument();
++
++    await userEvent.click(within(screen.getByRole('navigation', { name: 'Patient record' })).getByRole('link', { name: 'Appointments' }));
++
++    expect(await screen.findByRole('link', { name: 'Book appointment' })).toHaveAttribute('href', '/appointments/new?patient=1');
++  });
++
++  it('edits the data of a patient from the record, in a dialog filled with them', async () => {
++    const api = mockApi();
++    await renderApp('/patients/1');
++
++    await userEvent.click(await screen.findByRole('button', { name: 'Edit' }));
++    const form = screen.getByRole('form', { name: 'Edit patient' });
++    expect(within(form).getByLabelText('Name')).toHaveValue('Ana Beatriz Costa');
++    expect(within(form).getByLabelText('CPF')).toHaveValue('390.533.447-05');
++    expect(within(form).getByLabelText('Health plan')).toHaveValue('Horizonte Saúde');
++
++    await userEvent.clear(within(form).getByLabelText('Health plan'));
++    await userEvent.type(within(form).getByLabelText('Health plan'), 'Amparo Vida');
++    await userEvent.click(within(form).getByRole('button', { name: 'Save' }));
++
++    expect(await screen.findByText('Amparo Vida')).toBeInTheDocument();
++    expect(api.calls('PATCH', '/api/patients/1')[0].body).toMatchObject({ name: 'Ana Beatriz Costa', cpf: '390.533.447-05', healthPlan: 'Amparo Vida' });
++    await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument());
++    expect(screen.getByRole('button', { name: 'Edit' })).toHaveFocus();
++  });
++
++  it('keeps the data of a patient when the edit is cancelled', async () => {
++    const api = mockApi();
++    await renderApp('/patients/1');
++    await userEvent.click(await screen.findByRole('button', { name: 'Edit' }));
++
++    await userEvent.type(screen.getByLabelText('Name'), ' Changed');
++    await userEvent.click(screen.getByRole('button', { name: 'Cancel' }));
++
++    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
++    expect(screen.getByRole('heading', { name: 'Ana Beatriz Costa' })).toBeInTheDocument();
++    expect(api.calls('PATCH', '/api/patients/1')).toHaveLength(0);
++  });
++
++  it('removes a patient from the record, after a confirmation, and goes back to the list', async () => {
++    mockApi();
++    await renderApp('/patients/4');
++
++    await userEvent.click(await screen.findByRole('button', { name: 'Remove' }));
++    await userEvent.click(within(screen.getByRole('alertdialog', { name: 'Remove patient' })).getByRole('button', { name: 'Remove' }));
++
++    expect(await screen.findByRole('heading', { level: 2, name: 'Patients' })).toBeInTheDocument();
++    expect(screen.getByRole('status')).toHaveTextContent('Davi Fernandes was removed.');
++    await waitFor(() => expect(screen.queryByTestId('patient-4')).not.toBeInTheDocument());
++  });
++
++  it('says that the data of a patient were saved', async () => {
++    mockApi();
++    await renderApp('/patients/1');
++    await userEvent.click(await screen.findByRole('button', { name: 'Edit' }));
++
++    await userEvent.click(screen.getByRole('button', { name: 'Save' }));
++
++    expect(await screen.findByRole('status')).toHaveTextContent('The data of Ana Beatriz Costa were saved.');
++  });
++});
 diff --git a/client/src/pages/PatientRecord.tsx b/client/src/pages/PatientRecord.tsx
 new file mode 100644
-index 0000000..1cca954
+index 0000000..9fca727
 --- /dev/null
 +++ b/client/src/pages/PatientRecord.tsx
-@@ -0,0 +1,76 @@
+@@ -0,0 +1,78 @@
 +import { useEffect, useState } from 'react';
 +import { Link, NavLink, Route, Routes, useParams } from 'react-router';
 +import { ApiError } from '../api/http.ts';
@@ -153,6 +238,7 @@ index 0000000..1cca954
 +import { PatientDetails } from '../components/PatientDetails.tsx';
 +import ui from '../components/ui.module.css';
 +import styles from './PatientRecord.module.css';
++import { Icon } from '../components/Icon.tsx';
 +
 +/**
 + * The record of one patient, at /patients/:id, with one tab per address:
@@ -202,6 +288,7 @@ index 0000000..1cca954
 +      <div className={ui.titleRow}>
 +        <h2>{patient.name}</h2>
 +        <Link className={ui.button} to="/patients">
++          <Icon name="back" />
 +          Back to the patients
 +        </Link>
 +      </div>
@@ -214,7 +301,7 @@ index 0000000..1cca954
 +      </nav>
 +
 +      <Routes>
-+        <Route index element={<PatientDetails patient={patient} />} />
++        <Route index element={<PatientDetails patient={patient} onChange={setPatient} />} />
 +        <Route path="appointments" element={<PatientAppointments patient={patient} />} />
 +      </Routes>
 +    </section>

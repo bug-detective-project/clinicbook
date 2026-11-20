@@ -1,0 +1,13 @@
+{
+  "type": "fix",
+  "skills": {
+    "en": [
+      "Business rules and layers",
+      "Databases and queries"
+    ],
+    "pt": [
+      "Regras de negócio e camadas",
+      "Banco de dados e consultas"
+    ]
+  }
+}

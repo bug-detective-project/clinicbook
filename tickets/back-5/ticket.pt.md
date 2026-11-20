@@ -23,7 +23,7 @@ Toda consulta ocupa um horário de 30 minutos. Um médico tem expediente para ca
 ## O que já existe
 
 - O cliente chama `GET /api/doctors/:id/slots?day=AAAA-MM-DD` (`listSlots` em `client/src/api/doctors.ts`) e espera `{ "day": "...", "slots": ["08:00", "08:30", ...] }`.
-- `server/src/routes/doctors.ts` tem a outra rota dos médicos. As rotas recebem `db` e `today()`, o dia que o servidor chama de hoje.
+- `server/src/routes/doctors.ts` tem as outras rotas dos médicos (a lista, um médico, cadastrar, mudar e remover). As rotas recebem `db` e `today()`, o dia que o servidor chama de hoje.
 - `server/src/repository.ts` tem `findDoctor(db, id)`, `workingPeriods(db, doctorId, weekday)` (os períodos de um dia da semana, o mais cedo primeiro, cada um com `startsAt` e `endsAt` como `HH:MM`) e `bookedTimes(db, doctorId, day)` (os horários das consultas daquele dia que não estão canceladas).
 - `server/src/dates.ts` tem `isDay`, `weekdayOf` (1 é segunda-feira), `minutesOf` (`"08:30"` é 510) e `timeOf` (510 é `"08:30"`). `server/src/schedule.ts` tem `SLOT_MINUTES` e `isWorkingTime`, a regra que uma marcação usa para aceitar um horário.
 - `server/src/schemas.ts` tem `requiredDayQuery`, o esquema de uma query que precisa trazer um `day`. Os erros de `server/src/errors.ts` (`NotFoundError`, `InvalidError`) viram as respostas certas sozinhos.

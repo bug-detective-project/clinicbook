@@ -1,54 +1,63 @@
 diff --git a/client/src/App.tsx b/client/src/App.tsx
-index ff04b51..d819488 100644
+index 3d9b9cb..1ebbab7 100644
 --- a/client/src/App.tsx
 +++ b/client/src/App.tsx
-@@ -3,7 +3,6 @@ import { Layout } from './components/Layout.tsx';
- import { AgendaPage } from './pages/AgendaPage.tsx';
- import { BookingPage } from './pages/BookingPage.tsx';
+@@ -8,7 +8,6 @@ import { DoctorFormPage } from './pages/DoctorFormPage.tsx';
+ import { DoctorPage } from './pages/DoctorPage.tsx';
+ import { DoctorsPage } from './pages/DoctorsPage.tsx';
  import { NotFound } from './pages/NotFound.tsx';
 -import { PatientRecord } from './pages/PatientRecord.tsx';
  import { PatientsPage } from './pages/PatientsPage.tsx';
  import { RemindersPage } from './pages/RemindersPage.tsx';
  import { TodayProvider } from './TodayContext.tsx';
-@@ -17,7 +16,6 @@ export function App() {
-           <Route path="appointments/new" element={<BookingPage />} />
-           <Route path="appointments/:id/reschedule" element={<BookingPage />} />
-           <Route path="patients" element={<PatientsPage />} />
--          <Route path="patients/:id/*" element={<PatientRecord />} />
-           <Route path="reminders" element={<RemindersPage />} />
-           <Route path="*" element={<NotFound />} />
-         </Route>
+@@ -24,7 +23,6 @@ export function App() {
+             <Route path="appointments/new" element={<BookingPage />} />
+             <Route path="appointments/:id/reschedule" element={<BookingPage />} />
+             <Route path="patients" element={<PatientsPage />} />
+-            <Route path="patients/:id/*" element={<PatientRecord />} />
+             <Route path="week" element={<AgendaWeekPage />} />
+             <Route path="month" element={<AgendaMonthPage />} />
+             <Route path="doctors" element={<DoctorsPage />} />
 diff --git a/client/src/pages/PatientRecord.module.css b/client/src/pages/PatientRecord.module.css
 deleted file mode 100644
-index b913e0e..0000000
+index ca543d8..0000000
 --- a/client/src/pages/PatientRecord.module.css
 +++ /dev/null
-@@ -1,19 +0,0 @@
+@@ -1,28 +0,0 @@
+-/* The two tabs of the record, as one control. */
 -.tabs {
--  display: flex;
+-  display: inline-flex;
 -  gap: 4px;
--  margin-bottom: 16px;
--  border-bottom: 1px solid var(--line);
+-  margin-bottom: 20px;
+-  padding: 4px;
+-  border: 1px solid var(--line);
+-  border-radius: 12px;
+-  background: var(--surface);
 -}
 -
 -.tabs a {
 -  padding: 8px 16px;
--  border-bottom: 3px solid transparent;
--  color: var(--ink);
+-  border-radius: 9px;
+-  color: var(--muted);
+-  font-weight: 600;
 -  text-decoration: none;
 -}
 -
+-.tabs a:hover {
+-  background: var(--sunken);
+-  color: var(--ink);
+-}
+-
 -.tabs a[aria-current='page'] {
--  border-bottom-color: var(--brand);
--  color: var(--brand);
--  font-weight: 600;
+-  background: var(--brand);
+-  color: var(--brand-ink);
 -}
 diff --git a/client/src/pages/PatientRecord.tsx b/client/src/pages/PatientRecord.tsx
 deleted file mode 100644
-index 1cca954..0000000
+index 9fca727..0000000
 --- a/client/src/pages/PatientRecord.tsx
 +++ /dev/null
-@@ -1,76 +0,0 @@
+@@ -1,78 +0,0 @@
 -import { useEffect, useState } from 'react';
 -import { Link, NavLink, Route, Routes, useParams } from 'react-router';
 -import { ApiError } from '../api/http.ts';
@@ -58,6 +67,7 @@ index 1cca954..0000000
 -import { PatientDetails } from '../components/PatientDetails.tsx';
 -import ui from '../components/ui.module.css';
 -import styles from './PatientRecord.module.css';
+-import { Icon } from '../components/Icon.tsx';
 -
 -/**
 - * The record of one patient, at /patients/:id, with one tab per address:
@@ -107,6 +117,7 @@ index 1cca954..0000000
 -      <div className={ui.titleRow}>
 -        <h2>{patient.name}</h2>
 -        <Link className={ui.button} to="/patients">
+-          <Icon name="back" />
 -          Back to the patients
 -        </Link>
 -      </div>
@@ -119,7 +130,7 @@ index 1cca954..0000000
 -      </nav>
 -
 -      <Routes>
--        <Route index element={<PatientDetails patient={patient} />} />
+-        <Route index element={<PatientDetails patient={patient} onChange={setPatient} />} />
 -        <Route path="appointments" element={<PatientAppointments patient={patient} />} />
 -      </Routes>
 -    </section>

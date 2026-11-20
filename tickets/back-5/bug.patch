@@ -1,20 +1,34 @@
 diff --git a/server/src/routes/doctors.ts b/server/src/routes/doctors.ts
-index a79a773..d15ac61 100644
+index 271eaeb..ab59772 100644
 --- a/server/src/routes/doctors.ts
 +++ b/server/src/routes/doctors.ts
-@@ -1,32 +1,7 @@
+@@ -1,11 +1,9 @@
  import type { FastifyInstance } from 'fastify';
  import type { Context } from '../context.ts';
 -import { isDay, weekdayOf } from '../dates.ts';
--import { InvalidError, NotFoundError } from '../errors.ts';
--import { bookedTimes, findDoctor, listDoctors, workingPeriods } from '../repository.ts';
--import { requiredDayQuery } from '../schemas.ts';
+ import { InvalidError, NotFoundError } from '../errors.ts';
+-import { bookedTimes, createDoctor, deleteDoctor, findDoctor, findDoctorWithHours, listDoctors, updateDoctor, workingPeriods } from '../repository.ts';
++import { createDoctor, deleteDoctor, findDoctor, findDoctorWithHours, listDoctors, updateDoctor } from '../repository.ts';
+ import type { Hours } from '../repository.ts';
+-import { doctorBody, requiredDayQuery } from '../schemas.ts';
 -import { freeSlots } from '../slots.ts';
-+import { listDoctors } from '../repository.ts';
++import { doctorBody } from '../schemas.ts';
+ 
+ const WEEKDAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+ 
+@@ -27,7 +25,7 @@ function hoursProblem(hours: Hours[]): string | null {
+   return null;
+ }
  
 -export function doctorRoutes(app: FastifyInstance, { db, today }: Context): void {
 +export function doctorRoutes(app: FastifyInstance, { db }: Context): void {
    app.get('/api/doctors', () => listDoctors(db));
+ 
+   app.post<{ Body: { name: string; specialty: string; hours: Hours[] } }>('/api/doctors', { schema: { body: doctorBody } }, async (request, reply) => {
+@@ -73,25 +71,4 @@ export function doctorRoutes(app: FastifyInstance, { db, today }: Context): void
+     await deleteDoctor(db, id);
+     return reply.status(204).send();
+   });
 -
 -  // The times a doctor is free on a day. A day that is over has none.
 -  app.get<{ Params: { id: string }; Querystring: { day: string } }>(

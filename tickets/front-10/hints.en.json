@@ -1,0 +1,7 @@
+{
+  "hints": [
+    "The week and the month both start their grid on the Monday of a day: `mondayOf` in `client/src/calendar.ts`. Try it with a Wednesday and with a Sunday, and compare the results with a calendar.",
+    "`mondayOf` subtracts `getUTCDay()` from the day, plus one. `getUTCDay()` counts the week from Sunday: Sunday is 0, Monday is 1, Saturday is 6. For a Sunday it adds a day and lands on the next Monday.",
+    "The week of the clinic runs Monday to Sunday, and `client/src/calendar.ts` already has a function for that numbering: `weekdayOf`, where Monday is 1 and Sunday is 7. With it, the Monday of a day is `addDays(day, 1 - weekdayOf(day))`, and for a Sunday that goes six days back."
+  ]
+}

@@ -1,0 +1,52 @@
+diff --git a/client/src/calendar.sunday.test.tsx b/client/src/calendar.sunday.test.tsx
+new file mode 100644
+index 0000000..560fbcc
+--- /dev/null
++++ b/client/src/calendar.sunday.test.tsx
+@@ -0,0 +1,33 @@
++import { screen, within } from '@testing-library/react';
++import { describe, expect, it } from 'vitest';
++import { mockApi } from './test/mockApi.ts';
++import { renderApp } from './test/renderApp.tsx';
++
++describe('a week opened on a Sunday', () => {
++  it('is the week that ends on that Sunday', async () => {
++    mockApi();
++    await renderApp('/week?day=2026-03-15');
++
++    expect(await screen.findByRole('heading', { level: 2, name: 'Mar 9 – Mar 15, 2026' })).toBeInTheDocument();
++    expect(await screen.findByTestId('day-2026-03-09')).toBeInTheDocument();
++    // Monday to Saturday show; the Sunday shows only when it has appointments.
++    expect(screen.getByTestId('day-2026-03-14')).toBeInTheDocument();
++    expect(screen.queryByTestId('day-2026-03-16')).not.toBeInTheDocument();
++  });
++
++  it('is the same week as the Monday before it, with the same appointments', async () => {
++    mockApi();
++    await renderApp('/week?day=2026-03-15');
++    const monday = await screen.findByTestId('day-2026-03-09');
++
++    expect(within(monday).getAllByRole('listitem').length).toBeGreaterThan(0);
++  });
++
++  it('goes back one week with "Previous week"', async () => {
++    mockApi();
++    await renderApp('/week?day=2026-03-15');
++
++    const previous = await screen.findByRole('link', { name: 'Previous week' });
++    expect(previous.getAttribute('href')).toContain('day=2026-03-02');
++  });
++});
+diff --git a/client/src/calendar.ts b/client/src/calendar.ts
+index 4cd3ed9..e24a5e2 100644
+--- a/client/src/calendar.ts
++++ b/client/src/calendar.ts
+@@ -18,7 +18,7 @@ export function weekdayOf(day: string): number {
+ }
+ 
+ export function mondayOf(day: string): string {
+-  return addDays(day, 1 - utc(day).getUTCDay());
++  return addDays(day, 1 - weekdayOf(day));
+ }
+ 
+ /** The first day of the month of `day`, moved by `months` months. */

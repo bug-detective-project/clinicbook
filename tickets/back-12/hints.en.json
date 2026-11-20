@@ -1,0 +1,7 @@
+{
+  "hints": [
+    "The route `DELETE /api/doctors/:id` (`server/src/routes/doctors.ts`) calls `deleteDoctor` in `server/src/repository.ts`. Read what that function deletes, in which order, and why the comment says it does so.",
+    "`appointments.doctor_id` points to the doctor, and the database is set to refuse deleting a row that others point to (`foreign_keys = ON`). `deleteDoctor` gets around that by deleting the appointments of the doctor first. The database was enforcing the rule of the clinic, and the function removed what it protected.",
+    "Delete only the hours and the doctor, in the transaction. For a doctor with appointments the database refuses the delete of the doctor, the transaction rolls back (the hours come back), and the error handler already turns that refusal into a 409 with \"This record is in use and cannot be removed\", as it does for patients."
+  ]
+}

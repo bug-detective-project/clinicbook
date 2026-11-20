@@ -1,0 +1,7 @@
+{
+  "hints": [
+    "As mensagens são os toasts de `client/src/ToastContext.tsx`. Cada um (`ToastItem`) começa o seu cronômetro num efeito. Leia de que esse efeito depende, e pergunte quando cada um desses valores muda.",
+    "O efeito depende de `dismiss`, que o provider cria no próprio corpo: uma função nova a cada renderização do provider. O provider renderiza de novo sempre que a lista de toasts muda, quando um aparece e quando um sai. Um `dismiss` novo faz o efeito rodar de novo, e a limpeza dele apaga o cronômetro antigo.",
+    "Dê ao `dismiss` a mesma identidade entre renderizações: `useCallback((id: number) => setToasts((list) => list.filter((toast) => toast.id !== id)), [])`. Ele só usa o setter, que o React mantém estável, então não precisa de dependência. O efeito passa a rodar uma vez por toast, como o `show` já faz."
+  ]
+}

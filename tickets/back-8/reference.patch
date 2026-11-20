@@ -1,0 +1,58 @@
+diff --git a/server/src/doctor-hours-saved-together.test.ts b/server/src/doctor-hours-saved-together.test.ts
+new file mode 100644
+index 0000000..c38b76f
+--- /dev/null
++++ b/server/src/doctor-hours-saved-together.test.ts
+@@ -0,0 +1,29 @@
++import { describe, expect, it } from 'vitest';
++import { testApi } from './test/api.ts';
++
++interface DoctorWithHours {
++  id: number;
++  name: string;
++  specialty: string;
++  hours: { weekday: number; startsAt: string; endsAt: string }[];
++}
++
++describe('saving a doctor whose hours the database refuses', () => {
++  it('keeps the name, the specialty and every period the doctor had', async () => {
++    const { get, patch } = await testApi();
++    const before = (await get<DoctorWithHours>('/api/doctors/3')).body;
++
++    // The clinic opens at 06:00: the database refuses a period that starts at 05:00.
++    const { status } = await patch('/api/doctors/3', {
++      name: 'Dr. Yuki Tanabe Mori',
++      specialty: 'Dermatology and allergy',
++      hours: [
++        { weekday: 2, startsAt: '08:00', endsAt: '12:00' },
++        { weekday: 4, startsAt: '05:00', endsAt: '09:00' },
++      ],
++    });
++
++    expect(status).toBeGreaterThanOrEqual(400);
++    expect((await get<DoctorWithHours>('/api/doctors/3')).body).toEqual(before);
++  });
++});
+diff --git a/server/src/repository.ts b/server/src/repository.ts
+index b3758b2..486b646 100644
+--- a/server/src/repository.ts
++++ b/server/src/repository.ts
+@@ -101,11 +101,13 @@ export async function createDoctor(db: Db, doctor: { name: string; specialty: st
+ 
+ /** Changes the name and the specialty of a doctor, and puts `hours` in place of the old ones, all or nothing. */
+ export async function updateDoctor(db: Db, id: number, doctor: { name: string; specialty: string }, hours: Hours[]): Promise<DoctorWithHours> {
+-  await rows(db.updateTable('doctors').set(doctor).where('id', '=', id));
+-  await rows(db.deleteFrom('workingHours').where('doctorId', '=', id));
+-  if (hours.length > 0) {
+-    await rows(db.insertInto('workingHours').values(hours.map((period) => ({ doctorId: id, ...period }))));
+-  }
++  await db.transaction().execute(async (trx) => {
++    await rows(trx.updateTable('doctors').set(doctor).where('id', '=', id));
++    await rows(trx.deleteFrom('workingHours').where('doctorId', '=', id));
++    if (hours.length > 0) {
++      await rows(trx.insertInto('workingHours').values(hours.map((period) => ({ doctorId: id, ...period }))));
++    }
++  });
+   return (await findDoctorWithHours(db, id))!;
+ }
+ 

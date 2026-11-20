@@ -22,7 +22,7 @@ I want to open a patient and see their data, and switch to their appointments, p
 
 ## What is already there
 
-- `PatientDetails` (`client/src/components/PatientDetails.tsx`) shows the phone, the e-mail and the birth date of a patient. `PatientAppointments` (`client/src/components/PatientAppointments.tsx`) loads and lists the appointments of a patient. Both take one prop, `patient`.
+- `PatientDetails` (`client/src/components/PatientDetails.tsx`) shows the CPF, the health plan, the phone, the e-mail and the birth date of a patient, and has **Edit** and **Remove**. It takes the `patient` and `onChange`, which it calls with the patient as saved after an edit. `PatientAppointments` (`client/src/components/PatientAppointments.tsx`) loads and lists the appointments of a patient, with **Book appointment**. It takes the `patient`.
 - `getPatient(id)` in `client/src/api/patients.ts` gives one patient, and fails with an `ApiError` whose `status` is 404 when the patient does not exist.
 - The routes of the app are in `client/src/App.tsx`. The links to `/patients/<id>` already exist in the agenda, in the menu of each patient and nowhere else.
 - `client/src/components/Layout.tsx` shows how the main navigation marks the current page: `NavLink` of React Router sets `aria-current="page"` on the link of the current address.

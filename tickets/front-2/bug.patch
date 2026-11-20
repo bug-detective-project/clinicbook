@@ -1,16 +1,16 @@
 diff --git a/client/src/pages/AgendaPage.tsx b/client/src/pages/AgendaPage.tsx
-index 3305631..1042a7b 100644
+index dc0f6a5..db26e3c 100644
 --- a/client/src/pages/AgendaPage.tsx
 +++ b/client/src/pages/AgendaPage.tsx
-@@ -24,6 +24,7 @@ export function AgendaPage() {
+@@ -28,6 +28,7 @@ export function AgendaPage() {
    const [params] = useSearchParams();
    const day = params.get('day') ?? today;
    const [appointments, setAppointments] = useState<Appointment[] | null>(null);
 +  const [total, setTotal] = useState(0);
+   const toast = useToast();
    const [error, setError] = useState('');
  
-   useEffect(() => {
-@@ -33,6 +34,8 @@ export function AgendaPage() {
+@@ -38,6 +39,8 @@ export function AgendaPage() {
          .then((list) => {
            if (current) {
              setAppointments(list);
@@ -19,7 +19,7 @@ index 3305631..1042a7b 100644
            }
          })
          .catch(() => {
-@@ -64,9 +67,6 @@ export function AgendaPage() {
+@@ -69,9 +72,6 @@ export function AgendaPage() {
      }
    }
  
@@ -28,4 +28,4 @@ index 3305631..1042a7b 100644
 -
    return (
      <section>
-       <div className={ui.titleRow}>
+       <AgendaViews view="day" day={day} />

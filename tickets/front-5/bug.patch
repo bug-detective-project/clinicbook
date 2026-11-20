@@ -1,5 +1,5 @@
 diff --git a/client/src/components/PatientMenu.tsx b/client/src/components/PatientMenu.tsx
-index dbfefbb..8ee1928 100644
+index 281c62a..49acc4f 100644
 --- a/client/src/components/PatientMenu.tsx
 +++ b/client/src/components/PatientMenu.tsx
 @@ -1,4 +1,4 @@
@@ -7,8 +7,8 @@ index dbfefbb..8ee1928 100644
 +import { useState } from 'react';
  import { Link } from 'react-router';
  import type { Patient } from '../api/types.ts';
- import styles from './PatientMenu.module.css';
-@@ -11,38 +11,10 @@ export interface PatientMenuProps {
+ import { Icon } from './Icon.tsx';
+@@ -12,38 +12,10 @@ export interface PatientMenuProps {
  /** The "..." button of a patient and the menu of actions it opens. */
  export function PatientMenu({ patient, onRemove }: PatientMenuProps) {
    const [open, setOpen] = useState(false);

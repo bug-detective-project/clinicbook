@@ -1,0 +1,7 @@
+{
+  "hints": [
+    "The note comes from `client/src/components/WeekGrid.tsx`, which asks `insideHours(hours, weekday, time)` for each appointment. Read the condition it uses to decide that a time is inside a period.",
+    "A period is a half-open range: an appointment of 30 minutes can start at `startsAt` and must start before `endsAt`. The condition is written the other way round: `time > startsAt` leaves out the first slot, and `time <= endsAt` takes in the end.",
+    "Write the range as the clinic means it: `time >= period.startsAt && time < period.endsAt`. The times are texts `HH:MM`, which compare in the order of the clock."
+  ]
+}

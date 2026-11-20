@@ -1,8 +1,8 @@
 diff --git a/client/src/pages/AgendaPage.tsx b/client/src/pages/AgendaPage.tsx
-index 3305631..b1c655c 100644
+index dc0f6a5..641d4de 100644
 --- a/client/src/pages/AgendaPage.tsx
 +++ b/client/src/pages/AgendaPage.tsx
-@@ -44,10 +44,9 @@ export function AgendaPage() {
+@@ -49,10 +49,9 @@ export function AgendaPage() {
      setAppointments(null);
      setError('');
      void load();

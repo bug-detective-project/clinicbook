@@ -68,10 +68,10 @@ index 0000000..63950ea
 +  });
 +});
 diff --git a/client/src/pages/AgendaPage.tsx b/client/src/pages/AgendaPage.tsx
-index b1c655c..3305631 100644
+index 641d4de..dc0f6a5 100644
 --- a/client/src/pages/AgendaPage.tsx
 +++ b/client/src/pages/AgendaPage.tsx
-@@ -44,9 +44,10 @@ export function AgendaPage() {
+@@ -49,9 +49,10 @@ export function AgendaPage() {
      setAppointments(null);
      setError('');
      void load();

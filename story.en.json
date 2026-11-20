@@ -71,6 +71,22 @@
         "subject": "New ticket: CB-107",
         "body": "Every link to the record of a patient ends in \"Page not found\". The two parts of the record are written; the page that holds them, with a tab for each, is yours to build.\n\nDr. Helena wants a link she can send to a colleague for each tab. Keep that sentence in mind while you decide how the tabs work.\n\nRafaela"
       },
+      "front-8": {
+        "subject": "New ticket: CB-108",
+        "body": "Renata's agenda is covered in green messages every morning: they only go away when she stops working for a while.\n\nConfirm two appointments a few seconds apart and watch the first message.\n\nRafaela"
+      },
+      "front-9": {
+        "subject": "New ticket: CB-109",
+        "body": "The receptionists think we are losing e-mails: a record changes when the edit form is closed without saving.\n\nIt shows on a patient without an e-mail. Reload the page afterwards: the data is fine, the screen is not.\n\nRafaela"
+      },
+      "front-10": {
+        "subject": "New ticket: CB-110",
+        "body": "Dr. Prado plans the week on Sunday evenings, and the agenda keeps showing her the wrong week.\n\nTry the week of a Wednesday and of a Sunday side by side.\n\nRafaela"
+      },
+      "front-11": {
+        "subject": "New ticket: CB-111",
+        "body": "Dr. Prado changed her hours and the page now warns about the wrong appointments: the first one of the day, and not the one at the new end.\n\nThe ticket has the steps. Look at both edges of a period.\n\nRafaela"
+      },
       "back-1": {
         "subject": "New ticket: CB-201",
         "body": "A cancelled appointment was confirmed from the other desk a few seconds later, and two patients showed up for the same time.\n\nThe clinic has a clear rule about it, and I am fairly sure the server knows the rule. Find out why it was not asked.\n\nRafaela"
@@ -94,6 +110,30 @@
       "back-6": {
         "subject": "New ticket: CB-206",
         "body": "Rescheduling was started and never finished: the screen is done, and the server answers \"not available yet\". The front desk cancels and books again by hand, and sometimes forgets the second half.\n\nBefore you write anything, read what is already there, on the three layers of the server. Most of your work is connecting pieces that exist.\n\nRafaela"
+      },
+      "back-7": {
+        "subject": "New ticket: CB-207",
+        "body": "The plans are sending bills back because of CPFs that cannot exist. Otávio wrote down how the check digits work in the ticket.\n\nThe arithmetic is half the job; finding the one place every patient goes through is the other half.\n\nRafaela"
+      },
+      "back-8": {
+        "subject": "New ticket: CB-208",
+        "body": "Dr. Tanabe lost her whole week because of one change the server refused. Renata had to tell three patients we had no times for them.\n\nThe ticket has the exact request that does it. Look at what the server writes before it says no.\n\nRafaela"
+      },
+      "back-9": {
+        "subject": "New ticket: CB-209",
+        "body": "Dr. Prado had two periods on top of each other last Tuesday, and the server accepted them. Otávio says it only happens when the periods come out of order.\n\nTry the request in the ticket with the periods sorted, then as it is.\n\nRafaela"
+      },
+      "back-10": {
+        "subject": "New ticket: CB-210",
+        "body": "Dr. Oliveira's first Sunday patient is on the agenda of that day and missing from the week. Dr. Prado found more: the last day of any period is not there.\n\nStart with the two `curl` in the ticket; they should give the same appointments.\n\nRafaela"
+      },
+      "back-11": {
+        "subject": "New ticket: CB-211",
+        "body": "IT's plan script is clearing e-mails and birth dates. It only sends the new plan, which is exactly what it should send.\n\nCompare how the route treats a field that is missing with one sent as `null`.\n\nRafaela"
+      },
+      "back-12": {
+        "subject": "New ticket: CB-212",
+        "body": "One wrong click on the edit screen and Dr. Oliveira was gone, with every appointment of his week. Two patients came for appointments we no longer had.\n\nThe database was trying to stop it. See what the code does to get past it.\n\nRafaela"
       }
     },
     "completion": {
