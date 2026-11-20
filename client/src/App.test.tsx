@@ -374,3 +374,24 @@ describe('addresses', () => {
     expect(await screen.findByRole('heading', { level: 2, name: 'Page not found' })).toBeInTheDocument();
   });
 });
+
+describe('the menu button', () => {
+  it('opens the screens, and closes when one is chosen or on Escape', async () => {
+    mockApi();
+    await renderApp();
+    const button = await screen.findByRole('button', { name: 'Menu' });
+    expect(button).toHaveAttribute('aria-expanded', 'false');
+
+    await userEvent.click(button);
+    expect(button).toHaveAttribute('aria-expanded', 'true');
+    await userEvent.click(within(screen.getByRole('navigation', { name: 'Main' })).getByRole('link', { name: 'Patients' }));
+
+    expect(await screen.findByRole('heading', { level: 2, name: 'Patients' })).toBeInTheDocument();
+    expect(button).toHaveAttribute('aria-expanded', 'false');
+
+    await userEvent.click(button);
+    await userEvent.keyboard('{Escape}');
+    expect(button).toHaveAttribute('aria-expanded', 'false');
+    expect(button).toHaveFocus();
+  });
+});

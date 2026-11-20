@@ -1,4 +1,4 @@
-/* A rail on the left with the clinic and the three screens; on a narrow window it becomes a bar on top. */
+/* A rail on the left with the clinic and the screens; below 768px it becomes a bar on top with a menu button. */
 .page {
   display: grid;
   grid-template-columns: 232px minmax(0, 1fr);
@@ -106,24 +106,63 @@
   padding: 32px 32px 56px;
 }
 
-@media (max-width: 820px) {
+/* Only a narrow window has the menu button. */
+.menuButton {
+  display: none;
+}
+
+@media (max-width: 767px) {
   .page {
     display: block;
   }
 
+  /* A bar on top with the clinic and the menu button; the screens open below it. */
   .header {
-    position: static;
+    top: env(safe-area-inset-top, 0px);
+    z-index: 20;
     flex-direction: row;
-    flex-wrap: wrap;
     align-items: center;
-    gap: 12px 20px;
+    justify-content: space-between;
+    gap: 12px;
     height: auto;
-    padding: 12px 16px;
+    padding: 10px 16px;
+  }
+
+  .menuButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 42px;
+    height: 42px;
+    border: 1px solid rgb(255 255 255 / 0.16);
+    border-radius: var(--radius);
+    background: rgb(255 255 255 / 0.06);
+    color: #ffffff;
+    cursor: pointer;
+  }
+
+  .menuButton:hover,
+  .menuButton[aria-expanded='true'] {
+    background: rgb(255 255 255 / 0.14);
   }
 
   .nav {
-    flex-direction: row;
-    flex-wrap: wrap;
+    position: absolute;
+    top: 100%;
+    right: 0;
+    left: 0;
+    display: none;
+    padding: 8px 16px 16px;
+    background: var(--rail);
+    box-shadow: 0 18px 30px -18px rgb(23 32 51 / 0.6);
+  }
+
+  .nav.open {
+    display: flex;
+  }
+
+  .nav a {
+    padding: 12px;
   }
 
   .desk {
