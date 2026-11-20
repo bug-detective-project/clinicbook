@@ -1,0 +1,57 @@
+/* The three steps read as one control. */
+.nav {
+  display: inline-flex;
+  gap: 4px;
+  max-width: 100%;
+  padding: 4px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--surface);
+}
+
+.step {
+  display: inline-flex;
+  flex: 1 1 auto;
+  gap: 6px;
+  align-items: center;
+  justify-content: center;
+  padding: 7px 12px;
+  border: 0;
+  border-radius: 8px;
+  background: none;
+  color: var(--ink);
+  font: inherit;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.step:hover {
+  background: var(--sunken);
+}
+
+.step svg {
+  flex-shrink: 0;
+  color: var(--muted);
+}
+
+/* The period on the screen is today, this week or this month. */
+.selected,
+.selected:hover {
+  background: var(--brand);
+  color: var(--brand-ink);
+}
+
+@media (max-width: 480px) {
+  .nav {
+    display: flex;
+    width: 100%;
+  }
+
+  .step {
+    padding: 7px 6px;
+    font-size: 0.8125rem;
+  }
+}
