@@ -32,8 +32,10 @@ export function WeekGrid({ days, appointments, today, showDoctor = false, hours 
         const weekday = weekdayOf(day);
         const ofDay = appointments.filter((appointment) => appointment.day === day);
         const periods = hours === undefined ? null : periodsOf(hours, weekday);
+        // A day the doctor does not work is greyed out.
+        const classes = [styles.day, day === today && styles.today, periods === '' && styles.off].filter(Boolean).join(' ');
         return (
-          <section key={day} data-testid={`day-${day}`} aria-labelledby={`day-title-${day}`} className={day === today ? `${styles.day} ${styles.today}` : styles.day}>
+          <section key={day} data-testid={`day-${day}`} aria-labelledby={`day-title-${day}`} className={classes}>
             <h3 id={`day-title-${day}`} className={styles.head}>
               <span className={styles.weekday}>{weekdayName(day)}</span>
               <span className={styles.number}>{Number(day.slice(8))}</span>
