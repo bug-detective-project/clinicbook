@@ -11,12 +11,12 @@
       "database": "SQLite"
     }
   },
-  "version": "1.0.0",
-  "createdAt": "2026-11-18T20:45:36.187Z",
+  "version": "1.1.1",
+  "createdAt": "2026-11-20T09:00:26.504Z",
   "tickets": {
-    "total": 13,
-    "front": 7,
-    "back": 6
+    "total": 23,
+    "front": 11,
+    "back": 12
   },
   "entries": [
     {
@@ -24,15 +24,15 @@
       "track": "front",
       "order": 1,
       "branch": "front-1",
-      "tag": "front-1-v1.0.0",
-      "commit": "b2d61c1dab2ba7e6b4a3f121460fdcfac7685750",
+      "tag": "front-1-v1.1.1",
+      "commit": "1cffa7af6f673710372d5d5f366b5599ad288f7d",
       "commitMessage": "ClinicBook release front-1",
-      "codeDigest": "sha256:d97787a98f2cae1d96b82ce508fb4fbe772b42af7a74b03468e219009c686a66",
-      "codeFiles": 103,
+      "codeDigest": "sha256:fa84db0ca146883bb4d0e65b42e25bc5c1b4dff874d9ebdddab65c8c8427e713",
+      "codeFiles": 152,
       "package": {
         "path": "tickets/front-1",
-        "files": 31,
-        "digest": "sha256:e234b383d7b30ed9695e2119171d3fbbc6ee838a054b46d25d6f31f36ed24fc0"
+        "files": 47,
+        "digest": "sha256:b11f1e58210383cc7c808832297f3e6fe0a7d4798f4e1f27f3daba2d6cbcc533"
       },
       "type": "fix",
       "skills": {
@@ -49,15 +49,15 @@
       "track": "front",
       "order": 2,
       "branch": "front-2",
-      "tag": "front-2-v1.0.0",
-      "commit": "3d37ef49b8519f32b34e3e184a19fefa0a24af3f",
+      "tag": "front-2-v1.1.1",
+      "commit": "256f4d0ca5b6f65883a0711ac9ce239a9e8a005e",
       "commitMessage": "ClinicBook release front-2",
-      "codeDigest": "sha256:8daf0d301730e131c08b299a0c8ea123994e1b2ebe5a69c92a209a6918967b91",
-      "codeFiles": 103,
+      "codeDigest": "sha256:372dd994e7aff17e381ee9dca799c86333c390ffef4f3e7be9fd78a904608766",
+      "codeFiles": 152,
       "package": {
         "path": "tickets/front-2",
-        "files": 31,
-        "digest": "sha256:842993d9f3df679f65064b0dbcc7c3217f6ae43fe80004712b29ce93121357b4"
+        "files": 47,
+        "digest": "sha256:bb92733aab11c9027021015fa6de6abdb1bed1bae2a59ab05a0fa9271d9ae3dc"
       },
       "type": "fix",
       "skills": {
@@ -74,15 +74,15 @@
       "track": "front",
       "order": 3,
       "branch": "front-3",
-      "tag": "front-3-v1.0.0",
-      "commit": "5f860d9659b744eb4390b8bfa1bd6cf08dd57e65",
+      "tag": "front-3-v1.1.1",
+      "commit": "b336c69ae9f0c44d9321b87e57e2f7716a169546",
       "commitMessage": "ClinicBook release front-3",
-      "codeDigest": "sha256:712e23ace7b44b88b928471be40bede3c36ae77b98543087343a97bf575f5a44",
-      "codeFiles": 103,
+      "codeDigest": "sha256:11897ec06f5fb672aca6aa02131050befbb5c18dd81eb2d0bd3a3d70f9a4b340",
+      "codeFiles": 152,
       "package": {
         "path": "tickets/front-3",
-        "files": 31,
-        "digest": "sha256:6b53be4c751938c7d8ad6ea79c5e922f10ccbc1d6be3801114c90e7789032c1c"
+        "files": 47,
+        "digest": "sha256:9c2c444848bdee49777643669ea9ca7ebbf2c86965ac515ed47ab96e4679dbf3"
       },
       "type": "fix",
       "skills": {
@@ -101,15 +101,15 @@
       "track": "front",
       "order": 4,
       "branch": "front-4",
-      "tag": "front-4-v1.0.0",
-      "commit": "01b6842897d8447d530d3b58858d49cc897a9909",
+      "tag": "front-4-v1.1.1",
+      "commit": "ca8d9989ecd2426bcea4d640998f12d2123ccc38",
       "commitMessage": "ClinicBook release front-4",
-      "codeDigest": "sha256:3579ffea7f5cba976120d3cf7433e758e37103696537e861525ee75def7933ca",
-      "codeFiles": 103,
+      "codeDigest": "sha256:c7f05488a89b91d2b90cc51eaa351d52b0230f35b00a46ac30737dbbf6fc4c00",
+      "codeFiles": 152,
       "package": {
         "path": "tickets/front-4",
-        "files": 31,
-        "digest": "sha256:0b596479acaa50b0fcc5b5488de73d63de43a544dcd036574f92f8e44aef0030"
+        "files": 47,
+        "digest": "sha256:2a86be6be0db6965ca7460c931ea48399996cb5cd2451d90938c1ff5dbeeb860"
       },
       "type": "fix",
       "skills": {
@@ -126,15 +126,15 @@
       "track": "front",
       "order": 5,
       "branch": "front-5",
-      "tag": "front-5-v1.0.0",
-      "commit": "e912c2770bb15652af8fc0d8eabc75d66266dc3d",
+      "tag": "front-5-v1.1.1",
+      "commit": "54b3d0cd366acd906714b7b037ef9e9946d45a31",
       "commitMessage": "ClinicBook release front-5",
-      "codeDigest": "sha256:3b508eed2c55ad377475c4f8d31afac6541e4b3ad8e4e876e91534ba188d6259",
-      "codeFiles": 103,
+      "codeDigest": "sha256:59dd395b5ad031892871443f54a6e7478703bcea1cbbb00bf26192fa3b0b64b7",
+      "codeFiles": 152,
       "package": {
         "path": "tickets/front-5",
-        "files": 31,
-        "digest": "sha256:4416157dc5c449d7cf5a5f3bca5af6146962f3815a43fc552ee0da2917ac1be7"
+        "files": 47,
+        "digest": "sha256:7282885a62049f6a7e3ef484e627a3641183248335dd127fd477a83b2e4c2012"
       },
       "type": "build",
       "skills": {
@@ -153,15 +153,15 @@
       "track": "front",
       "order": 6,
       "branch": "front-6",
-      "tag": "front-6-v1.0.0",
-      "commit": "a520ed1819c5df5bd44b84dde72b42b92affe272",
+      "tag": "front-6-v1.1.1",
+      "commit": "d9a1ec3be0644a9ca0a4e949549ef60f3b897621",
       "commitMessage": "ClinicBook release front-6",
-      "codeDigest": "sha256:92aac0bbbbd3134b1618fba92bdae6156108e0d55d480e5fe276d30617123f91",
-      "codeFiles": 101,
+      "codeDigest": "sha256:d82354bd2e4e83acf8a4566e0091d63c1a0c07aa959b46beea4bd16c6464f2e4",
+      "codeFiles": 150,
       "package": {
         "path": "tickets/front-6",
-        "files": 31,
-        "digest": "sha256:0277d3d04b963c2dc71e0816c93cddccef3656e1bc2481c22f6fa247ca9632ae"
+        "files": 47,
+        "digest": "sha256:2d6c45648fb64e115db42befe75b721c45465b327fed9c82e2e81a0b1bd8a7db"
       },
       "type": "build",
       "skills": {
@@ -178,15 +178,15 @@
       "track": "front",
       "order": 7,
       "branch": "front-7",
-      "tag": "front-7-v1.0.0",
-      "commit": "db7740a1732847f3e77e924e6d0dd674228b75ed",
+      "tag": "front-7-v1.1.1",
+      "commit": "f812f7cd65c65ff580df03667f6ca9a76db2b531",
       "commitMessage": "ClinicBook release front-7",
-      "codeDigest": "sha256:da18ca39c5dd3456c9b24ddd132ffe48883e34546a3b0fbca47766def983885b",
-      "codeFiles": 101,
+      "codeDigest": "sha256:b9dda91c0ed66986b219b42278db44414b9581c46494d1570d2a23df20538487",
+      "codeFiles": 150,
       "package": {
         "path": "tickets/front-7",
-        "files": 31,
-        "digest": "sha256:acad32559a3e5b0ffa29a778d923f537d348765c746e37b82a48efe480f4afbd"
+        "files": 47,
+        "digest": "sha256:8208b357f0832f4bef8361837d1fd5803c6b717f79236ba37d749dfb7663d7f9"
       },
       "type": "build",
       "skills": {
@@ -199,19 +199,119 @@
       }
     },
     {
+      "id": "front-8",
+      "track": "front",
+      "order": 8,
+      "branch": "front-8",
+      "tag": "front-8-v1.1.1",
+      "commit": "93f93730c0e281b8929000647f96a10b429c9913",
+      "commitMessage": "ClinicBook release front-8",
+      "codeDigest": "sha256:6327e1e5f4eb8216d51bbbbe892e3846a9883e652e0be38dc767f020db9c5bec",
+      "codeFiles": 152,
+      "package": {
+        "path": "tickets/front-8",
+        "files": 47,
+        "digest": "sha256:7de16d0514e317b434eb845146d0c2deb416e6af9ae4cf7f949fc6f1431c9dbf"
+      },
+      "type": "fix",
+      "skills": {
+        "en": [
+          "Effects and lifecycle"
+        ],
+        "pt": [
+          "Efeitos e ciclo de vida"
+        ]
+      }
+    },
+    {
+      "id": "front-9",
+      "track": "front",
+      "order": 9,
+      "branch": "front-9",
+      "tag": "front-9-v1.1.1",
+      "commit": "505e1f9ee1c72150fcfdcf34ae85102dc9beeae9",
+      "commitMessage": "ClinicBook release front-9",
+      "codeDigest": "sha256:9edb30ed4a150fd0e8b3b0edc3a91b52a58895f4fdfa0f3f86cee48102b4c928",
+      "codeFiles": 152,
+      "package": {
+        "path": "tickets/front-9",
+        "files": 47,
+        "digest": "sha256:108da4726c4d95aec6de02c7f87fe1d5e8831d3f463b2f6115fc29bd2d1c6a16"
+      },
+      "type": "fix",
+      "skills": {
+        "en": [
+          "Local and derived state"
+        ],
+        "pt": [
+          "Estado local e derivado"
+        ]
+      }
+    },
+    {
+      "id": "front-10",
+      "track": "front",
+      "order": 10,
+      "branch": "front-10",
+      "tag": "front-10-v1.1.1",
+      "commit": "81d5bc5c18a5222d53acf8e88f82d8a512591d94",
+      "commitMessage": "ClinicBook release front-10",
+      "codeDigest": "sha256:ad2786cfa0fc962d5dbdf5dd4d2697586bb15cb7d716fc8e092d7e5c7df1261d",
+      "codeFiles": 152,
+      "package": {
+        "path": "tickets/front-10",
+        "files": 47,
+        "digest": "sha256:b5df68140b819ee0eb3a942fa2791e7ccefb10eaa7042cbbdba82bf457066eb7"
+      },
+      "type": "fix",
+      "skills": {
+        "en": [
+          "Dates, numbers and text"
+        ],
+        "pt": [
+          "Datas, números e texto"
+        ]
+      }
+    },
+    {
+      "id": "front-11",
+      "track": "front",
+      "order": 11,
+      "branch": "front-11",
+      "tag": "front-11-v1.1.1",
+      "commit": "5ba46bb422c257b654a35da22e83247d17613677",
+      "commitMessage": "ClinicBook release front-11",
+      "codeDigest": "sha256:3bee71825763d6545d7686301cdb5482232e009ed4cf260f03c7c65d2fd9fd77",
+      "codeFiles": 152,
+      "package": {
+        "path": "tickets/front-11",
+        "files": 47,
+        "digest": "sha256:6c18a2231cf8f0c597d74911dc2c9393472f227c55f535f635b23f4447e2600b"
+      },
+      "type": "fix",
+      "skills": {
+        "en": [
+          "Everyday data structures and algorithms"
+        ],
+        "pt": [
+          "Estruturas de dados e algoritmos do dia a dia"
+        ]
+      }
+    },
+    {
       "id": "back-1",
       "track": "back",
       "order": 1,
       "branch": "back-1",
-      "tag": "back-1-v1.0.0",
-      "commit": "499015386e45b0b42f089b02af24656c211c66ac",
+      "tag": "back-1-v1.1.1",
+      "commit": "aefe6d6ba3dac2a0f6269d040dfb74e965c1b02d",
       "commitMessage": "ClinicBook release back-1",
-      "codeDigest": "sha256:7f341bd8678d85ad22fe0e52d87b5fdf36a9ca526c518ed3a0648cc0c6e5f8cf",
-      "codeFiles": 103,
+      "codeDigest": "sha256:a76444546567c51260b214133e7c8d288cfc0e7e405daceae0ea53991cc76bc1",
+      "codeFiles": 152,
       "package": {
         "path": "tickets/back-1",
-        "files": 31,
-        "digest": "sha256:0a99ba4bfb7efe977517c3f0aacf7eae4d77cce76fc0e08c5b27b75adf1dd02a"
+        "files": 47,
+        "digest": "sha256:adc99078b816d4328373f25c276d84686363e48d508b766a86aeb172d6ebddc2"
       },
       "type": "fix",
       "skills": {
@@ -228,15 +328,15 @@
       "track": "back",
       "order": 2,
       "branch": "back-2",
-      "tag": "back-2-v1.0.0",
-      "commit": "e3eee46038192267f412b40844d55f916e0c4187",
+      "tag": "back-2-v1.1.1",
+      "commit": "cd2bff77ac3339f8d65807724faa9d47383b16f3",
       "commitMessage": "ClinicBook release back-2",
-      "codeDigest": "sha256:4bd0b161d3eb3510681ec12d3db6ebff4c0f11f6d2e763ebd621fa25770526ce",
-      "codeFiles": 103,
+      "codeDigest": "sha256:eabc55af99073a6d7a5610fff1ddeafd5d515ab0b85daac753f3a9fd8de6e466",
+      "codeFiles": 152,
       "package": {
         "path": "tickets/back-2",
-        "files": 31,
-        "digest": "sha256:80a4d145fd980a76a1934152b69cf93659cae3e58eafc1630ec96a81a426bd7d"
+        "files": 47,
+        "digest": "sha256:e6116111de7e03d27de1f2decd5a842959d59129e2365457e99dd382558e5bfc"
       },
       "type": "fix",
       "skills": {
@@ -255,15 +355,15 @@
       "track": "back",
       "order": 3,
       "branch": "back-3",
-      "tag": "back-3-v1.0.0",
-      "commit": "15058082aa1eca6f15e73c904363f921104cae79",
+      "tag": "back-3-v1.1.1",
+      "commit": "eb0d4985578cd07ccc3ce02e6ec7b15d8fd7fdeb",
       "commitMessage": "ClinicBook release back-3",
-      "codeDigest": "sha256:873eea807b2bd9deb89b22c4e834d52970ddc16303d055e81fc3586e14bc6d8d",
-      "codeFiles": 103,
+      "codeDigest": "sha256:4a1b7938a5e5121b75a637357be4bad542c2a68f7e9f943b4d5cf2b207dbe128",
+      "codeFiles": 152,
       "package": {
         "path": "tickets/back-3",
-        "files": 31,
-        "digest": "sha256:27760dcd2197cd387eaee0e73f061325e39a148deb6c3cf4c11fdb2bdd5808e9"
+        "files": 47,
+        "digest": "sha256:c574a13e2e394177ac11faea37ae75ca633154b0f59b675f6b3142962945be56"
       },
       "type": "fix",
       "skills": {
@@ -282,15 +382,15 @@
       "track": "back",
       "order": 4,
       "branch": "back-4",
-      "tag": "back-4-v1.0.0",
-      "commit": "b7109f51e068dc6354348db82fc8f3ef0ba0c6d7",
+      "tag": "back-4-v1.1.1",
+      "commit": "c7a518a2b15cc33f163568c356a7d050840648fe",
       "commitMessage": "ClinicBook release back-4",
-      "codeDigest": "sha256:01fbc282f22aa15108a01cdd2fe1cdb083a2c2728f44c0deafd372051da80a34",
-      "codeFiles": 103,
+      "codeDigest": "sha256:e82510230cb8ddae7a51d54c61d0181a31e47a5285786fb7156e3831f20b641b",
+      "codeFiles": 152,
       "package": {
         "path": "tickets/back-4",
-        "files": 31,
-        "digest": "sha256:431867f25fac62d871ac88449e92e95e81c44b0370745de04f5bcdef397d7b1f"
+        "files": 47,
+        "digest": "sha256:f70c94260569a6d26534a56b40c5051039bfc68b89bdf40060f54bdfd4c75a7e"
       },
       "type": "build",
       "skills": {
@@ -307,15 +407,15 @@
       "track": "back",
       "order": 5,
       "branch": "back-5",
-      "tag": "back-5-v1.0.0",
-      "commit": "e16e0f02962b439ae19b2960dfd5c9b400921585",
+      "tag": "back-5-v1.1.1",
+      "commit": "824cfc5b11c3af924331cb51fe4480d36fd4f1f9",
       "commitMessage": "ClinicBook release back-5",
-      "codeDigest": "sha256:9e1c5337c3a9e953f1e290805719590d4c729f2387555886a29aca16d5ea021b",
-      "codeFiles": 102,
+      "codeDigest": "sha256:a7bd17b240e55dc5f1facc61bc6f94153a1d897a82562377f4ae9f55426bd014",
+      "codeFiles": 151,
       "package": {
         "path": "tickets/back-5",
-        "files": 31,
-        "digest": "sha256:105035d9b254c5c63d162ac8fbbda3636f9b04b7bda4cb07bbffe4f6cec2719f"
+        "files": 47,
+        "digest": "sha256:cb505a7b47a326f087442090dbd28be3d3eb0019dea16290735aa1bf96c1bec2"
       },
       "type": "build",
       "skills": {
@@ -334,15 +434,15 @@
       "track": "back",
       "order": 6,
       "branch": "back-6",
-      "tag": "back-6-v1.0.0",
-      "commit": "2a42e63197784a478cfac5537060a3bde0cb9632",
+      "tag": "back-6-v1.1.1",
+      "commit": "ef34b0b554e6d41f34f387e4b79284bddd61f31f",
       "commitMessage": "ClinicBook release back-6",
-      "codeDigest": "sha256:b87aa201432bd54c445daab1a3f2e29adaa9ff86e2ba506e293b1521df5167d6",
-      "codeFiles": 103,
+      "codeDigest": "sha256:d49c63cea14b1ff76d2f72f05eded8e65aa064d3c69169dd4dfaa5338ba4d6e3",
+      "codeFiles": 152,
       "package": {
         "path": "tickets/back-6",
-        "files": 31,
-        "digest": "sha256:5e200f020380bb408a937490d47a382119891281389e436ed494d1f57d86150f"
+        "files": 47,
+        "digest": "sha256:76f73ae0f4f549bcdad816868d6fda6e2cb4b35a32a6ab6314238a96281aefdb"
       },
       "type": "complete",
       "skills": {
@@ -351,6 +451,160 @@
         ],
         "pt": [
           "Criação de rotas e endpoints"
+        ]
+      }
+    },
+    {
+      "id": "back-7",
+      "track": "back",
+      "order": 7,
+      "branch": "back-7",
+      "tag": "back-7-v1.1.1",
+      "commit": "c3a1762156a44d2b9393b768051902cba9f63d22",
+      "commitMessage": "ClinicBook release back-7",
+      "codeDigest": "sha256:de5a8b78b8dd30106338b85529ad00a644d598c5c3b89ad73120e8d3970548fe",
+      "codeFiles": 152,
+      "package": {
+        "path": "tickets/back-7",
+        "files": 47,
+        "digest": "sha256:624f0e2ad39e92d5c2777214274b4bcd20cd54ef85173eb14f7db5231850328b"
+      },
+      "type": "build",
+      "skills": {
+        "en": [
+          "Input validation",
+          "Everyday data structures and algorithms"
+        ],
+        "pt": [
+          "Validação de entrada",
+          "Estruturas de dados e algoritmos do dia a dia"
+        ]
+      }
+    },
+    {
+      "id": "back-8",
+      "track": "back",
+      "order": 8,
+      "branch": "back-8",
+      "tag": "back-8-v1.1.1",
+      "commit": "5882abc8b3bdec8c405358b5f576cfa528b78968",
+      "commitMessage": "ClinicBook release back-8",
+      "codeDigest": "sha256:7d9fe90f8e21d01bf03bf4e3fbddfa853fd9c109e4ddef17a65ade9fc3364a38",
+      "codeFiles": 152,
+      "package": {
+        "path": "tickets/back-8",
+        "files": 47,
+        "digest": "sha256:bf663aa5c16bfa7bdc7a4f6c43390bfb24b6a2bd01c6c36c713d4b0bf90f8e18"
+      },
+      "type": "fix",
+      "skills": {
+        "en": [
+          "Databases and queries"
+        ],
+        "pt": [
+          "Banco de dados e consultas"
+        ]
+      }
+    },
+    {
+      "id": "back-9",
+      "track": "back",
+      "order": 9,
+      "branch": "back-9",
+      "tag": "back-9-v1.1.1",
+      "commit": "4f414034d33c97b82acc7327ea4c8af694b0eeef",
+      "commitMessage": "ClinicBook release back-9",
+      "codeDigest": "sha256:5561566abd18232a91a2777d4521741659c388877f1c8dd36cc45d3dcc738ec1",
+      "codeFiles": 152,
+      "package": {
+        "path": "tickets/back-9",
+        "files": 47,
+        "digest": "sha256:076ed08e1f4ccdacde02753ed2f033e64e035a2616afab4702d024d906ef5f89"
+      },
+      "type": "fix",
+      "skills": {
+        "en": [
+          "Business rules and layers"
+        ],
+        "pt": [
+          "Regras de negócio e camadas"
+        ]
+      }
+    },
+    {
+      "id": "back-10",
+      "track": "back",
+      "order": 10,
+      "branch": "back-10",
+      "tag": "back-10-v1.1.1",
+      "commit": "e736702ebab9e0e416bdaa90bef3d13866e1f332",
+      "commitMessage": "ClinicBook release back-10",
+      "codeDigest": "sha256:18b6fe8d1aba94dab9f62a8d328ed390aa120b543a95173c26d80d184debfa82",
+      "codeFiles": 152,
+      "package": {
+        "path": "tickets/back-10",
+        "files": 47,
+        "digest": "sha256:d838d031641b2b285fd48176804492dcf38adc0b53bc34dca113ca466b0ca8c3"
+      },
+      "type": "fix",
+      "skills": {
+        "en": [
+          "Search, filters and pagination"
+        ],
+        "pt": [
+          "Busca, filtros e paginação"
+        ]
+      }
+    },
+    {
+      "id": "back-11",
+      "track": "back",
+      "order": 11,
+      "branch": "back-11",
+      "tag": "back-11-v1.1.1",
+      "commit": "348f2c0b00678ed8587f49935db542440d0d6628",
+      "commitMessage": "ClinicBook release back-11",
+      "codeDigest": "sha256:fdb5cccf1230e403205660e64d5042353b40472c62c3510855be29f09b9e8b0d",
+      "codeFiles": 152,
+      "package": {
+        "path": "tickets/back-11",
+        "files": 47,
+        "digest": "sha256:4fc76ed21dc8013258920aba5b6ff62d6112838daa176bc199f857de59965c70"
+      },
+      "type": "fix",
+      "skills": {
+        "en": [
+          "API design and HTTP"
+        ],
+        "pt": [
+          "Desenho de API e HTTP"
+        ]
+      }
+    },
+    {
+      "id": "back-12",
+      "track": "back",
+      "order": 12,
+      "branch": "back-12",
+      "tag": "back-12-v1.1.1",
+      "commit": "832a0e4fed4902c2d23278b99ff201ed9518199b",
+      "commitMessage": "ClinicBook release back-12",
+      "codeDigest": "sha256:e9bb2782a55227559ccd18f4ff85ae836207c1f5350f539289369f3cbf004957",
+      "codeFiles": 152,
+      "package": {
+        "path": "tickets/back-12",
+        "files": 47,
+        "digest": "sha256:af7f6b97602cae71f4bb05c8cfc8f514897d2a978f5bccb3739fd72a1d887cf8"
+      },
+      "type": "fix",
+      "skills": {
+        "en": [
+          "Business rules and layers",
+          "Databases and queries"
+        ],
+        "pt": [
+          "Regras de negócio e camadas",
+          "Banco de dados e consultas"
         ]
       }
     }
