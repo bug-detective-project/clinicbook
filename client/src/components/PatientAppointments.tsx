@@ -1,4 +1,6 @@
 import { useEffect, useState } from 'react';
+import type { ReactNode } from 'react';
+import { Link } from 'react-router';
 import { listPatientAppointments } from '../api/patients.ts';
 import type { Appointment, Patient } from '../api/types.ts';
 import ui from '../components/ui.module.css';
@@ -30,20 +32,32 @@ export function PatientAppointments({ patient }: { patient: Patient }) {
     };
   }, [patient.id]);
 
+  // A new appointment of the patient is booked from here, whatever the list holds.
+  const withBooking = (content: ReactNode) => (
+    <>
+      <div className={styles.toolbar}>
+        <Link className={ui.primary} to={`/appointments/new?patient=${patient.id}`}>
+          Book appointment
+        </Link>
+      </div>
+      {content}
+    </>
+  );
+
   if (failed) {
-    return (
+    return withBooking(
       <p role="alert" className={ui.alert}>
         The appointments could not be loaded.
-      </p>
+      </p>,
     );
   }
   if (appointments === null) {
-    return <p>Loading…</p>;
+    return withBooking(<p>Loading…</p>);
   }
   if (appointments.length === 0) {
-    return <p className={ui.muted}>This patient has no appointments yet.</p>;
+    return withBooking(<p className={ui.muted}>This patient has no appointments yet.</p>);
   }
-  return (
+  return withBooking(
     <ul aria-label={`Appointments of ${patient.name}`} className={ui.list}>
       {appointments.map((appointment) => (
         <li key={appointment.id} className={`${ui.card} ${styles.row}`}>
@@ -65,6 +79,6 @@ export function PatientAppointments({ patient }: { patient: Patient }) {
           <StatusBadge status={appointment.status} />
         </li>
       ))}
-    </ul>
+    </ul>,
   );
 }

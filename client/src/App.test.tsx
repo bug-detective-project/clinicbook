@@ -240,6 +240,17 @@ describe('patients', () => {
     expect(screen.getByText('Horizonte Saúde')).toBeInTheDocument();
   });
 
+  it('books an appointment of a patient from the Appointments tab of the record, not from Details', async () => {
+    mockApi();
+    await renderApp('/patients/1');
+    expect(await screen.findByText('390.533.447-05')).toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: 'Book appointment' })).not.toBeInTheDocument();
+
+    await userEvent.click(within(screen.getByRole('navigation', { name: 'Patient record' })).getByRole('link', { name: 'Appointments' }));
+
+    expect(await screen.findByRole('link', { name: 'Book appointment' })).toHaveAttribute('href', '/appointments/new?patient=1');
+  });
+
   it('edits the data of a patient from the record, in a dialog filled with them', async () => {
     const api = mockApi();
     await renderApp('/patients/1');

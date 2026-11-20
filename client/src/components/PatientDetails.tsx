@@ -1,5 +1,4 @@
 import { useRef, useState } from 'react';
-import { Link } from 'react-router';
 import { updatePatient } from '../api/patients.ts';
 import type { Patient } from '../api/types.ts';
 import ui from '../components/ui.module.css';
@@ -35,9 +34,6 @@ export function PatientDetails({ patient, onChange }: { patient: Patient; onChan
         <dd>{patient.birthDate === null ? 'Not informed' : formatShortDay(patient.birthDate)}</dd>
       </dl>
       <div className={styles.actions}>
-        <Link className={ui.primary} to={`/appointments/new?patient=${patient.id}`}>
-          Book appointment
-        </Link>
         <button ref={editRef} type="button" className={ui.button} aria-haspopup="dialog" onClick={() => setEditing(true)}>
           Edit
         </button>
