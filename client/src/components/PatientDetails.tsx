@@ -23,15 +23,30 @@ export function PatientDetails({ patient, onChange }: { patient: Patient; onChan
   return (
     <div className={ui.card}>
       <dl className={styles.data}>
-        <dt>CPF</dt>
+        <dt>
+          <Icon name="card" />
+          CPF
+        </dt>
         <dd>{maskCpf(patient.cpf)}</dd>
-        <dt>Health plan</dt>
+        <dt>
+          <Icon name="shield" />
+          Health plan
+        </dt>
         <dd>{patient.healthPlan}</dd>
-        <dt>Phone</dt>
+        <dt>
+          <Icon name="phone" />
+          Phone
+        </dt>
         <dd>{formatPhone(patient.phone)}</dd>
-        <dt>E-mail</dt>
+        <dt>
+          <Icon name="mail" />
+          E-mail
+        </dt>
         <dd>{patient.email ?? 'No e-mail'}</dd>
-        <dt>Birth date</dt>
+        <dt>
+          <Icon name="cake" />
+          Birth date
+        </dt>
         <dd>{patient.birthDate === null ? 'Not informed' : formatShortDay(patient.birthDate)}</dd>
       </dl>
       <div className={styles.actions}>

@@ -11,11 +11,19 @@
 }
 
 .data dt {
+  display: flex;
+  gap: 8px;
+  align-items: center;
   font-size: 0.8125rem;
   font-weight: 700;
   letter-spacing: 0.04em;
   text-transform: uppercase;
   color: var(--muted);
+}
+
+.data dt svg {
+  flex-shrink: 0;
+  color: var(--brand);
 }
 
 .data dd {
