@@ -138,4 +138,22 @@ describe('the agenda', () => {
     await userEvent.click(within(screen.getByRole('navigation', { name: 'Agenda views' })).getByRole('link', { name: 'Week' }));
     expect(await screen.findByRole('heading', { level: 2, name: 'Mar 9 – Mar 15, 2026' })).toBeInTheDocument();
   });
+
+  it('marks today, this week and this month as selected only while they are on the screen', async () => {
+    mockApi();
+    await renderApp('/');
+    const days = await screen.findByRole('navigation', { name: 'Days' });
+    expect(within(days).getByRole('link', { name: 'Today' })).toHaveAttribute('aria-current', 'true');
+
+    await userEvent.click(within(days).getByRole('link', { name: 'Next day' }));
+    expect(await screen.findByRole('heading', { level: 2, name: 'Tuesday, March 10' })).toBeInTheDocument();
+    expect(within(screen.getByRole('navigation', { name: 'Days' })).getByRole('link', { name: 'Today' })).not.toHaveAttribute('aria-current');
+
+    await userEvent.click(within(screen.getByRole('navigation', { name: 'Agenda views' })).getByRole('link', { name: 'Month' }));
+    const months = await screen.findByRole('navigation', { name: 'Months' });
+    expect(within(months).getByRole('link', { name: 'This month' })).toHaveAttribute('aria-current', 'true');
+    await userEvent.click(within(months).getByRole('link', { name: 'Previous month' }));
+    expect(await screen.findByRole('heading', { level: 2, name: 'February 2026' })).toBeInTheDocument();
+    expect(within(screen.getByRole('navigation', { name: 'Months' })).getByRole('link', { name: 'This month' })).not.toHaveAttribute('aria-current');
+  });
 });

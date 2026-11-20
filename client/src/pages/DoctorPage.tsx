@@ -3,6 +3,7 @@ import { Link, useParams } from 'react-router';
 import { listSchedule } from '../api/appointments.ts';
 import { getDoctor } from '../api/doctors.ts';
 import type { Appointment, DoctorWithHours } from '../api/types.ts';
+import { PeriodNav } from '../components/PeriodNav.tsx';
 import ui from '../components/ui.module.css';
 import { WeekGrid } from '../components/WeekGrid.tsx';
 import { addDays, daysFrom, hoursSummary, mondayOf, weekName } from '../calendar.ts';
@@ -82,17 +83,13 @@ export function DoctorPage() {
 
       <div className={weekStyles.controls}>
         <h3 className={styles.week}>{weekName(monday, sunday)}</h3>
-        <nav aria-label="Weeks" className={weekStyles.weeks}>
-          <button type="button" className={ui.button} onClick={() => setMonday(addDays(monday, -7))}>
-            Previous week
-          </button>
-          <button type="button" className={ui.button} onClick={() => setMonday(mondayOf(today))}>
-            This week
-          </button>
-          <button type="button" className={ui.button} onClick={() => setMonday(addDays(monday, 7))}>
-            Next week
-          </button>
-        </nav>
+        <PeriodNav
+          label="Weeks"
+          previous={{ label: 'Previous week', onClick: () => setMonday(addDays(monday, -7)) }}
+          current={{ label: 'This week', onClick: () => setMonday(mondayOf(today)) }}
+          next={{ label: 'Next week', onClick: () => setMonday(addDays(monday, 7)) }}
+          showingCurrent={monday === mondayOf(today)}
+        />
       </div>
       {appointments === null ? <p>Loading…</p> : <WeekGrid days={daysFrom(monday, lastDay)} appointments={appointments} today={today} hours={doctor.hours} />}
 

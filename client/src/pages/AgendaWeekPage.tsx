@@ -5,6 +5,7 @@ import { listDoctors } from '../api/doctors.ts';
 import type { Appointment, Doctor } from '../api/types.ts';
 import { agendaAddress } from '../agenda.ts';
 import { AgendaViews } from '../components/AgendaViews.tsx';
+import { PeriodNav } from '../components/PeriodNav.tsx';
 import ui from '../components/ui.module.css';
 import { WeekGrid } from '../components/WeekGrid.tsx';
 import { addDays, daysFrom, mondayOf, weekName } from '../calendar.ts';
@@ -50,17 +51,13 @@ export function AgendaWeekPage() {
         </Link>
       </div>
       <div className={styles.controls}>
-        <nav aria-label="Weeks" className={styles.weeks}>
-          <Link className={ui.button} to={agendaAddress('week', addDays(monday, -7), doctor)}>
-            Previous week
-          </Link>
-          <Link className={ui.button} to={agendaAddress('week', today, doctor)}>
-            This week
-          </Link>
-          <Link className={ui.button} to={agendaAddress('week', addDays(monday, 7), doctor)}>
-            Next week
-          </Link>
-        </nav>
+        <PeriodNav
+          label="Weeks"
+          previous={{ label: 'Previous week', to: agendaAddress('week', addDays(monday, -7), doctor) }}
+          current={{ label: 'This week', to: agendaAddress('week', today, doctor) }}
+          next={{ label: 'Next week', to: agendaAddress('week', addDays(monday, 7), doctor) }}
+          showingCurrent={monday === mondayOf(today)}
+        />
         <DoctorFilter doctors={doctors} doctor={doctor} view="week" day={day} />
       </div>
       {error !== '' && (

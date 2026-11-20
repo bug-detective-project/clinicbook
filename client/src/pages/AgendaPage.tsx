@@ -5,6 +5,7 @@ import { ApiError } from '../api/http.ts';
 import type { Appointment } from '../api/types.ts';
 import { StatusBadge } from '../components/StatusBadge.tsx';
 import { AgendaViews } from '../components/AgendaViews.tsx';
+import { PeriodNav } from '../components/PeriodNav.tsx';
 import ui from '../components/ui.module.css';
 import { useToast } from '../useToast.ts';
 import { addDays, formatDay } from '../dates.ts';
@@ -80,17 +81,15 @@ export function AgendaPage() {
         </Link>
       </div>
 
-      <nav aria-label="Days" className={styles.days}>
-        <Link className={ui.button} to={`/?day=${addDays(day, -1)}`}>
-          Previous day
-        </Link>
-        <Link className={ui.button} to="/">
-          Today
-        </Link>
-        <Link className={ui.button} to={`/?day=${addDays(day, 1)}`}>
-          Next day
-        </Link>
-      </nav>
+      <div className={styles.days}>
+        <PeriodNav
+          label="Days"
+          previous={{ label: 'Previous day', to: `/?day=${addDays(day, -1)}` }}
+          current={{ label: 'Today', to: '/' }}
+          next={{ label: 'Next day', to: `/?day=${addDays(day, 1)}` }}
+          showingCurrent={day === today}
+        />
+      </div>
 
       {error !== '' && (
         <p role="alert" className={ui.alert}>

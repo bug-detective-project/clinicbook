@@ -5,6 +5,7 @@ import { listDoctors } from '../api/doctors.ts';
 import type { Appointment, Doctor } from '../api/types.ts';
 import { agendaAddress } from '../agenda.ts';
 import { AgendaViews } from '../components/AgendaViews.tsx';
+import { PeriodNav } from '../components/PeriodNav.tsx';
 import ui from '../components/ui.module.css';
 import { addDays, daysFrom, mondayOf, monthEnd, monthName, monthStart } from '../calendar.ts';
 import { useToday } from '../useToday.ts';
@@ -57,17 +58,13 @@ export function AgendaMonthPage() {
         </Link>
       </div>
       <div className={weekStyles.controls}>
-        <nav aria-label="Months" className={weekStyles.weeks}>
-          <Link className={ui.button} to={agendaAddress('month', monthStart(first, -1), doctor)}>
-            Previous month
-          </Link>
-          <Link className={ui.button} to={agendaAddress('month', today, doctor)}>
-            This month
-          </Link>
-          <Link className={ui.button} to={agendaAddress('month', monthStart(first, 1), doctor)}>
-            Next month
-          </Link>
-        </nav>
+        <PeriodNav
+          label="Months"
+          previous={{ label: 'Previous month', to: agendaAddress('month', monthStart(first, -1), doctor) }}
+          current={{ label: 'This month', to: agendaAddress('month', today, doctor) }}
+          next={{ label: 'Next month', to: agendaAddress('month', monthStart(first, 1), doctor) }}
+          showingCurrent={first === monthStart(today)}
+        />
         <DoctorFilter doctors={doctors} doctor={doctor} view="month" day={day} />
       </div>
       {error !== '' && (

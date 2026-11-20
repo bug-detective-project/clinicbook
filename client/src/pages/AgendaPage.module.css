@@ -1,17 +1,5 @@
-/* The three day links read as one control. */
 .days {
-  display: inline-flex;
-  gap: 4px;
   margin-bottom: 20px;
-  padding: 4px;
-  border: 1px solid var(--line);
-  border-radius: 12px;
-  background: var(--surface);
-}
-
-.days a {
-  border-color: transparent;
-  box-shadow: none;
 }
 
 .total {
