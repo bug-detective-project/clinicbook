@@ -3,6 +3,7 @@ import { listPatientAppointments } from '../api/patients.ts';
 import type { Appointment, Patient } from '../api/types.ts';
 import ui from '../components/ui.module.css';
 import { formatDay } from '../dates.ts';
+import { Icon } from './Icon.tsx';
 import styles from './PatientAppointments.module.css';
 import { StatusBadge } from './StatusBadge.tsx';
 
@@ -46,10 +47,18 @@ export function PatientAppointments({ patient }: { patient: Patient }) {
     <ul aria-label={`Appointments of ${patient.name}`} className={ui.list}>
       {appointments.map((appointment) => (
         <li key={appointment.id} className={`${ui.card} ${styles.row}`}>
-          <strong>
+          <strong className={styles.item}>
+            <Icon>
+              <rect x="3.5" y="5" width="17" height="15" rx="2.5" />
+              <path d="M3.5 10h17M8 3v4m8-4v4" />
+            </Icon>
             {formatDay(appointment.day)} at {appointment.time}
           </strong>
-          <span className={ui.muted}>
+          <span className={`${ui.muted} ${styles.item}`}>
+            <Icon>
+              <path d="M6 3v6a4 4 0 0 0 8 0V3M6 3H5m9 0h1M10 13v2a5 5 0 0 0 10 0v-2" />
+              <circle cx="20" cy="11" r="2" />
+            </Icon>
             {appointment.doctorName}
             {appointment.reason !== '' && ` · ${appointment.reason}`}
           </span>

@@ -10,6 +10,18 @@
   font-variant-numeric: tabular-nums;
 }
 
+.item {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  min-width: 0;
+}
+
+.item svg {
+  flex-shrink: 0;
+  color: var(--muted);
+}
+
 @media (max-width: 720px) {
   .row {
     grid-template-columns: 1fr;

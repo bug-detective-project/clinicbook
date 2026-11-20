@@ -1,17 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
-import type { ReactNode } from 'react';
 import { Link } from 'react-router';
 import type { Patient } from '../api/types.ts';
+import { Icon } from './Icon.tsx';
 import styles from './PatientMenu.module.css';
-
-/** A line icon beside the label of an action; the label alone names it. */
-function Icon({ children }: { children: ReactNode }) {
-  return (
-    <svg aria-hidden="true" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-      {children}
-    </svg>
-  );
-}
 
 export interface PatientMenuProps {
   patient: Patient;
