@@ -1,0 +1,97 @@
+.calendar {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 6px;
+  table-layout: fixed;
+}
+
+.calendar th {
+  color: var(--muted);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.calendar td {
+  padding: 0;
+}
+
+.hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.cell {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 84px;
+  padding: 8px 10px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--surface);
+  color: var(--ink);
+  text-decoration: none;
+  transition: border-color 0.15s;
+  /* The tag of the count follows the width of the day, not of the window. */
+  container-type: inline-size;
+}
+
+.cell:hover {
+  border-color: var(--brand);
+}
+
+.outside {
+  background: var(--page);
+  color: var(--muted);
+}
+
+.today {
+  border-color: var(--brand);
+  box-shadow: 0 0 0 3px var(--brand-soft);
+}
+
+.number {
+  font-weight: 800;
+}
+
+.count {
+  align-self: flex-start;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--brand-soft);
+  color: var(--brand-strong);
+  font-size: 0.75rem;
+  font-weight: 700;
+  white-space: nowrap;
+  max-width: 100%;
+  overflow: hidden;
+}
+
+/* A day too narrow for "5 appts." shows the number only; the link still reads "5 appointments". */
+@container (max-width: 76px) {
+  .word {
+    display: none;
+  }
+}
+
+@media (max-width: 560px) {
+  .calendar {
+    border-spacing: 3px;
+  }
+
+  .cell {
+    min-height: 52px;
+    padding: 5px;
+  }
+
+  .count {
+    padding: 1px 6px;
+    font-size: 0.6875rem;
+  }
+}
