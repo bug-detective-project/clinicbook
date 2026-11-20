@@ -45,12 +45,6 @@
   min-width: 0;
 }
 
-.email {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
 .name {
   color: var(--ink);
   font-size: 1.0625rem;

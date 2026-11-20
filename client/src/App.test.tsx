@@ -148,7 +148,7 @@ describe('patients', () => {
       'Camila Duarte',
       'Davi Fernandes',
     ]);
-    expect(within(rows[2]).getByText('No e-mail')).toBeInTheDocument();
+    expect(within(rows[2]).getByText('Private')).toBeInTheDocument();
   });
 
   it('registers a patient and puts it on the list', async () => {

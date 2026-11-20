@@ -7,7 +7,6 @@ import { PatientDialog } from '../components/PatientDialog.tsx';
 import { PatientMenu } from '../components/PatientMenu.tsx';
 import ui from '../components/ui.module.css';
 import { useToast } from '../useToast.ts';
-import { formatPhone } from '../masks.ts';
 import styles from './PatientsPage.module.css';
 
 export function PatientsPage() {
@@ -88,10 +87,6 @@ export function PatientsPage() {
                   <strong>{patient.name}</strong>
                 </Link>
                 <span className={styles.plan}>{patient.healthPlan}</span>
-                <span>{formatPhone(patient.phone)}</span>
-                <span className={`${ui.muted} ${styles.email}`} title={patient.email ?? undefined}>
-                  {patient.email ?? 'No e-mail'}
-                </span>
               </div>
               <div className={styles.menu}>
                 <PatientMenu patient={patient} onRemove={(removed) => void remove(removed)} />
